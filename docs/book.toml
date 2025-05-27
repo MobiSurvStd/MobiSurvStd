@@ -6,7 +6,7 @@ src = "src"
 title = "MobiSurvStd"
 
 [output.html]
-default-theme = "light"
+default-theme = "rust"
 preferred-dark-theme = "navy"
 smart-punctuation = true
 mathjax-support = false

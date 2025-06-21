@@ -44,6 +44,22 @@ def add_bicycle_counts(lf: pl.LazyFrame, existing_cols: list[str]):
     return lf
 
 
+def add_lng_lat(
+    lf: pl.LazyFrame,
+    existing_cols: list[str],
+    special_locations: pl.DataFrame | None,
+    detailed_zones: pl.DataFrame | None,
+):
+    for coords, name in (
+        (special_locations, "special_location"),
+        (detailed_zones, "detailed_zone"),
+    ):
+        breakpoint()
+        if coords is not None and f"home_{name}" in existing_cols:
+            lf = add_lng_lat_columns(lf, existing_cols, coords, prefix="home", name=name)
+    return lf
+
+
 def add_insee_columns(lf: pl.LazyFrame, existing_cols: list[str]):
     """Add `home_insee`column (if it does not exist already), by reading the home longitudes and
     latitudes.

@@ -55,10 +55,10 @@ PURPOSE_MAP = {
     28: "education:other",  # Étudier sur un autre lieu (lycée).
     29: "education:other",  # Étudier sur un autre lieu (universités et grandes écoles).
     30: "shopping:no_purchase",  # Visite d’un magasin, d’un centre commercial ou d’un marché de plein vent sans effectuer d’achat
-    31: "shopping:mall",  # Réaliser plusieurs motifs en centre commercial.
-    32: "shopping:large_store",  # Faire des achats en grand magasin, supermarché, hypermarché et leurs galeries marchandes.
-    33: "shopping:small_store",  # Faire des achats en petit et moyen commerce et drive in
-    34: "shopping:market",  # Faire des achats en marché couvert et de plein vent.
+    31: "shopping:unspecified",  # Réaliser plusieurs motifs en centre commercial.
+    32: "shopping:unspecified",  # Faire des achats en grand magasin, supermarché, hypermarché et leurs galeries marchandes.
+    33: "shopping:unspecified",  # Faire des achats en petit et moyen commerce et drive in
+    34: "shopping:unspecified",  # Faire des achats en marché couvert et de plein vent.
     35: "shopping:pickup",  # Récupérer des achats faits à distance (Drive, points relais)
     41: "task:healthcare",  # Recevoir des soins (santé).
     42: "task:procedure",  # Faire une démarche autre que rechercher un emploi.
@@ -88,6 +88,14 @@ PURPOSE_MAP = {
     # 97: "escort:middle_high_school:other",  # Étudier sur un autre lieu (collège ou lycée). Cas egt personne accompagnée
     # 98: "escort:shopping",  # Faire des achats sans précision (egt, motif personne accompagnée)
     # TODO: Fix 96, 97, and 98 if I find these values in a dataset.
+}
+
+SHOP_TYPE_MAP = {
+    31: "mall",  # Réaliser plusieurs motifs en centre commercial.
+    32: "supermarket_or_hypermarket",  # Faire des achats en grand magasin, supermarché, hypermarché et leurs galeries marchandes.
+    33: "small_shop",  # Faire des achats en petit et moyen commerce et drive in
+    34: "market",  # Faire des achats en marché couvert et de plein vent.
+    35: "drive_in",  # Récupérer des achats faits à distance (Drive, points relais)
 }
 
 TRIP_PERIMETER_MAP = {
@@ -134,9 +142,11 @@ def standardize_trips(
         original_trip_id=pl.struct("DMET", "ECH", "STD", "PER", "NDEP"),
         origin_purpose=pl.col("D2A").replace_strict(PURPOSE_MAP),
         origin_escort_purpose=pl.col("D2B").replace_strict(PURPOSE_MAP),
+        origin_shop_type=pl.col("D2A").replace(SHOP_TYPE_MAP, default=None),
         departure_time=60 * (pl.col("D4") // 100) + pl.col("D4") % 100,
         destination_purpose=pl.col("D5A").replace_strict(PURPOSE_MAP),
         destination_escort_purpose=pl.col("D5B").replace_strict(PURPOSE_MAP),
+        destination_shop_type=pl.col("D5A").replace(SHOP_TYPE_MAP, default=None),
         arrival_time=60 * (pl.col("D8") // 100) + pl.col("D8") % 100,
         trip_euclidean_distance_km=pl.col("D11") / 1e3,
         trip_travel_distance_km=pl.col("D12") / 1e3,

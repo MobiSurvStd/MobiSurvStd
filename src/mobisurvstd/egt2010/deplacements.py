@@ -109,6 +109,18 @@ PURPOSE_MAP = {
     "98": "other",  # Autre motif
 }
 
+SHOP_TYPE_MAP = {
+    1: "small_shop",  # Petit commerce
+    2: "small_shop",  # Supérette
+    3: "supermarket",  # Supermarché
+    4: "hypermarket",  # Grande surface
+    5: "hypermarket",  # Hypermarché
+    6: "mall",  # Centre commercial
+    7: "mall",  # Grands magasin
+    8: "market",  # Marché
+    9: "drive_in",  # Marché aux puces
+}
+
 
 def scan_trips(filename: str):
     lf = pl.scan_csv(filename, separator=";", schema_overrides=SCHEMA)
@@ -150,11 +162,16 @@ def standardize_trips(filename: str, persons: pl.LazyFrame, households: pl.LazyF
         destination_purpose=pl.col("DESTMOT").replace_strict(PURPOSE_MAP),
         origin_escort_purpose=pl.col("ACCMOT").replace_strict(PURPOSE_MAP),
         destination_escort_purpose=pl.col("ACCMOT").replace_strict(PURPOSE_MAP),
+        destination_shop_type=pl.col("TLA").replace_strict(SHOP_TYPE_MAP),
         departure_time=pl.col("ORH") * 60 + pl.col("ORM"),
         arrival_time=pl.col("DESTH") * 60 + pl.col("DESTM"),
         # The trip took place the day before the interview.
         trip_date=pl.col("interview_date") - timedelta(days=1),
     ).with_columns(
+        # Read the `origin_shop_type` from the `destination_shop_type` of the previous trip.
+        origin_shop_type=pl.when(pl.col("origin_purpose").str.starts_with("shopping:")).then(
+            pl.col("destination_shop_type").shift(1).over("person_id")
+        ),
         # Set escort purpose to null when the purpose is not escort.
         # (EGT 2010 uses a single column for escort purpose at origin and at destination)
         origin_escort_purpose=pl.when(pl.col("origin_purpose").str.starts_with("escort:")).then(

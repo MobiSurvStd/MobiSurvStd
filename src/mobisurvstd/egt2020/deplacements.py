@@ -104,6 +104,17 @@ PURPOSE_MAP = {
     90: "other",  # Autre lieu
 }
 
+SHOP_TYPE_MAP = {
+    1: "small_shop",  # Dans un petit commerce
+    2: "supermarket",  # Dans un supermarché
+    3: "hypermarket",  # Dans un hypermarché ou une grande surface
+    4: "mall",  # Dans un centre commercial ou un grand magasin
+    5: "market",  # Dans un marché ou un marché aux puces
+    6: "drive_in",  # Dans un drive-in ou un point relais
+    7: "private",  # Chez un particulier
+    9: "other",  # Autre
+}
+
 
 def scan_trips(filename: str):
     # We use the inefficient `read_csv().lazy()` because we need to use `encoding="latin1"`, which
@@ -149,6 +160,7 @@ def standardize_trips(filename: str, households: pl.LazyFrame, persons: pl.LazyF
         original_trip_id=pl.struct("IDCEREMA", "NP", "ND"),
         origin_purpose=pl.col("ORMOT").replace_strict(PURPOSE_MAP),
         destination_purpose=pl.col("DESTMOT").replace_strict(PURPOSE_MAP),
+        destination_shop_type=pl.col("TLA").replace_strict(SHOP_TYPE_MAP),
         departure_time=(pl.col("ORHOR") // 100) * 60 + pl.col("ORHOR") % 100,
         arrival_time=(pl.col("DESTHOR") // 100) * 60 + pl.col("DESTHOR") % 100,
         # For INSEE in départements < 10, the starting 0 is omitted (e.g., "02307" is "2307") so we
@@ -165,6 +177,11 @@ def standardize_trips(filename: str, households: pl.LazyFrame, persons: pl.LazyF
         .otherwise("destination_insee"),
         # The trip took place the day before the interview.
         trip_date=pl.col("interview_date") - timedelta(days=1),
+    ).with_columns(
+        # Read the `origin_shop_type` from the `destination_shop_type` of the previous trip.
+        origin_shop_type=pl.when(pl.col("origin_purpose").str.starts_with("shopping:")).then(
+            pl.col("destination_shop_type").shift(1).over("person_id")
+        ),
     )
     # For EGT2020, we use the AAV and density data from 2020 (even if some interviews are from 2018
     # and 2019).

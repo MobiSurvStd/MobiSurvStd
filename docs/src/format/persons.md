@@ -266,7 +266,7 @@ The codes follow the
   - All values are between 1 and 8.
   - The values are consistent with variable `pcs_group` (e.g., value is 5 if and only if
     `pcs_group` is `"employés"`).
-  - The value is null *if and only if* `pcs_group` is `"no_answer"` or null.
+  - The value is null *if and only if* `pcs_group` is null.
 
 ### `pcs_category_code2020`
 
@@ -524,7 +524,6 @@ Whether the person has access to a bicycle parking spot at the usual work locati
   - `"yes:nearby"`: the person has access to a bicycle parking nearby work (unknown whether it is
     sheltered)
   - `"no"`: the person does not have access to a bicycle parking at workplace or nearby work
-  - `"no_answer"`: the person did not answer that question
 - **Guarantees:**
   - If `professional_occupation` is *not* `"worker"`, then the value is null.
   - If `work_only_at_home` is true, then the value is null.
@@ -777,7 +776,6 @@ Whether the person has access to a bicycle parking spot at the usual study locat
   - `"yes:nearby"`: the person has access to a bicycle parking nearby study location (unknown
     whether it is sheltered)
   - `"no"`: the person does not have access to a bicycle parking at or near study location
-  - `"no_answer"`: the person did not answer that question
 - **Guarantees:**
   - If `professional_occupation` is *not* `"student"`, then the value is null.
   - If `study_only_at_home` is true, then the value is null.

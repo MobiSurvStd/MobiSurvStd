@@ -512,10 +512,7 @@ PURPOSE_ENUM = pl.Enum(
         "shopping:daily",
         "shopping:weekly",
         "shopping:specialized",
-        "shopping:mall",
-        "shopping:large_store",
-        "shopping:small_store",
-        "shopping:market",
+        "shopping:unspecified",
         "shopping:pickup",
         "shopping:no_purchase",
         "shopping:tour_no_purchase",
@@ -539,6 +536,20 @@ PURPOSE_ENUM = pl.Enum(
         "escort:transport:pick_up",
         "escort:unspecified:drop_off",
         "escort:unspecified:pick_up",
+        "other",
+    ]
+)
+
+SHOP_TYPE_ENUM = pl.Enum(
+    [
+        "small_shop",
+        "supermarket",
+        "hypermarket",
+        "supermarket_or_hypermarket",
+        "mall",
+        "market",
+        "drive_in",
+        "private",
         "other",
     ]
 )
@@ -644,6 +655,10 @@ TRIP_SCHEMA = {
     # Purpose group of the activity performed at the trip's destination by the person who is
     # escorted.
     "destination_escort_purpose_group": PURPOSE_GROUP_ENUM,
+    # Type of shop where the activity at origin was performed.
+    "origin_shop_type": SHOP_TYPE_ENUM,
+    # Type of shop where the activity at destination was performed.
+    "destination_shop_type": SHOP_TYPE_ENUM,
     # Longitude of the trip's origin.
     "origin_lng": pl.Float64,
     # Latitude of the trip's origin.

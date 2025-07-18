@@ -106,7 +106,7 @@ HOUSING_STATUS_MAP = {
     6: "other",  # Autre Exclusif
     7: "other",  # Autre Non précisé
     8: "tenant:unspecified",  # Locataire sans précision
-    9: "no_answer",  # NR-Refus
+    9: None,  # NR-Refus
 }
 
 CAR_TYPE_MAP = {

@@ -123,15 +123,11 @@ Purpose of the activity performed at the trip's origin.
   - `"education:declared"`: the person is studying at their usual study location
   - `"education:other"`: the person is studying at a different location
   - `"shopping:daily"`: the person is shopping for daily needs (e.g., bread, newspaper)
-  - `"shopping:weekly"`: the person is shopping for daily needs (e.g., groceries)
+  - `"shopping:weekly"`: the person is shopping for weekly needs (e.g., groceries)
   - `"shopping:specialized"`: the person is shopping for occasional needs (e.g., bookstore,
     clothing)
-  - `"shopping:mall"`: the person is doing shopping in a mall ("centre commercial")
-  - `"shopping:large_store"`: the person is doing shopping in a large store ("supermarché",
-    "hypermarché")
-  - `"shopping:small_store"`: the person is doing shopping in a small store ("petit et moyen
-    commerce")
-  - `"shopping:market"`: the person is doing shopping in a market ("marché")
+  - `"shopping:unspecified"`: the person is shopping for goods without further specification (daily,
+    weekly, or specialized)
   - `"shopping:pickup"`: the person is picking up purchases from online shopping ("drive",
     "point relais")
   - `"shopping:no_purchase"`: the person is visiting a store without doing any purchase
@@ -302,6 +298,41 @@ Purpose group of the activity performed at the trip's destination by the person 
   - `"other"`
 - **Guarantees:**
   - The values are consistent with `destination_escort_purpose`.
+
+## Shopping
+
+### `origin_shop_type`
+
+Type of shop where the activity at origin was performed (for shopping activities).
+
+- **Modalities:**
+  - `"small_shop"`: "petit commerce" / "supérette"
+  - `"supermarket"`: "supermarché"
+  - `"hypermarket"`: "hypermarché" / "grande surface"
+  - `"supermarket_or_hypermarket"`: "supermarché" / "hypermarché" / "grande surface"
+  - `"mall"`: "centre commercial" / "grand magasin"
+  - `"market"`: "marché"
+  - `"drive_in"`: "drive-in" / "point relais"
+  - `"private"`: "particulier"
+  - `"other"`
+- **Guarantees:**
+  - If `origin_purpose_group` is not `"shopping"`, then the value is null.
+
+### `destination_shop_type`
+
+Type of shop where the activity at destination was performed (for shopping activities).
+
+- **Modalities:**
+  - `"small_shop"`: "petit commerce"
+  - `"supermarket"`: "supermarché"
+  - `"hypermarket"`: "hypermarché" / "grande surface"
+  - `"mall"`: "centre commercial" / "grand magasin"
+  - `"market"`: "marché"
+  - `"drive_in"`: "drive-in" / "point relais"
+  - `"private"`: "particulier"
+  - `"other"`
+- **Guarantees:**
+  - If `destination_purpose_group` is not `"shopping"`, then the value is null.
 
 ## Origin location
 

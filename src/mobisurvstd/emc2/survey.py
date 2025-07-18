@@ -195,19 +195,19 @@ def legs_filename(source: str | ZipFile):
 
 def detailed_zones_filename(source: str | ZipFile):
     return find_file(
-        source, ".*_ZF(_.*)?.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
+        source, ".*_ZF(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
     )
 
 
 def special_locations_filename(source: str | ZipFile):
     return find_file(
-        source, ".*_GT(_.*)?.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
+        source, ".*_GT(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
     )
 
 
 def draw_zones_filename(source: str | ZipFile):
     return find_file(
-        source, ".*_DTIR(_.*)?.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
+        source, ".*_DTIR(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
     )
 
 
@@ -219,33 +219,6 @@ def add_survey_dates(households: pl.LazyFrame, persons: pl.LazyFrame):
         household_dates, on="household_id", how="left", coalesce=True
     ).with_columns(interview_date=pl.col("trip_date") + timedelta(days=1))
     return households
-
-
-def get_all_ids(
-    suffix: str,
-    households: pl.LazyFrame,
-    persons: pl.LazyFrame,
-    trips: pl.LazyFrame,
-    legs: pl.LazyFrame,
-):
-    return (
-        pl.concat(
-            (
-                households.select(id=f"home_{suffix}"),
-                persons.select(id=f"work_{suffix}"),
-                persons.select(id=f"study_{suffix}"),
-                trips.select(id=f"origin_{suffix}"),
-                trips.select(id=f"destination_{suffix}"),
-                legs.select(id=f"start_{suffix}"),
-                legs.select(id=f"end_{suffix}"),
-            ),
-            how="vertical",
-        )
-        .collect()
-        .to_series()
-        .drop_nulls()
-        .cast(pl.Int64)
-    )
 
 
 def fix_special_locations_with_gcd(

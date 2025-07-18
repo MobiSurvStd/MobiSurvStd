@@ -81,4 +81,6 @@ def legs_filename(source: str | ZipFile):
 
 
 def detailed_zones_filename(source: str | ZipFile):
-    return find_file(source, "carr100m.shp", subdir=os.path.join("Doc", "Carreaux_shape_mifmid"))
+    return find_file(
+        source, "carr100m.shp", subdir=os.path.join("Doc", "Carreaux_shape_mifmid"), as_url=True
+    )

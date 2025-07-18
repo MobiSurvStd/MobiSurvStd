@@ -123,8 +123,8 @@ PURPOSE_MAP = {
     "1.3": "home:secondary",  # Retour au domicile de parents (hors ménage) ou d’amis
     "1.4": "education:other",  # Étudier (école, lycée, université)
     "1.5": "education:childcare",  # Faire garder un enfant en bas âge (nourrice, crèche, famille)
-    "2.1": "shopping:mall",  # Se rendre dans une grande surface ou un centre commercial (y compris boutiques et services)
-    "2.2": "shopping:small_store",  # Se rendre dans un centre de proximité, petit commerce, supérette, boutique, services (banque, cordonnier...) commercial) (hors centre commercial)
+    "2.1": "shopping:unspecified",  # Se rendre dans une grande surface ou un centre commercial (y compris boutiques et services)
+    "2.2": "shopping:unspecified",  # Se rendre dans un centre de proximité, petit commerce, supérette, boutique, services (banque, cordonnier...) commercial) (hors centre commercial)
     "3.1": "task:healthcare",  # Soins médicaux ou personnels (médecin, coiffeur…)
     "4.1": "task:procedure",  # Démarche administrative, recherche d’informations
     "4.12": "task:other",  # Déchetterie
@@ -153,6 +153,11 @@ PURPOSE_MAP = {
     "9.5": "work:other",  # Autres motifs professionnels
     "9999": None,
     "9999.0": None,
+}
+
+SHOP_TYPE_MAP = {
+    "2.1": "supermarket_or_hypermarket",  # Se rendre dans une grande surface ou un centre commercial (y compris boutiques et services)
+    "2.2": "small_shop",  # Se rendre dans un centre de proximité, petit commerce, supérette, boutique, services (banque, cordonnier...) commercial) (hors centre commercial)
 }
 
 MODE_MAP = {
@@ -250,6 +255,8 @@ def standardize_trips(filename: str, persons: pl.LazyFrame):
         origin_purpose=pl.col("MOTPREC").replace_strict(PURPOSE_MAP),
         destination_purpose=pl.col("MMOTIFDES").replace_strict(PURPOSE_MAP),
         destination_escort_purpose=pl.col("MMOTIFDACC").replace_strict(PURPOSE_MAP),
+        origin_shop_type=pl.col("MOTPREC").replace_strict(SHOP_TYPE_MAP, default=None),
+        destination_shop_type=pl.col("MMOTIFDES").replace_strict(SHOP_TYPE_MAP, default=None),
         origin_insee_density=insee_density_col("densite_7_ORI"),
         destination_insee_density=insee_density_col("densite_7_DES"),
         origin_aav_category=pl.col("TAA2017_ORI").replace({0: None, 8: None, 9: None}),

@@ -3,7 +3,6 @@ from datetime import timedelta
 import polars as pl
 
 from mobisurvstd.common.trips import clean
-from mobisurvstd.schema import TRIP_SCHEMA
 
 SCHEMA = {
     "IDCEREMA": pl.String,  # Identifiant du ménage
@@ -148,12 +147,8 @@ def standardize_trips(filename: str, households: pl.LazyFrame, persons: pl.LazyF
     )
     lf = lf.with_columns(
         original_trip_id=pl.struct("IDCEREMA", "NP", "ND"),
-        origin_purpose=pl.col("ORMOT").replace_strict(
-            PURPOSE_MAP, return_dtype=TRIP_SCHEMA["origin_purpose"]
-        ),
-        destination_purpose=pl.col("DESTMOT").replace_strict(
-            PURPOSE_MAP, return_dtype=TRIP_SCHEMA["destination_purpose"]
-        ),
+        origin_purpose=pl.col("ORMOT").replace_strict(PURPOSE_MAP),
+        destination_purpose=pl.col("DESTMOT").replace_strict(PURPOSE_MAP),
         departure_time=(pl.col("ORHOR") // 100) * 60 + pl.col("ORHOR") % 100,
         arrival_time=(pl.col("DESTHOR") // 100) * 60 + pl.col("DESTHOR") % 100,
         # For INSEE in départements < 10, the starting 0 is omitted (e.g., "02307" is "2307") so we
@@ -171,7 +166,6 @@ def standardize_trips(filename: str, households: pl.LazyFrame, persons: pl.LazyF
         # The trip took place the day before the interview.
         trip_date=pl.col("interview_date") - timedelta(days=1),
     )
-    lf = lf.sort("IDCEREMA", "NP", "ND")
     # For EGT2020, we use the AAV and density data from 2020 (even if some interviews are from 2018
     # and 2019).
     # The survey perimiters cover excatly the 8 départements of the IDF region.

@@ -1,20 +1,33 @@
 import polars as pl
 
-from mobisurvstd.common.admin_express import find_insee
-from mobisurvstd.common.insee_data import add_insee_data
 from mobisurvstd.common.modes import MODE_TO_GROUP
-from mobisurvstd.common.nuts import add_nuts_data
+from mobisurvstd.common.zones import add_lng_lat_columns
+from mobisurvstd.resources.admin_express import find_insee
+from mobisurvstd.resources.insee_data import add_insee_data
+from mobisurvstd.resources.nuts import add_nuts_data
 from mobisurvstd.schema import LEG_SCHEMA
 
+from . import DEBUG
 
-def clean(lf: pl.LazyFrame):
+
+def clean(
+    lf: pl.LazyFrame,
+    special_locations: pl.DataFrame | None = None,
+    detailed_zones: pl.DataFrame | None = None,
+):
     existing_cols = lf.collect_schema().names()
+    lf = lf.sort("original_leg_id")
     lf = add_indexing(lf, existing_cols)
     lf = add_nb_persons_in_vehicle(lf, existing_cols)
     lf = add_mode_groups(lf, existing_cols)
+    lf = add_lng_lat(lf, existing_cols, special_locations, detailed_zones)
     lf = add_insee_columns(lf, existing_cols)
     lf = add_insee_data_columns(lf, existing_cols)
     lf = add_nuts_columns(lf, existing_cols)
+    if DEBUG:
+        # Try to collect the schema to check if it is valid.
+        lf.collect_schema()
+        lf.collect()
     return lf
 
 
@@ -67,6 +80,24 @@ def add_mode_groups(lf: pl.LazyFrame, existing_cols: list[str]):
     if "mode" in existing_cols:
         lf = lf.with_columns(mode_group=pl.col("mode").replace_strict(MODE_TO_GROUP))
         existing_cols.append("mode_group")
+    return lf
+
+
+def add_lng_lat(
+    lf: pl.LazyFrame,
+    existing_cols: list[str],
+    special_locations: pl.DataFrame | None,
+    detailed_zones: pl.DataFrame | None,
+):
+    for coords, name in (
+        (special_locations, "special_location"),
+        (detailed_zones, "detailed_zone"),
+    ):
+        if coords is not None and (
+            f"start_{name}" in existing_cols or f"end_{name}" in existing_cols
+        ):
+            lf = add_lng_lat_columns(lf, existing_cols, coords, prefix="start", name=name)
+            lf = add_lng_lat_columns(lf, existing_cols, coords, prefix="end", name=name)
     return lf
 
 

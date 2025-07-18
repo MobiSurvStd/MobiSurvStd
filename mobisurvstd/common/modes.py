@@ -28,6 +28,7 @@ MODE_TO_GROUP = {
     "public_transit:urban:coach": "public_transit",
     "public_transit:urban:tram": "public_transit",
     "public_transit:urban:metro": "public_transit",
+    "public_transit:urban:funicular": "public_transit",
     "public_transit:urban:rail": "public_transit",
     "public_transit:urban:TER": "public_transit",
     "public_transit:urban:demand_responsive": "public_transit",

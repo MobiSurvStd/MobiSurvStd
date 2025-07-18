@@ -3,7 +3,6 @@ from datetime import timedelta
 import polars as pl
 
 from mobisurvstd.common.households import clean
-from mobisurvstd.schema import HOUSEHOLD_SCHEMA
 
 SCHEMA = {
     "IDCEREMA": pl.String,  # Identifiant du ménage
@@ -133,21 +132,13 @@ def standardize_households(filename: str):
     )
     lf = lf.with_columns(
         original_household_id=pl.struct("IDCEREMA"),
-        survey_method=pl.col("TYPE_QUEST").replace_strict(
-            SURVEY_METHOD_MAP, return_dtype=HOUSEHOLD_SCHEMA["survey_method"]
-        ),
+        survey_method=pl.col("TYPE_QUEST").replace_strict(SURVEY_METHOD_MAP),
         interview_date=pl.date(year="ANNEE", month="MOIS", day="JOUR") + timedelta(days=1),
-        household_type=pl.col("TYPE_MEN").replace_strict(
-            HOUSEHOLD_TYPE_MAP, return_dtype=HOUSEHOLD_SCHEMA["household_type"]
-        ),
-        income_lower_bound=pl.col("REVENU").replace_strict(REVENU_LB_MAP, return_dtype=pl.UInt16),
-        income_upper_bound=pl.col("REVENU").replace_strict(REVENU_UB_MAP, return_dtype=pl.UInt16),
-        housing_type=pl.col("TYPELOG").replace_strict(
-            HOUSING_TYPE_MAP, return_dtype=HOUSEHOLD_SCHEMA["housing_type"]
-        ),
-        housing_status=pl.col("OCCUPLOG").replace_strict(
-            HOUSING_STATUS_MAP, return_dtype=HOUSEHOLD_SCHEMA["housing_status"]
-        ),
+        household_type=pl.col("TYPE_MEN").replace_strict(HOUSEHOLD_TYPE_MAP),
+        income_lower_bound=pl.col("REVENU").replace_strict(REVENU_LB_MAP),
+        income_upper_bound=pl.col("REVENU").replace_strict(REVENU_UB_MAP),
+        housing_type=pl.col("TYPELOG").replace_strict(HOUSING_TYPE_MAP),
+        housing_status=pl.col("OCCUPLOG").replace_strict(HOUSING_STATUS_MAP),
         has_internet=pl.col("INTERNET") == 1,
         nb_standard_bicycles=pl.col("nb_bicycles") - pl.col("nb_electric_bicycles"),
         has_bicycle_parking=pl.col("ABRI_VL") == 1,
@@ -167,6 +158,5 @@ def standardize_households(filename: str):
             .otherwise(pl.col("housing_status"))
         ),
     )
-    lf = lf.sort("IDCEREMA")
     lf = clean(lf)
     return lf

@@ -21,9 +21,6 @@ standardisé, clair et homogène.*
 MobiSurvStd est un outil simple à utiliser, qui permet de convertir plusieurs enquêtes de mobilité
 françaises dans un format unique et standardisé.
 
-Vous avez une enquête EGT, EMC² ou EMP et vous ne savez pas comment l'exploiter ?
-Cet outil est fait pour vous.
-
 ---
 
 ## Contexte
@@ -50,7 +47,8 @@ Voici quelques exemples :
 - Fichiers à relier entre eux sans documentation
 - Codes à adapter pour chaque nouvelle enquête ou territoire
 
-✅ MobiSurvStd simplifie tout cela en vous proposant un format commun et documenté.
+✅ MobiSurvStd simplifie tout cela en vous proposant un
+[format Parquet commun et documenté](https://mobisurvstd.github.io/MobiSurvStd/format/index.html).
 
 👉 [Exemple concret ici](https://mobisurvstd.github.io/MobiSurvStd/problem-example.html)
 
@@ -76,10 +74,34 @@ pip install mobisurvstd
 python -m mobisurvstd emp_2019_donnees_individuelles_anonymisees_novembre2024.zip standardized_emp2019 --survey-type emp2019
 ```
 
-✅ Un dossier `standardized_emp2019` sera créé avec les fichiers Parquet au format standard.
+Un dossier `standardized_emp2019` sera créé avec les fichiers Parquet au format standard.
+
+Ces fichiers Parquet peuvent ensuite être analysés avec, par exemple, les librairies Python
+[polars](https://pola.rs/) et [pandas](https://pandas.pydata.org) ou le package R
+[arrow](https://arrow.apache.org/docs/r/).
 
 🔎 Consultez le [Guide utilisateur](https://mobisurvstd.github.io/MobiSurvStd/howto.html) pour plus
 de détails.
+
+---
+
+## Étude de cas : Usage du vélo
+
+Le graphe ci-dessous représente la part de déplacements à vélo pour chaque enquête EMC² et pour
+l'EGT 2020.
+La couleur des cercles représente le numbre moyen de vélo par ménage enquêté.
+La taille des cercles représente le nombre estimé de déplacements dans l'aire d'enquête.
+
+Le graphe a été généré à partir du code [analyses/bicycle_shares.py]().
+
+![](docs/src/images/bicycle_shares.png)
+
+La carte ci-dessous représente la part de déplacements à vélo au sein des municipalités.
+Seules les municipalités avec plus de 30 déplacements observés sont représentées.
+
+La carte a été générée à partir du code [analyses/bicycle_share_by_insee.py]().
+
+![](docs/src/images/bicycle_shares_by_insee.png)
 
 ---
 
@@ -98,10 +120,10 @@ Actuellement :
 
 ---
 
-## ⚠️ Mentions légales
+## Mentions légales
 
 <span style="color:red">
-<strong>MobiSurvStd ne rend pas les données anonymes.</strong>
+⚠️ <strong>MobiSurvStd ne rend pas les données anonymes.</strong>
 Si vous travaillez avec des données confidentielles (par exemple EMC² ou EGT), vous devez respecter
 les mêmes règles de confidentialité que pour les données originales.
 

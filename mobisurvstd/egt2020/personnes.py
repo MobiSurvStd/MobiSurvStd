@@ -1,7 +1,6 @@
 import polars as pl
 
 from mobisurvstd.common.persons import clean
-from mobisurvstd.schema import PERSON_SCHEMA
 
 SCHEMA = {
     "IDCEREMA": pl.String,  # Identifiant du ménage
@@ -275,30 +274,16 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
     )
     lf = lf.with_columns(
         original_person_id=pl.struct("IDCEREMA", "NP"),
-        reference_person_link=pl.col("LIENP1").replace_strict(
-            REFERENCE_PERSON_LINK_MAP, return_dtype=PERSON_SCHEMA["reference_person_link"]
-        ),
+        reference_person_link=pl.col("LIENP1").replace_strict(REFERENCE_PERSON_LINK_MAP),
         woman=pl.col("SEXE") == 2,
-        education_level=pl.col("DIPL").replace_strict(
-            EDUCATION_LEVEL_MAP, return_dtype=PERSON_SCHEMA["education_level"]
-        ),
-        detailed_education_level=pl.col("DIPL").replace_strict(
-            DETAILED_EDUCATION_LEVEL_MAP, return_dtype=PERSON_SCHEMA["detailed_education_level"]
-        ),
-        professional_occupation=pl.col("OCCP").replace_strict(
-            PROFESSIONAL_OCCUPATION_MAP, return_dtype=PERSON_SCHEMA["professional_occupation"]
-        ),
+        education_level=pl.col("DIPL").replace_strict(EDUCATION_LEVEL_MAP),
+        detailed_education_level=pl.col("DIPL").replace_strict(DETAILED_EDUCATION_LEVEL_MAP),
+        professional_occupation=pl.col("OCCP").replace_strict(PROFESSIONAL_OCCUPATION_MAP),
         detailed_professional_occupation=pl.col("OCCP").replace_strict(
-            DETAILED_PROFESSIONAL_OCCUPATION_MAP,
-            return_dtype=PERSON_SCHEMA["detailed_professional_occupation"],
+            DETAILED_PROFESSIONAL_OCCUPATION_MAP
         ),
-        pcs_category_code2003=pl.when(pl.col("CS24L").is_between(1, 69))
-        .then("CS24L")
-        .otherwise(None)
-        .cast(PERSON_SCHEMA["pcs_category_code2003"]),
-        workplace_singularity=pl.col("LIEU_TRAV").replace_strict(
-            WORKPLACE_SINGULARITY_MAP, return_dtype=PERSON_SCHEMA["workplace_singularity"]
-        ),
+        pcs_category_code2003=pl.when(pl.col("CS24L").is_between(1, 69)).then("CS24L"),
+        workplace_singularity=pl.col("LIEU_TRAV").replace_strict(WORKPLACE_SINGULARITY_MAP),
         # Column DDOMTRAV can represent either work commute distance or study commute distance.
         work_commute_euclidean_distance_km=pl.when(pl.col("work_lng").is_not_null())
         .then("DDOMTRAV")
@@ -306,30 +291,18 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         study_commute_euclidean_distance_km=pl.when(pl.col("study_lng").is_not_null())
         .then("DDOMTRAV")
         .otherwise(None),
-        work_car_parking=pl.col("PKVPTRAV").replace_strict(
-            CAR_PARKING_MAP, return_dtype=PERSON_SCHEMA["work_car_parking"]
-        ),
-        work_bicycle_parking=pl.col("PKVLTRAV").replace_strict(
-            BICYCLE_PARKING_MAP, return_dtype=PERSON_SCHEMA["work_bicycle_parking"]
-        ),
+        work_car_parking=pl.col("PKVPTRAV").replace_strict(CAR_PARKING_MAP),
+        work_bicycle_parking=pl.col("PKVLTRAV").replace_strict(BICYCLE_PARKING_MAP),
         # The student category is not reported in CS24L, contrarily to what the survey documentation
         # says.
         # student_category=pl.col("CS24L").replace_strict(
-        #     STUDENT_CATEGORY_MAP, default=None, return_dtype=PERSON_SCHEMA["student_category"]
+        #     STUDENT_CATEGORY_MAP, default=None
         # ),
         study_only_at_home=pl.col("LIEU_ETUD").eq(2),
-        study_car_parking=pl.col("PKVPETUD").replace_strict(
-            CAR_PARKING_MAP, return_dtype=PERSON_SCHEMA["study_car_parking"]
-        ),
-        study_bicycle_parking=pl.col("PKVLETUD").replace_strict(
-            BICYCLE_PARKING_MAP, return_dtype=PERSON_SCHEMA["study_bicycle_parking"]
-        ),
-        has_driving_license=pl.col("PERMVP").replace_strict(
-            DRIVING_LICENSE_MAP, return_dtype=PERSON_SCHEMA["has_driving_license"]
-        ),
-        has_motorcycle_driving_license=pl.col("PERM2RM").replace_strict(
-            DRIVING_LICENSE_MAP, return_dtype=PERSON_SCHEMA["has_motorcycle_driving_license"]
-        ),
+        study_car_parking=pl.col("PKVPETUD").replace_strict(CAR_PARKING_MAP),
+        study_bicycle_parking=pl.col("PKVLETUD").replace_strict(BICYCLE_PARKING_MAP),
+        has_driving_license=pl.col("PERMVP").replace_strict(DRIVING_LICENSE_MAP),
+        has_motorcycle_driving_license=pl.col("PERM2RM").replace_strict(DRIVING_LICENSE_MAP),
         has_public_transit_subscription=pl.col("ABONTC").eq(1),
         public_transit_subscription=pl.when(
             # Forfait Navigo Gratuité, Améthyste et Gratuité Jeunes en insertion
@@ -414,6 +387,5 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         .then(pl.lit(None))
         .otherwise("pcs_category_code2003"),
     )
-    lf = lf.sort("IDCEREMA", "NP")
     lf = clean(lf)
     return lf

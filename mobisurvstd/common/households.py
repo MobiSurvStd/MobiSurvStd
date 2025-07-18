@@ -1,18 +1,32 @@
 import polars as pl
 
-from mobisurvstd.common.admin_express import find_insee
-from mobisurvstd.common.insee_data import add_insee_data
-from mobisurvstd.common.nuts import add_nuts_data
+from mobisurvstd.common.zones import add_lng_lat_columns
+from mobisurvstd.resources.admin_express import find_insee
+from mobisurvstd.resources.insee_data import add_insee_data
+from mobisurvstd.resources.nuts import add_nuts_data
 from mobisurvstd.schema import HOUSEHOLD_SCHEMA
 
+from . import DEBUG
 
-def clean(lf: pl.LazyFrame):
+
+def clean(
+    lf: pl.LazyFrame,
+    special_locations: pl.DataFrame | None = None,
+    detailed_zones: pl.DataFrame | None = None,
+):
     existing_cols = lf.collect_schema().names()
+    lf = lf.sort("original_household_id")
     lf = indexing(lf)
     lf = add_bicycle_counts(lf, existing_cols)
+    lf = add_lng_lat(lf, existing_cols, special_locations, detailed_zones)
     lf = add_insee_columns(lf, existing_cols)
+    lf = add_insee_data_columns(lf, existing_cols)
     if "home_dep" in existing_cols:
         lf = add_nuts_data(lf, "home")
+    if DEBUG:
+        # Try to collect the schema to check if it is valid.
+        lf.collect_schema()
+        lf.collect()
     return lf
 
 
@@ -54,7 +68,6 @@ def add_lng_lat(
         (special_locations, "special_location"),
         (detailed_zones, "detailed_zone"),
     ):
-        breakpoint()
         if coords is not None and f"home_{name}" in existing_cols:
             lf = add_lng_lat_columns(lf, existing_cols, coords, prefix="home", name=name)
     return lf

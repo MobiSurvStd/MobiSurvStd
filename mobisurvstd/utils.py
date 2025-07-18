@@ -1,93 +1,125 @@
-import json
 import os
 import re
+import shutil
+import tempfile
+from contextlib import contextmanager
+from zipfile import BadZipFile, ZipFile
 
-import geopandas as gpd
-import polars as pl
-
-from .clean import clean
-
-
-class SurveyData:
-    def __init__(
-        self,
-        households: pl.DataFrame,
-        cars: pl.DataFrame,
-        motorcycles: pl.DataFrame,
-        persons: pl.DataFrame,
-        trips: pl.DataFrame,
-        legs: pl.DataFrame,
-        special_locations: gpd.GeoDataFrame | None,
-        detailed_zones: gpd.GeoDataFrame | None,
-        draw_zones: gpd.GeoDataFrame | None,
-        insee_zones: gpd.GeoDataFrame | None,
-        metadata: dict,
-    ):
-        self.households = households
-        self.cars = cars
-        self.motorcycles = motorcycles
-        self.persons = persons
-        self.trips = trips
-        self.legs = legs
-        self.special_locations = special_locations
-        self.detailed_zones = detailed_zones
-        self.draw_zones = draw_zones
-        self.insee_zones = insee_zones
-        self.metadata = metadata
-
-    @classmethod
-    def from_dict(cls, data: dict):
-        return cls(
-            data["households"],
-            data["cars"],
-            data["motorcycles"],
-            data["persons"],
-            data["trips"],
-            data["legs"],
-            data.get("special_locations"),
-            data.get("detailed_zones"),
-            data.get("draw_zones"),
-            data.get("insee_zones"),
-            data["metadata"],
-        )
-
-    def clean(self):
-        data = clean(
-            households=self.households,
-            cars=self.cars,
-            motorcycles=self.motorcycles,
-            persons=self.persons,
-            trips=self.trips,
-            legs=self.legs,
-            special_locations=self.special_locations,
-            detailed_zones=self.detailed_zones,
-            draw_zones=self.draw_zones,
-            insee_zones=self.insee_zones,
-        )
-        data["metadata"] = self.metadata
-        return self.__class__.from_dict(data)
-
-    def save(self, output_directory: str):
-        if not os.path.isdir(output_directory):
-            os.makedirs(output_directory)
-        self.households.write_parquet(os.path.join(output_directory, "households.parquet"))
-        self.cars.write_parquet(os.path.join(output_directory, "cars.parquet"))
-        self.motorcycles.write_parquet(os.path.join(output_directory, "motorcycles.parquet"))
-        self.persons.write_parquet(os.path.join(output_directory, "persons.parquet"))
-        self.trips.write_parquet(os.path.join(output_directory, "trips.parquet"))
-        self.legs.write_parquet(os.path.join(output_directory, "legs.parquet"))
-        if self.detailed_zones is not None:
-            self.detailed_zones.to_parquet(os.path.join(output_directory, "detailed_zones.parquet"))
-        if self.draw_zones is not None:
-            self.draw_zones.to_parquet(os.path.join(output_directory, "draw_zones.parquet"))
-        if self.insee_zones is not None:
-            self.insee_zones.to_parquet(os.path.join(output_directory, "insee_zones.parquet"))
-        with open(os.path.join(output_directory, "metadata.json"), "w") as f:
-            json.dump(self.metadata, f)
+import requests
+from loguru import logger
 
 
-def find_file(directory: str, regex: str):
-    pattern = re.compile(regex)
+def read_source(source: str) -> str | ZipFile | None:
+    """Converts the input string given by the user as either a directory path or a ZipFile.
+
+    Returns None if the source is not a directory or zipfile.
+    """
+    if os.path.isdir(source):
+        return source
+    elif os.path.isfile(source):
+        try:
+            z = ZipFile(source)
+        except BadZipFile as e:
+            logger.error(f"Not a valid zipfile: `{source}`:\n{e}")
+            return None
+        return z
+    else:
+        logger.error(f"Not a directory nor a valid zipfile: `{source}`")
+        return None
+
+
+def find_file(
+    source: str | ZipFile, regex: str, subdir: str = "", as_url=False
+) -> str | bytes | None:
+    """Reads the files in a source directory or zipfile and returns the first file that matches the
+    given regex.
+
+    Optionally, the `subdir` parameter can be used to constrain the search to a sub directory.
+
+    Returns `None` if there is no file that matches the regex.
+    """
+    if isinstance(source, str):
+        directory = os.path.join(source, subdir)
+        if os.path.isdir(directory):
+            return find_file_in_directory(directory, regex)
+        else:
+            return None
+    elif isinstance(source, ZipFile):
+        return find_file_in_zipfile(source, subdir, regex, as_url)
+    else:
+        logger.error(f"Invalid source: `{source}`")
+        return None
+
+
+def find_file_in_directory(directory: str, regex: str) -> str | None:
+    """Returns the path to the first file that matches the given regex in the input directory.
+
+    Returns `None` if there is no file that matches the regex.
+    """
+    pattern = re.compile(regex, flags=re.IGNORECASE)
     for filename in os.listdir(directory):
         if pattern.match(filename):
             return os.path.join(directory, filename)
+
+
+def find_file_in_zipfile(z: ZipFile, subdir: str, regex: str, as_url=False) -> str | bytes | None:
+    """Returns the first file that matches the given regex in the input ZipFile.
+
+    If `as_url` is `True`, the file is returned as a url "zip://[ZIPFILE_PATH]!/FILE_PATH", suitable
+    to be open by geopandas.
+
+    If `as_url` is `False`, the file is returned as a bytes, suitable to be open by polars.
+
+    Optionally, the search can be constrained to the given `subdir`.
+
+    Returns `None` if there is no file that matches the regex.
+    """
+    if subdir:
+        pattern = re.compile(f".*{subdir}/{regex}", flags=re.IGNORECASE)
+    else:
+        pattern = re.compile(regex, flags=re.IGNORECASE)
+    for fileinfo in z.infolist():
+        if pattern.match(fileinfo.filename):
+            if as_url:
+                return f"zip://{z.filename}!/{fileinfo.filename}"
+            else:
+                return z.read(fileinfo)
+
+
+@contextmanager
+def tmp_download(url):
+    """Downloads a file from the given url to a temporary location, then deletes it."""
+    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+        logger.debug(f"Requesting url: {url}")
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+        logger.debug(f"Saving returned data to file `{tmp_file.name}`")
+        with open(tmp_file.name, "wb") as f:
+            shutil.copyfileobj(response.raw, f)
+        try:
+            yield tmp_file.name
+        finally:
+            try:
+                logger.debug(f"Removing temporary file `{tmp_file.name}`")
+                os.remove(tmp_file.name)
+            except OSError as e:
+                logger.debug(f"Removing temporary file `{tmp_file.name}` failed:\n{e}")
+                pass
+
+
+def guess_survey_type(source: str | ZipFile) -> str | None:
+    """Returns the type of the survey data stored in `source` as a string.
+
+    If the survey type cannot be guessed, returns None.
+    """
+    if find_file(source, "k_individu_public_V3.csv", as_url=True):
+        return "emp2019"
+    if find_file(source, "a_menage_egt1820.csv", subdir="Csv", as_url=True):
+        return "egt2020"
+    if find_file(source, "menages_semaine.csv", subdir="Csv", as_url=True):
+        return "egt2010"
+    if find_file(
+        source, ".*_std_men.csv", subdir=os.path.join("Csv", "Fichiers_Standard"), as_url=True
+    ):
+        return "emc2"
+    return None

@@ -76,7 +76,7 @@ See [`home_lng`](#home_lng) for details on the accuracy of the value.
 
 Identifier of the special location where the household is located.
 
-- **Type:** UInt32
+- **Type:** String
 - **Guarantees:**
   - The home special location intersects with the home detailed zone, draw zone, and INSEE zone
     (only checked if the locations and zones are known).
@@ -85,7 +85,7 @@ Identifier of the special location where the household is located.
 
 Identifier of the detailed zone where the household is located.
 
-- **Type:** UInt32
+- **Type:** String
 - **Guarantees:**
   - Values are either all null or all defined.
   - If `detailed_zones.parquet` exists, then the value is a valid `detailed_zone_id`.
@@ -96,7 +96,7 @@ Identifier of the detailed zone where the household is located.
 
 Identifier of the draw zone where the household is located.
 
-- **Type:** UInt32
+- **Type:** String
 - **Guarantees:**
   - Values are either all null or all defined.
   - If `draw_zones.parquet` exists, then the value is a valid `draw_zone_id`.

@@ -1,7 +1,6 @@
 import polars as pl
 
 from mobisurvstd.common.cars import clean
-from mobisurvstd.schema import CAR_SCHEMA
 
 SCHEMA = {
     "IDCEREMA": pl.String,  # Identifiant du ménage
@@ -101,26 +100,16 @@ def standardize_cars(filename: str, households: pl.LazyFrame):
     lf = lf.rename({"PUISS": "tax_horsepower"})
     lf = lf.with_columns(
         original_car_id=pl.struct("IDCEREMA", "NVP"),
-        fuel_type=pl.col("ENERG").replace_strict(
-            FUEL_TYPE_MAP, return_dtype=CAR_SCHEMA["fuel_type"]
-        ),
+        fuel_type=pl.col("ENERG").replace_strict(FUEL_TYPE_MAP),
         # 1900 is used as undetermined year.
         year=pl.col("APMC").replace([1900], None),
-        annual_mileage_lower_bound=pl.col("ANKM").replace_strict(
-            MILEAGE_LB_MAP, return_dtype=CAR_SCHEMA["annual_mileage_lower_bound"]
-        ),
-        annual_mileage_upper_bound=pl.col("ANKM").replace_strict(
-            MILEAGE_UB_MAP, return_dtype=CAR_SCHEMA["annual_mileage_upper_bound"]
-        ),
-        ownership=pl.col("POSS").replace_strict(
-            OWNERSHIP_MAP, return_dtype=CAR_SCHEMA["ownership"]
-        ),
-        parking_location=pl.col("STAT").replace_strict(
-            PARKING_LOCATION_MAP, return_dtype=CAR_SCHEMA["parking_location"]
-        ),
+        annual_mileage_lower_bound=pl.col("ANKM").replace_strict(MILEAGE_LB_MAP),
+        annual_mileage_upper_bound=pl.col("ANKM").replace_strict(MILEAGE_UB_MAP),
+        ownership=pl.col("POSS").replace_strict(OWNERSHIP_MAP),
+        parking_location=pl.col("STAT").replace_strict(PARKING_LOCATION_MAP),
         parking_type=(
             pl.col("STAT_G").fill_null(0) * 100 + pl.col("STAT_VT").fill_null(0)
-        ).replace_strict(PARKING_TYPE_MAP, return_dtype=CAR_SCHEMA["parking_type"]),
+        ).replace_strict(PARKING_TYPE_MAP),
     )
     lf = lf.with_columns(
         # Some cars ownership status were not set to "personal" because the proposed answer was

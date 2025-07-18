@@ -16,11 +16,11 @@ HOUSEHOLD_SCHEMA = {
     # Latitude of home coordinates.
     "home_lat": pl.Float64,
     # Special location where the household is located.
-    "home_special_location": pl.UInt32,
+    "home_special_location": pl.String,
     # Detailed zone where the household is located.
-    "home_detailed_zone": pl.UInt32,
+    "home_detailed_zone": pl.String,
     # Draw zone where the household is located.
-    "home_draw_zone": pl.UInt32,
+    "home_draw_zone": pl.String,
     # INSEE code of the municipality where the household is located.
     "home_insee": pl.String,
     # Name of the municipality where the household is located.
@@ -311,6 +311,7 @@ PERSON_SCHEMA = {
             "student:apprenticeship",
             "student:higher",
             "student:primary_or_secondary",
+            "student:unspecified",
             "other:unemployed",
             "other:retired",
             "other:homemaker",
@@ -349,11 +350,11 @@ PERSON_SCHEMA = {
     # Latitude of usual workplace.
     "work_lat": pl.Float64,
     # Special location of the usual work location of the person.
-    "work_special_location": pl.UInt32,
+    "work_special_location": pl.String,
     # Detailed zone of the usual work location of the person.
-    "work_detailed_zone": pl.UInt32,
+    "work_detailed_zone": pl.String,
     # Draw zone of the usual work location.
-    "work_draw_zone": pl.UInt32,
+    "work_draw_zone": pl.String,
     # INSEE code of the municipality where the usual work location is.
     "work_insee": pl.String,
     # Name of the municipality where the usual work location is.
@@ -414,11 +415,11 @@ PERSON_SCHEMA = {
     # Latitude of usual study location.
     "study_lat": pl.Float64,
     # Special location of the usual study location of the person.
-    "study_special_location": pl.UInt32,
+    "study_special_location": pl.String,
     # Detailed zone of the usual study location of the person.
-    "study_detailed_zone": pl.UInt32,
+    "study_detailed_zone": pl.String,
     # Draw zone of the usual study location.
-    "study_draw_zone": pl.UInt32,
+    "study_draw_zone": pl.String,
     # INSEE code of the municipality where the usual study location is.
     "study_insee": pl.String,
     # Name of the municipality where the usual study location is.
@@ -577,6 +578,7 @@ MODE_ENUM = pl.Enum(
         "public_transit:urban:coach",
         "public_transit:urban:tram",
         "public_transit:urban:metro",
+        "public_transit:urban:funicular",
         "public_transit:urban:rail",
         "public_transit:urban:TER",
         "public_transit:urban:demand_responsive",
@@ -647,11 +649,11 @@ TRIP_SCHEMA = {
     # Latitude of the trip's origin.
     "origin_lat": pl.Float64,
     # Special location of the trip's origin.
-    "origin_special_location": pl.UInt32,
+    "origin_special_location": pl.String,
     # Detailed zone of the trip's origin.
-    "origin_detailed_zone": pl.UInt32,
+    "origin_detailed_zone": pl.String,
     # Draw zone of the trip's origin.
-    "origin_draw_zone": pl.UInt32,
+    "origin_draw_zone": pl.String,
     # INSEE code of the municipality of trip's origin.
     "origin_insee": pl.String,
     # Name of the municipality of trip's origin.
@@ -683,11 +685,11 @@ TRIP_SCHEMA = {
     # Latitude of the trip's destination.
     "destination_lat": pl.Float64,
     # Special location of the trip's destination.
-    "destination_special_location": pl.UInt32,
+    "destination_special_location": pl.String,
     # Detailed zone of the trip's destination.
-    "destination_detailed_zone": pl.UInt32,
+    "destination_detailed_zone": pl.String,
     # Draw zone of the trip's destination.
-    "destination_draw_zone": pl.UInt32,
+    "destination_draw_zone": pl.String,
     # INSEE code of the municipality of trip's destination.
     "destination_insee": pl.String,
     # Name of the municipality of trip's destination.
@@ -814,11 +816,11 @@ LEG_SCHEMA = {
     # Latitude of the leg's start point.
     "start_lat": pl.Float64,
     # Special location from which the leg started (after walking).
-    "start_special_location": pl.UInt32,
+    "start_special_location": pl.String,
     # Detailed zone from which the leg started (after walking).
-    "start_detailed_zone": pl.UInt32,
+    "start_detailed_zone": pl.String,
     # Draw zone from which the leg started (after walking).
-    "start_draw_zone": pl.UInt32,
+    "start_draw_zone": pl.String,
     # INSEE code of the municipality from which the leg started (after walking).
     "start_insee": pl.String,
     # Name of the municipality from which the leg started (after walking).
@@ -840,11 +842,11 @@ LEG_SCHEMA = {
     # Latitude of the leg's end point.
     "end_lat": pl.Float64,
     # Special location at which the leg stopped (before walking).
-    "end_special_location": pl.UInt32,
+    "end_special_location": pl.String,
     # Detailed zone at which the leg stopped (before walking).
-    "end_detailed_zone": pl.UInt32,
+    "end_detailed_zone": pl.String,
     # Draw zone at which the leg stopped (before walking).
-    "end_draw_zone": pl.UInt32,
+    "end_draw_zone": pl.String,
     # INSEE code of the municipality at which the leg stopped (before walking).
     "end_insee": pl.String,
     # Name of the municipality at which the leg stopped (after walking).

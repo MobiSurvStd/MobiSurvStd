@@ -1,7 +1,6 @@
 import polars as pl
 
 from mobisurvstd.common.motorcycles import clean
-from mobisurvstd.schema import MOTORCYCLE_SCHEMA
 
 SCHEMA = {
     "IDCEREMA": pl.String,  # Identifiant du ménage
@@ -88,29 +87,17 @@ def standardize_motorcycles(filename: str, households: pl.LazyFrame):
     )
     lf = lf.with_columns(
         original_motorcycle_id=pl.struct("IDCEREMA", "NRM"),
-        fuel_type=pl.col("ENERG").replace_strict(
-            FUEL_TYPE_MAP, return_dtype=MOTORCYCLE_SCHEMA["fuel_type"]
-        ),
+        fuel_type=pl.col("ENERG").replace_strict(FUEL_TYPE_MAP),
         # 1900 is used as undetermined year.
         year=pl.col("APMC").replace([1900], None),
-        thermic_engine_type=pl.col("ENERG").replace_strict(
-            THERMIC_ENGINE_TYPE_MAP, return_dtype=MOTORCYCLE_SCHEMA["thermic_engine_type"]
-        ),
+        thermic_engine_type=pl.col("ENERG").replace_strict(THERMIC_ENGINE_TYPE_MAP),
         # 0 is used for unknown cm3
         cm3_lower_bound=pl.col("CYL").replace([0], None),
         cm3_upper_bound=pl.col("CYL").replace([0], None),
-        annual_mileage_lower_bound=pl.col("ANKM").replace_strict(
-            MILEAGE_LB_MAP, return_dtype=MOTORCYCLE_SCHEMA["annual_mileage_lower_bound"]
-        ),
-        annual_mileage_upper_bound=pl.col("ANKM").replace_strict(
-            MILEAGE_UB_MAP, return_dtype=MOTORCYCLE_SCHEMA["annual_mileage_upper_bound"]
-        ),
-        parking_location=pl.col("STAT").replace_strict(
-            PARKING_LOCATION_MAP, return_dtype=MOTORCYCLE_SCHEMA["parking_location"]
-        ),
-        parking_type=pl.col("STAT_G").replace_strict(
-            PARKING_TYPE_MAP, return_dtype=MOTORCYCLE_SCHEMA["parking_type"]
-        ),
+        annual_mileage_lower_bound=pl.col("ANKM").replace_strict(MILEAGE_LB_MAP),
+        annual_mileage_upper_bound=pl.col("ANKM").replace_strict(MILEAGE_UB_MAP),
+        parking_location=pl.col("STAT").replace_strict(PARKING_LOCATION_MAP),
+        parking_type=pl.col("STAT_G").replace_strict(PARKING_TYPE_MAP),
     )
     lf = clean(lf)
     return lf

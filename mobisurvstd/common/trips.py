@@ -1,9 +1,13 @@
 import polars as pl
 
-from mobisurvstd.common.admin_express import find_insee
-from mobisurvstd.common.insee_data import add_insee_data
-from mobisurvstd.common.nuts import add_nuts_data
+from mobisurvstd.common.modes import MODE_TO_GROUP
+from mobisurvstd.common.zones import add_lng_lat_columns
+from mobisurvstd.resources.admin_express import find_insee
+from mobisurvstd.resources.insee_data import add_insee_data
+from mobisurvstd.resources.nuts import add_nuts_data
 from mobisurvstd.schema import TRIP_SCHEMA
+
+from . import DEBUG
 
 
 def clean(
@@ -11,18 +15,27 @@ def clean(
     year: int,
     perimeter_insees: list[str] | None = None,
     perimeter_deps: list[str] | None = None,
+    special_locations: pl.DataFrame | None = None,
+    detailed_zones: pl.DataFrame | None = None,
 ):
     existing_cols = lf.collect_schema().names()
+    lf = lf.sort("original_trip_id")
     lf = add_indexing(lf, existing_cols)
     lf = add_purpose_groups(lf, existing_cols)
     lf = add_home_sequence_index(lf)
     lf = add_durations(lf, existing_cols)
     lf = add_weekdays(lf, existing_cols)
+    lf = add_lng_lat(lf, existing_cols, special_locations, detailed_zones)
     lf = add_insee_columns(lf, existing_cols)
     lf = add_insee_data_columns(lf, existing_cols, year)
     lf = add_nuts_columns(lf, existing_cols)
     lf = add_intra_zones(lf, existing_cols)
+    lf = add_main_mode_groups(lf, existing_cols)
     lf = add_trip_perimeter(lf, existing_cols, perimeter_insees, perimeter_deps)
+    if DEBUG:
+        # Try to collect the schema to check if it is valid.
+        lf.collect_schema()
+        lf.collect()
     return lf
 
 
@@ -79,9 +92,7 @@ def add_weekdays(lf: pl.LazyFrame, existing_cols: list[str]):
     """Add columns `trip_weekday` to the trip LazyFrame if column `trip_date` exists."""
     if "trip_date" in existing_cols and "trip_weekay" not in existing_cols:
         lf = lf.with_columns(
-            trip_weekday=pl.col("trip_date")
-            .dt.weekday()
-            .replace_strict(WEEKDAY_MAP, return_dtype=TRIP_SCHEMA["trip_weekday"])
+            trip_weekday=pl.col("trip_date").dt.weekday().replace_strict(WEEKDAY_MAP)
         )
     return lf
 
@@ -107,6 +118,24 @@ def add_home_sequence_index(lf: pl.LazyFrame):
     return lf.with_columns(
         home_sequence_index=pl.col("origin_purpose_group").eq("home").cum_sum().over("person_id")
     )
+
+
+def add_lng_lat(
+    lf: pl.LazyFrame,
+    existing_cols: list[str],
+    special_locations: pl.DataFrame | None,
+    detailed_zones: pl.DataFrame | None,
+):
+    for coords, name in (
+        (special_locations, "special_location"),
+        (detailed_zones, "detailed_zone"),
+    ):
+        if coords is not None and (
+            f"origin_{name}" in existing_cols or f"destination_{name}" in existing_cols
+        ):
+            lf = add_lng_lat_columns(lf, existing_cols, coords, prefix="origin", name=name)
+            lf = add_lng_lat_columns(lf, existing_cols, coords, prefix="destination", name=name)
+    return lf
 
 
 def add_insee_columns(lf: pl.LazyFrame, existing_cols: list[str]):
@@ -157,6 +186,14 @@ def add_intra_zones(lf: pl.LazyFrame, existing_cols: list[str]):
         dest_col = f"destination_{suffix}"
         if orig_col in existing_cols and dest_col in existing_cols:
             lf = lf.with_columns((pl.col(orig_col) == pl.col(dest_col)).alias(col))
+    return lf
+
+
+def add_main_mode_groups(lf: pl.LazyFrame, existing_cols: list[str]):
+    """Add `main_mode_group` columns (if the `main_mode` column exists)."""
+    if "main_mode" in existing_cols:
+        lf = lf.with_columns(main_mode_group=pl.col("main_mode").replace_strict(MODE_TO_GROUP))
+        existing_cols.append("main_mode_group")
     return lf
 
 

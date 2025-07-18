@@ -295,7 +295,7 @@ def clean(
         )
     valid_insee_codes(households, "home_insee")
     if insee_zones is not None:
-        n = households["home_insee"].is_in(insee_zones["insee_zone_id"]).not_().sum()
+        n = households["home_insee"].is_in(insee_zones["insee_id"]).not_().sum()
         if n > 0:
             print(f"Warning. `home_insee` is not in the defined INSEE zones for {n} households")
     car_counts = cars["household_id"].value_counts()
@@ -1222,7 +1222,7 @@ def clean(
         zone_ids = set(draw_zones["draw_zone_id"])
         perimeter_check(trips, zone_ids, "draw")
     if insee_zones is not None:
-        zone_ids = set(insee_zones["insee_zone_id"])
+        zone_ids = set(insee_zones["insee_id"])
         perimeter_check(trips, zone_ids, "insee")
     tour_purposes = ("work:professional_tour", "shopping:tour_no_purchase")
     all_null_for(

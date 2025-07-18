@@ -201,6 +201,7 @@ Detailed professional status of the person.
   - `"student:primary_or_secondary"`: the person is a student in primary or secondary education
   - `"student:higher"`: the person is a student in higher education ("enseignement supérieur")
   - `"student:apprenticeship"`: the person is in apprenticeship training
+  - `"student:unspecified"`: the person is a student (unspecifide level)
   - `"other:unemployed"`: the person is unemployed, looking for a job
   - `"other:retired"`: the person is retired
   - `"other:homemaker"`: the person is not working and not looking for a job

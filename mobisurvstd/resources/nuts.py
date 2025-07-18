@@ -1,5 +1,6 @@
 import polars as pl
 
+# Hand-made dataframe with the relations between départements, NUTS2, and NUTS1.
 NUTS_DF = pl.DataFrame(
     [
         ["FR1", "Île-de-France", "FR10", "Île-de-France", "FR101", "75", "Paris"],
@@ -110,7 +111,9 @@ NUTS_DF = pl.DataFrame(
 
 
 def add_nuts_data(lf: pl.LazyFrame, prefix: str):
-    """Add all département and NUTS-related columns."""
+    """Given a LazyFrame with a "{prefix}_dep" column, adds the corresponding "dep_name", "NUTS1",
+    "NUTS1_name", "NUTS2", and "NUTS2_name" columns.
+    """
     dep_col = f"{prefix}_dep"
     # Add NUTS data.
     lf = lf.join(NUTS_DF.lazy(), left_on=dep_col, right_on="dep_code", how="left")

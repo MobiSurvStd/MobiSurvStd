@@ -133,7 +133,7 @@ See [`start_lng`](#start_lng) for details on the accuracy of the value.
 
 Identifier of the special location corresponding to the leg start point.
 
-- **Type:** UInt32
+- **Type:** String
 - **Guarantees:**
   - The start special location intersects with the start detailed zone, draw zone, and INSEE zone
     (only checked if the zones are known).
@@ -142,7 +142,7 @@ Identifier of the special location corresponding to the leg start point.
 
 Identifier of the detailed zone corresponding to the leg start point.
 
-- **Type:** UInt32
+- **Type:** String
 - **Guarantees:**
   - The start detailed zone intersects with the start draw zone and INSEE zone (only checked if the
     zones are known).
@@ -151,7 +151,7 @@ Identifier of the detailed zone corresponding to the leg start point.
 
 Identifier of the draw zone corresponding to the leg start point.
 
-- **Type:** UInt32
+- **Type:** String
 - **Guarantees:**
   - The start detailed zone intersects with the start draw zone and INSEE zone (only checked if the
     zones are known).
@@ -256,7 +256,7 @@ Exceptions can occur when two special locations are so closed that the person wa
 from one to the other and did not report that as a dedicate leg.
 MobiSurvStd will show warning messages indicating how many legs does not match the constraint.
 
-- **Type:** UInt32
+- **Type:** String
 - **Guarantees:**
   - The end special location intersects with the end detailed zone, draw zone, and INSEE zone
     (only checked if the zones are known).
@@ -265,7 +265,7 @@ MobiSurvStd will show warning messages indicating how many legs does not match t
 
 Identifier of the detailed zone corresponding to the leg end point.
 
-- **Type:** UInt32
+- **Type:** String
 - **Guarantees:**
   - The end detailed zone intersects with the end draw zone and INSEE zone (only checked if the
     zones are known).
@@ -275,7 +275,7 @@ Identifier of the detailed zone corresponding to the leg end point.
 
 Identifier of the draw zone corresponding to the leg end point.
 
-- **Type:** UInt32
+- **Type:** String
 - **Guarantees:**
   - The end detailed zone intersects with the end draw zone and INSEE zone (only checked if the
     zones are known).
@@ -288,7 +288,7 @@ INSEE code of the municipality corresponding to the leg end point.
 - **Type:** String
 - **Guarantees:**
   - String is a [valid INSEE code](TODO).
-  - The value is equal to the `start_insee_zone` of the next leg (if any).
+  - The value is equal to the `start_insee` of the next leg (if any).
 
 ### `end_insee_name`
 

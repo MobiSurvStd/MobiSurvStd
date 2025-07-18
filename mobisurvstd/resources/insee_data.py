@@ -1,14 +1,13 @@
 import os
-import shutil
-import tempfile
 import zipfile
-from contextlib import contextmanager
 
 import geopandas as gpd
 import polars as pl
-import requests
+from loguru import logger
 
-OUTPUT_FILE = "./output/insee_data.parquet"
+from mobisurvstd.utils import tmp_download
+
+OUTPUT_FILE = os.path.join("resources", "insee_data.parquet")
 
 CODE_GEO_URL = "https://www.insee.fr/fr/statistiques/fichier/8377162/v_commune_2025.csv"
 
@@ -33,25 +32,7 @@ AAV_URL_DICT = {
 }
 
 
-@contextmanager
-def tmp_download(url):
-    """Download a file temporarily and remove it after use."""
-    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-        response = requests.get(url, stream=True)
-        response.raise_for_status()
-        with open(tmp_file.name, "wb") as f:
-            shutil.copyfileobj(response.raw, f)
-        try:
-            yield tmp_file.name
-        finally:
-            try:
-                os.remove(tmp_file.name)
-            except OSError:
-                pass
-
-
 def get_insee_code_geo():
-    print("Reading INSEE codes")
     with tmp_download(CODE_GEO_URL) as fn:
         df = pl.read_csv(
             fn,
@@ -74,7 +55,6 @@ def get_insee_code_geo():
 
 
 def get_insee_changes():
-    print("Reading INSEE code changes")
     with tmp_download(INSEE_CHANGE_URL) as fn:
         with zipfile.ZipFile(fn) as z:
             df = pl.read_excel(
@@ -98,8 +78,6 @@ def read_density_excel(source: bytes | str, year: str):
 
 def get_insee_density():
     df = pl.DataFrame({"insee": pl.Series(dtype=pl.String)})
-
-    print("Reading Grille communale de densité 2015 to 2020")
     with tmp_download(DENSITY_URL_DICT["2015_to_2020"]) as fn:
         with zipfile.ZipFile(fn) as z:
             for year in range(2015, 2021):
@@ -107,13 +85,10 @@ def get_insee_density():
                     z.read(f"grille_densite_7_niveaux_{year}.xlsx"), str(year)
                 )
                 df = df.join(tmp_df, on="insee", how="full", coalesce=True)
-
     for year in range(2021, 2025):
-        print(f"Reading Grille communale de densité {year}")
         with tmp_download(DENSITY_URL_DICT[str(year)]) as fn:
             tmp_df = read_density_excel(fn, str(year))
             df = df.join(tmp_df, on="insee", how="full", coalesce=True)
-
     df = df.sort("insee")
     return df
 
@@ -226,21 +201,25 @@ def read_aav(source: zipfile.ZipExtFile | str, year: str):
 
 def get_insee_aav():
     df = pl.DataFrame({"insee": pl.Series(dtype=pl.String)})
-
     for year in range(2020, 2025):
-        print(f"Reading AAV {year}")
         with tmp_download(AAV_URL_DICT[str(year)]) as fn:
             tmp_df = read_aav(fn, str(year))
             df = df.join(tmp_df, on="insee", how="full", coalesce=True)
-
     df = df.sort("insee")
     return df
 
 
 def download_insee_data():
+    logger.warning("INSEE municipality-level data not found")
+    logger.warning("Data will be downloaded from the INSEE website")
+    logger.warning("This operation only needs to be performed once")
+    logger.debug("Retrieving INSEE codes")
     df_codes = get_insee_code_geo()
+    logger.debug("Retrieving INSEE code changes")
     df_changes = get_insee_changes()
+    logger.debug("Retrieving INSEE densities")
     df_density = get_insee_density()
+    logger.debug("Retrieving INSEE AAV")
     df_aav = get_insee_aav()
     # Add INSEE codes missing from code géo.
     missing = df_changes.join(df_codes, on="insee", how="anti").join(
@@ -271,12 +250,18 @@ def download_insee_data():
         for col in df_aav.columns
         if col != "insee"
     )
+    if not os.path.isdir(os.path.dirname(OUTPUT_FILE)):
+        os.makedirs(os.path.dirname(OUTPUT_FILE))
+    logger.debug(f"Writing INSEE data to `{OUTPUT_FILE}`")
     df.write_parquet(OUTPUT_FILE)
     return df
 
 
 def load_insee_data(columns: list[str] | None = None):
-    return pl.read_parquet(OUTPUT_FILE, columns=columns)
+    if not os.path.isfile(OUTPUT_FILE):
+        return download_insee_data()
+    else:
+        return pl.read_parquet(OUTPUT_FILE, columns=columns)
 
 
 def add_insee_data(lf: pl.LazyFrame, prefix: str, year: int | None = None, skip_dep=False):
@@ -312,11 +297,11 @@ def add_insee_data(lf: pl.LazyFrame, prefix: str, year: int | None = None, skip_
     if year is not None:
         lf = lf.rename(
             {
-                f"insee_density_{year}": f"{prefix}_insee_density",
-                f"aav_{year}": f"{prefix}_aav",
-                f"insee_aav_type_{year}": f"{prefix}_insee_aav_type",
-                f"aav_name_{year}": f"{prefix}_aav_name",
-                f"aav_category_{year}": f"{prefix}_aav_category",
+                f"insee_density_{density_year}": f"{prefix}_insee_density",
+                f"aav_{aav_year}": f"{prefix}_aav",
+                f"insee_aav_type_{aav_year}": f"{prefix}_insee_aav_type",
+                f"aav_name_{aav_year}": f"{prefix}_aav_name",
+                f"aav_category_{aav_year}": f"{prefix}_aav_category",
             }
         )
     return lf

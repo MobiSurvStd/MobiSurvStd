@@ -2,11 +2,18 @@ import polars as pl
 
 from mobisurvstd.schema import MOTORCYCLE_SCHEMA
 
+from . import DEBUG
+
 
 def clean(lf: pl.LazyFrame):
     existing_cols = lf.collect_schema().names()
+    lf = lf.sort("original_motorcycle_id")
     lf = indexing(lf, existing_cols)
     lf = add_mileage_bounds(lf, existing_cols)
+    if DEBUG:
+        # Try to collect the schema to check if it is valid.
+        lf.collect_schema()
+        lf.collect()
     return lf
 
 

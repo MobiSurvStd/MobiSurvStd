@@ -328,7 +328,7 @@ See [`origin_lng`](#origin_lng) for details on the accuracy of the value.
 
 Identifier of the special location of the trip's origin.
 
-- **Type:** UInt8
+- **Type:** String
 - **Guarantees:**
   - The origin special location intersects with the origin detailed zone, draw zone, and INSEE zone
     (only checked if the zones are known).
@@ -337,7 +337,7 @@ Identifier of the special location of the trip's origin.
 
 Identifier of the detailed zone of the trip's origin.
 
-- **Type:** UInt8
+- **Type:** String
 - **Guarantees:**
   - The origin detailed zone intersects with the origin draw zone and INSEE zone (only checked if
     the zones are known).
@@ -346,7 +346,7 @@ Identifier of the detailed zone of the trip's origin.
 
 Identifier of the draw zone of the trip's origin.
 
-- **Type:** UInt8
+- **Type:** String
 - **Guarantees:**
   - The origin detailed zone intersects with the origin draw zone and INSEE zone (only checked if
     the zones are known).
@@ -507,7 +507,7 @@ Rare exceptions can occur when someone is moving to a different location while t
 performed (e.g., for bus drivers).
 MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
 
-- **Type:** UInt8
+- **Type:** String
 - **Guarantees:**
   - The destination special location intersects with the destination detailed zone, draw zone, and
     INSEE zone (only checked if the zones are known).
@@ -522,7 +522,7 @@ Rare exceptions can occur when someone is moving to a different location while t
 performed (e.g., for bus drivers).
 MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
 
-- **Type:** UInt8
+- **Type:** String
 - **Guarantees:**
   - The destination detailed zone intersects with the destination draw zone and INSEE zone (only
     checked if the zones are known).
@@ -537,7 +537,7 @@ Rare exceptions can occur when someone is moving to a different location while t
 performed (e.g., for bus drivers).
 MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
 
-- **Type:** UInt8
+- **Type:** String
 - **Guarantees:**
   - The destination detailed zone intersects with the destination draw zone and INSEE zone (only
     checked if the zones are known).
@@ -760,6 +760,7 @@ In case of intermodality, there is no clear rule how the main mode is defined.
   - `"public_transit:urban:coach"`: passenger in a coach ("autocar"), excluding long-distance trips
   - `"public_transit:urban:tram"`: passenger in a tramway
   - `"public_transit:urban:metro"`: passenger in a metro
+  - `"public_transit:urban:funicular"`: passenger in a funicular
   - `"public_transit:urban:rail"`: passenger in an express rail service (e.g., RER)
   - `"public_transit:urban:TER"`: passenger in a TER
   - `"public_transit:urban:demand_responsive"`: passenger in a demand-responsive service

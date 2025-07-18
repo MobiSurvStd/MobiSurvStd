@@ -12,7 +12,7 @@
 - [Mobility Surveys in France](#mobility-surveys-in-france)
 - [Why MobiSurvStd?](#why-mobisurvstd)
 - [Installation](#installation)
-- [Usage](#usage)
+- [Getting Started](#getting-started)
 - [Supported Surveys](#supported-surveys)
 - [Legal Notice](#legal-notice)
 - [Contributing](#contributing)
@@ -21,6 +21,8 @@
 
 MobiSurvStd (Mobility Survey Standardizer) is an easy-to-use Python command line interface to convert many French mobility surveys
 (EMC², EGT, EMP, etc.) to a unique standardized and clean format.
+
+---
 
 ## Mobility Surveys in France
 
@@ -49,6 +51,8 @@ Also surveys based on previous formats are still in use today:
 - [**ENTD**](https://www.statistiques.developpement-durable.gouv.fr/enquete-nationale-transports-et-deplacements-entd-2008)
   (Enquête nationale transports et déplacements, SDES): former national mobility survey (2008).
 
+---
+
 ## Why MobiSurvStd?
 
 The existing formats all have the same drawbacks:
@@ -64,11 +68,13 @@ The existing formats all have the same drawbacks:
 Additionally, when working with different territories / periods, it is often necessary to write a
 similar code multiple times due to the existence of different formats.
 
-MobiSurvStd solves all these issues by being able to convert all survey formats to a well-defined
-Parquet format.
+MobiSurvStd solves all these issues by being able to convert all survey formats to a [well-defined
+Parquet format](https://mobisurvstd.github.io/MobiSurvStd/format/index.html).
 
 See [this example](https://mobisurvstd.github.io/MobiSurvStd/problem-example.html) to understand how
 MobiSurvStd can simplify your workflow.
+
+---
 
 ## Installation
 
@@ -78,15 +84,25 @@ Install the library with
 pip install mobisurvstd
 ```
 
-## Usage
+---
+
+## Getting Started
 
 Download the
-[EMP 2019 survey](https://www.statistiques.developpement-durable.gouv.fr/resultats-detailles-de-lenquete-mobilite-des-personnes-de-2019),
-then run the following command to standardize it and save it in the `standardized_emp2019` directory:
+[EMP 2019 survey](https://www.statistiques.developpement-durable.gouv.fr/resultats-detailles-de-lenquete-mobilite-des-personnes-de-2019)
+_(Données individuelles anonymisées (fichiers au format CSV))_, then run the following command:
 
 ```bash
 python -m mobisurvstd emp_2019_donnees_individuelles_anonymisees_novembre2024.zip standardized_emp2019 --survey-type emp2019
 ```
+
+It will standardize the EMP 2019 survey and save the resulting Parquet files in the
+`standardized_emp2019` directory.
+These Parquet files can then be analyzed using e.g., [polars](https://pola.rs/) or
+[pandas](https://pandas.pydata.org) in Python or [arrow](https://arrow.apache.org/docs/r/) in R.
+
+A detailed definition of the Parquet format used by MobiSurvStd is available
+[here](https://mobisurvstd.github.io/MobiSurvStd/format/index.html).
 
 You can also standardize surveys programmatically in Python with the `standardize` function:
 
@@ -95,11 +111,33 @@ import mobisurvstd
 mobisurvstd.standardize(
     "emp_2019_donnees_individuelles_anonymisees_novembre2024.zip",
     "standardized_emp2019",
-    survey_type="emp2019"
+    survey_type="emp2019",
 )
 ```
 
 For more, check the [User Guide](https://mobisurvstd.github.io/MobiSurvStd/howto.html).
+
+---
+
+## Case Study: Bicycle Use
+
+The following graph represents the share of bicycle trips for all EMC² surveys and the EGT 2020
+survey.
+The circle colors represent the average number of bicycles in the surveyed households.
+The circle sizes represent the expected number of trips in the surveyed area.
+
+The graph has been generated from the code in [analyses/bicycle_shares.py]().
+
+![](docs/src/images/bicycle_shares.png)
+
+The following map represents the share of bicycle trips within INSEE municipalities.
+Only municipalities with more than 30 surveyed trips are shown.
+
+The map has been generated from the code in [analyses/bicycle_share_by_insee.py]().
+
+![](docs/src/images/bicycle_shares_by_insee.png)
+
+---
 
 ## Supported Surveys
 
@@ -119,15 +157,19 @@ MobiSurvStd covers only French mobility survey formats.
 If other countries have similar survey formats, they might be easily integrated into MobiSurvStd (or
 a variant of it).
 
-## ⚠️ Legal Notice
+---
+
+## Legal Notice
 
 <span style="color:red">
-<strong>MobiSurvStd does not anonymize the data.</strong>
+⚠️ <strong>MobiSurvStd does not anonymize the data.</strong>
 If you are working with confidential datasets (e.g., EMC² or EGT surveys), you must apply the same
 confidentiality rules to the standardized data as to the original data.
 In particular, <strong>you must not share the standardized data</strong> if your confidentiality
 agreement prohibits sharing the original data.
 </span>
+
+---
 
 ## Contributing
 

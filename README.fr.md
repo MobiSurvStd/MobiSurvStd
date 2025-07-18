@@ -94,7 +94,7 @@ La taille des cercles représente le nombre estimé de déplacements dans l'aire
 
 Le graphe a été généré à partir du code [analyses/bicycle_shares.py](analyses/bicycle_shares.py).
 
-![](docs/src/images/bicycle_shares.png)
+![Graphe de la parte de déplacements à vélo par enquête](https://raw.githubusercontent.com/MobiSurvStd/MobiSurvStd/main/docs/src/images/bicycle_shares.png)
 
 La carte ci-dessous représente la part de déplacements à vélo au sein des municipalités.
 Seules les municipalités avec plus de 30 déplacements observés sont représentées.
@@ -102,7 +102,7 @@ Seules les municipalités avec plus de 30 déplacements observés sont représen
 La carte a été générée à partir du code
 [analyses/bicycle_shares_by_insee.py](analyses/bicycle_shares_by_insee.py).
 
-![](docs/src/images/bicycle_shares_by_insee.png)
+![Carte de la parte de déplacements à vélo par municipalité](https://raw.githubusercontent.com/MobiSurvStd/MobiSurvStd/main/docs/src/images/bicycle_shares_by_insee.png)
 
 ---
 

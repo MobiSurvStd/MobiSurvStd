@@ -92,14 +92,15 @@ l'EGT 2020.
 La couleur des cercles représente le numbre moyen de vélo par ménage enquêté.
 La taille des cercles représente le nombre estimé de déplacements dans l'aire d'enquête.
 
-Le graphe a été généré à partir du code [analyses/bicycle_shares.py]().
+Le graphe a été généré à partir du code [analyses/bicycle_shares.py](analyses/bicycle_shares.py).
 
 ![](docs/src/images/bicycle_shares.png)
 
 La carte ci-dessous représente la part de déplacements à vélo au sein des municipalités.
 Seules les municipalités avec plus de 30 déplacements observés sont représentées.
 
-La carte a été générée à partir du code [analyses/bicycle_share_by_insee.py]().
+La carte a été générée à partir du code
+[analyses/bicycle_shares_by_insee.py](analyses/bicycle_shares_by_insee.py).
 
 ![](docs/src/images/bicycle_shares_by_insee.png)
 

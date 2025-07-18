@@ -108,14 +108,16 @@ survey.
 The circle colors represent the average number of bicycles in the surveyed households.
 The circle sizes represent the expected number of trips in the surveyed area.
 
-The graph has been generated from the code in [analyses/bicycle_shares.py]().
+The graph has been generated from the code in
+[analyses/bicycle_shares.py](https://github.com/MobiSurvStd/MobiSurvStd/blob/main/analyses/bicycle_shares.py).
 
 ![Graph of bicycle share by survey](images/bicycle_shares.png)
 
 The following map represents the share of bicycle trips within INSEE municipalities.
 Only municipalities with more than 30 surveyed trips are shown.
 
-The map has been generated from the code in [analyses/bicycle_share_by_insee.py]().
+The map has been generated from the code in
+[analyses/bicycle_shares_by_insee.py](https://github.com/MobiSurvStd/MobiSurvStd/blob/main/analyses/bicycle_shares_by_insee.py).
 
 ![Map of bicycle share by INSEE municipality](images/bicycle_shares_by_insee.png)
 

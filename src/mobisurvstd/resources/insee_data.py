@@ -7,7 +7,9 @@ from loguru import logger
 
 from mobisurvstd.utils import tmp_download
 
-OUTPUT_FILE = os.path.join("resources", "insee_data.parquet")
+from . import CACHE_DIR
+
+OUTPUT_FILE = os.path.join(CACHE_DIR, "insee_data.parquet")
 
 CODE_GEO_URL = "https://www.insee.fr/fr/statistiques/fichier/8377162/v_commune_2025.csv"
 
@@ -250,8 +252,8 @@ def download_insee_data():
         for col in df_aav.columns
         if col != "insee"
     )
-    if not os.path.isdir(os.path.dirname(OUTPUT_FILE)):
-        os.makedirs(os.path.dirname(OUTPUT_FILE))
+    if not os.path.isdir(CACHE_DIR):
+        os.makedirs(CACHE_DIR)
     logger.debug(f"Writing INSEE data to `{OUTPUT_FILE}`")
     df.write_parquet(OUTPUT_FILE)
     return df

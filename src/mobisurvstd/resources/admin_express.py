@@ -10,9 +10,11 @@ from loguru import logger
 
 from mobisurvstd.utils import tmp_download
 
+from . import CACHE_DIR
+
 URL = "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG-CARTO/ADMIN-EXPRESS-COG-CARTO_3-2__SHP_WGS84G_FRA_2025-04-02/ADMIN-EXPRESS-COG-CARTO_3-2__SHP_WGS84G_FRA_2025-04-02.7z"
 PATH = "ADMIN-EXPRESS-COG-CARTO_3-2__SHP_WGS84G_FRA_2025-04-02/ADMIN-EXPRESS-COG-CARTO/1_DONNEES_LIVRAISON_2025-04-00194/ADECOGC_3-2_SHP_WGS84G_FRA-ED2025-04-02/"
-OUTPUT_FILE = os.path.join("resources", "insee_geometries.geo.parquet")
+OUTPUT_FILE = os.path.join(CACHE_DIR, "insee_geometries.geo.parquet")
 
 
 def read_admin_express():
@@ -53,8 +55,8 @@ def read_admin_express():
         ignore_index=True,
     )
     gdf = gdf.sort_values("insee")
-    if not os.path.isdir(os.path.dirname(OUTPUT_FILE)):
-        os.makedirs(os.path.dirname(OUTPUT_FILE))
+    if not os.path.isdir(CACHE_DIR):
+        os.makedirs(CACHE_DIR)
     logger.debug(f"Writing ADMIN EXPRESS data to `{OUTPUT_FILE}`")
     gdf.to_parquet(OUTPUT_FILE)
     return gdf

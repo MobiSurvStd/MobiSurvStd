@@ -1,4 +1,6 @@
 data/
+dist/
 **/__pycache__/
 output/
 resources/
+**/mobisurvstd.egg-info/

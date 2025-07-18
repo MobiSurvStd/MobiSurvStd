@@ -1,10 +1,10 @@
 import typer
 from typing_extensions import Annotated
 
-from . import bulk_standardize, standardize
+from .main import bulk_standardize, standardize
 
 
-def main(
+def standardizer(
     source: Annotated[
         str,
         typer.Argument(
@@ -36,5 +36,9 @@ def main(
         standardize(source, output_directory, survey_type)
 
 
+app = typer.Typer()
+app.command()(standardizer)
+
+
 if __name__ == "__main__":
-    typer.run(main)
+    app()

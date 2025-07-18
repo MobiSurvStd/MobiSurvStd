@@ -1,0 +1,41 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mobisurvstd"
+version = "0.1.0"
+description = "A tool to standardize French mobility survey datasets (EMC2, EGT, EMP, etc.) into a unified format."
+readme = "README.md"
+authors = [{ name = "Lucas Javaudin", email = "lucas@lucasjavaudin.com" }]
+license = "MIT"
+license-files = ["LICENSE.md"]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: File Formats"
+]
+keywords = ["mobility survey", "polars", "data format"]
+dependencies = [
+    "Cartopy >= 0.24.1",
+    "fastexcel >= 0.14.0",
+    "geopandas >= 1.0.1",
+    "loguru >= 0.7.3",
+    "matplotlib >= 3.10.1",
+    "numpy >= 2.2.4",
+    "pandas >= 2.2.3",
+    "polars >= 1.31.0",
+    "py7zr >= 0.22.0",
+    "pyarrow >= 19.0.1",
+    "requests >= 2.32.3",
+    "typer >= 0.16.0",
+]
+requires-python = ">=3.10"
+
+[project.urls]
+Homepage = "https://github.com/MobiSurvStd/MobiSurvStd"
+Documentation = "https://mobisurvstd.github.io/MobiSurvStd/index.html"
+Repository = "https://github.com/MobiSurvStd/MobiSurvStd"
+Issues =  "https://github.com/MobiSurvStd/MobiSurvStd/issues"

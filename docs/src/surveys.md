@@ -82,6 +82,44 @@ Notes:
 - The `work_insee` and `study_insee` values are derived from the given coordinates, using INSEE data
   from 2025. There can be some errors because of the 100m rounding.
 
+## Enquêtes Déplacements Grands Territoires (EDGT)
+
+Code: `edgt`
+
+Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2]()
+
+Download link (for researchers): [https://data.progedo.fr/studies?q=edgt]()
+
+Tested surveys:
+
+- Amiens 2010
+- Angers 2012
+- Annecy 2017
+- Annemasse 2016
+- Bayonne 2010
+- Clermont-Ferrand 2012
+- Dijon 2016
+- Dunkerque 2015
+- Lyon 2015
+- Marseille 2009
+- Metz 2017
+- Montpellier 2014
+- Nancy 2013
+- Nantes 2015
+- Nice 2009
+- Saint-Denis-de-la-Réunion 2016
+- Saint-Quentin-en-Yvelines 2010
+- Valence 2014
+
+Notes:
+
+- The survey detailed zones ("zones fines") usually correspond to IRIS zones.
+- Some surveys include special locations ("GT"), representing e.g., train stations or hospitals.
+- Draw zones correspond to the survey's "zones de tirage".
+- For each trips, the non-walking legs are recorded. MobiSurvStd reconstruct the walking legs using
+  the access / egress walking time variables. This means that the leg travel time is known only for
+  the walking legs (as it is not a recorded variable for the other legs).
+
 
 ## Enquête Globale Transport 2010
 

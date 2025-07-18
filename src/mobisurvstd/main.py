@@ -3,7 +3,7 @@ from zipfile import ZipFile
 
 from loguru import logger
 
-from . import egt2010, egt2020, emc2, emp
+from . import edgt, egt2010, egt2020, emc2, emp
 from .classes import SurveyData
 from .utils import guess_survey_type, read_source
 
@@ -29,7 +29,7 @@ def standardize(
     survey_type
         String indicating the type of the survey to be converted.
         If the value is omitted, MobiSurvStd will do its best to guess the survey type.
-        Possible values: "emc2", "emp2019", "egt2020", "egt2010".
+        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt".
     add_name_subdir
         Whether the standardized survey is stored directly in `output_directory` or within a
         subdirectory of `output_directory`.
@@ -67,6 +67,8 @@ def standardize(
     # documented (because why not?).
     if survey_type == "emc2":
         survey_data = emc2.standardize(dir_or_zip)
+    elif survey_type == "edgt":
+        survey_data = edgt.standardize(dir_or_zip)
     elif survey_type in ("emp", "emp2019"):
         survey_data = emp.standardize(dir_or_zip)
     elif survey_type in ("egt2020", "egt20", "egt1820"):
@@ -110,7 +112,7 @@ def bulk_standardize(
         String indicating the type of the surveys to be converted.
         If the directory contains surveys of different types, leave this value to None and
         MobiSurvStd will try to guess the type of each survey.
-        Possible values: "emc2", "emp2019", "egt2020", "egt2010".
+        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt".
 
     Examples
     --------
@@ -149,10 +151,8 @@ def bulk_standardize_impl(
                 data = standardize(source, output_directory, survey_type, add_name_subdir=True)
                 if data is not None:
                     n += 1
-                    print(n)
         if source.endswith(".zip"):
             data = standardize(source, output_directory, survey_type, add_name_subdir=True)
             if data is not None:
                 n += 1
-                print(n)
     return n

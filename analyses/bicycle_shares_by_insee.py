@@ -9,8 +9,8 @@ from mobisurvstd.resources.admin_express import load_insee_geometries
 
 
 def get_trip_origins(data: SurveyDataReader):
-    if data.metadata["type"] in ("EGT2010", "EMP2019"):
-        # Ignore EGT2010 (too old) and EMP2019 (national).
+    if data.metadata["type"] == "EMP2019":
+        # Ignore EMP2019 (national).
         return
     name = data.metadata["name"]
     print(name)

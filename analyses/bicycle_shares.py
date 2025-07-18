@@ -9,8 +9,8 @@ from mobisurvstd import SurveyDataReader, read_many
 
 
 def get_bicycle_share(data: SurveyDataReader):
-    if data.metadata["type"] in ("EGT2010", "EMP2019"):
-        # Ignore EGT2010 (too old) and EMP2019 (national).
+    if data.metadata["type"] == "EMP2019":
+        # Ignore EMP2019 (national).
         return
     print(data.metadata["name"])
     df = data.trips.join(data.persons, on="person_id", how="left").select(
@@ -35,20 +35,24 @@ def get_bicycle_share(data: SurveyDataReader):
 
 shares = read_many("./output", get_bicycle_share, lambda x, y: x + y)
 df = pl.DataFrame(shares)
+df = df.with_columns(pl.col("bicycles_per_household").fill_null(-1.0))
 
 markersizes = 200.0 * df["total_weight"].sqrt() / df["total_weight"].sqrt().mean()
+cmap = mpl.colormaps["YlGn"].with_extremes(under="lightgrey")
 fig, ax = plt.subplots(figsize=(9, 7), dpi=200)
 scatter = ax.scatter(
     df["date"],
     df["bicycle_share"] * 100,
     s=markersizes,
     c=df["bicycles_per_household"],
-    cmap=mpl.colormaps["YlGn"],
+    cmap=cmap,
+    vmin=0.0,
+    vmax=df["bicycles_per_household"].max(),
     alpha=0.7,
 )
 cbar = fig.colorbar(scatter, ax=ax)
 cbar.set_label("Bicycles per household")
-for row in df.sort("total_weight", descending=True)[:5].iter_rows(named=True):
+for row in df.sort("total_weight", descending=True)[:10].iter_rows(named=True):
     ax.annotate(
         row["name"],
         (row["date"], 100 * row["bicycle_share"]),

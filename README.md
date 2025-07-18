@@ -121,8 +121,7 @@ For more, check the [User Guide](https://mobisurvstd.github.io/MobiSurvStd/howto
 
 ## Case Study: Bicycle Use
 
-The following graph represents the share of bicycle trips for all EMC² surveys and the EGT 2020
-survey.
+The following graph represents the share of bicycle trips for EMC², EDGT, and EGT surveys.
 The circle colors represent the average number of bicycles in the surveyed households.
 The circle sizes represent the expected number of trips in the surveyed area.
 
@@ -149,10 +148,11 @@ Currently, MobiSurvStd supports the following survey types:
 - `emc2`
 - `egt2020`
 - `egt2010`
+- `edgt`
 
 See [Survey Types](https://mobisurvstd.github.io/MobiSurvStd/surveys.html) for more.
 
-Other survey types that are planned to be integrated are: `edvm`, `edgt`, `entd`, `emg`.
+Other survey types that are planned to be integrated are: `edvm`, `entd`, `emg`.
 If you know another survey format that could be integrated, feel free to open an issue on GitHub.
 
 MobiSurvStd covers only French mobility survey formats.

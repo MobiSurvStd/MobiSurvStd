@@ -187,14 +187,14 @@ def survey_main_insee(source: str | bytes):
 
 
 def survey_name(source: str | ZipFile):
-    filename = find_file(source, ".*_std_faf_men.csv", subdir=os.path.join("Csv"), as_url=True)
+    filename = find_file(source, ".*_std_faf_men.csv", subdir="Csv", as_url=True)
     return re.match("(.*)_std_faf_men.csv", os.path.basename(filename)).group(1)
 
 
 def get_files(source: str | ZipFile, name: str):
     return [
-        find_file(source, f".*_std_faf_{name}.csv", subdir=os.path.join("Csv")),
-        find_file(source, f".*_std_tel_{name}.csv", subdir=os.path.join("Csv")),
+        find_file(source, f".*_std_faf_{name}.csv", subdir="Csv"),
+        find_file(source, f".*_std_tel_{name}.csv", subdir="Csv"),
     ]
 
 

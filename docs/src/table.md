@@ -6,7 +6,7 @@ Variables in bold are available in all surveys.
 
 ## Households
 
-|                             | EMC²     | EMP2019  | EGT2020  | EMC²     | EGT2010 |
+|                             | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
 | --------------------------- | -------- | -------- | -------- | -------- |-------- |
 | **`household_id`**          | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
 | **`original_household_id`** | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
@@ -45,7 +45,7 @@ Variables in bold are available in all surveys.
 
 ## Persons
 
-|                                         | EMC²     | EMP2019  | EGT2020  | EMC²     | EGT2010 |
+|                                         | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
 | --------------------------------------- | -------- | -------- | -------- | -------- |-------- |
 | **`person_id`**                         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
 | **`household_id`**                      | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
@@ -123,7 +123,7 @@ Variables in bold are available in all surveys.
 
 ## Trips
 
-|                                        | EMC²     | EMP2019  | EGT2020  | EMC²     | EGT2010 |
+|                                        | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
 | -------------------------------------- | -------- | -------- | -------- | -------- |-------- |
 | **`trip_id`**                          | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
 | **`person_id`**                        | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
@@ -211,7 +211,7 @@ Variables in bold are available in all surveys.
 
 ## Legs
 
-|                                         | EMC²     | EMP2019  | EGT2020  | EMC²     | EGT2010 |
+|                                         | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
 | --------------------------------------- | -------- | -------- | -------- | -------- |-------- |
 | **`leg_id`**                            | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
 | **`trip_id`**                           | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
@@ -270,7 +270,7 @@ Variables in bold are available in all surveys.
 
 ## Cars
 
-|                                | EMC²     | EMP2019  | EGT2020  | EMC²     | EGT2010 |
+|                                | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
 | ------------------------------ | -------- | -------- | -------- | -------- |-------- |
 | **`car_id`**                   | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
 | **`household_id`**             | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
@@ -294,7 +294,7 @@ Variables in bold are available in all surveys.
 
 ## Motorcycles
 
-|                                | EMC²     | EMP2019  | EGT2020  | EMC²     | EGT2010 |
+|                                | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
 | ------------------------------ | -------- | -------- | -------- | -------- |-------- |
 | **`motorcycle_id`**            | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
 | **`household_id`**             | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |

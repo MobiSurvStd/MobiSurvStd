@@ -118,6 +118,8 @@ def guess_survey_type(source: str | ZipFile) -> str | None:
         return "egt2020"
     if find_file(source, "menages_semaine.csv", subdir="Csv", as_url=True):
         return "egt2010"
+    if find_file(source, ".*_std_faf_men.csv", subdir="Csv", as_url=True):
+        return "edgt"
     if find_file(
         source, ".*_std_men.csv", subdir=os.path.join("Csv", "Fichiers_Standard"), as_url=True
     ):

@@ -99,6 +99,12 @@ mobisurvstd.standardize(
 
 For more, check the [User Guide](howto.html).
 
+**Citing MobiSurvStd**
+
+If you use MobiSurvStd in a publication or project, please include the following attribution:
+"This work used the MobiSurvStd library developed by Lucas Javaudin, available at
+[https://github.com/MobiSurvStd/MobiSurvStd]()".
+
 ---
 
 ## Case Study: Bicycle Use

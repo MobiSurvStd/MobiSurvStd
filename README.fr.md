@@ -83,6 +83,13 @@ Ces fichiers Parquet peuvent ensuite être analysés avec, par exemple, les libr
 🔎 Consultez le [Guide utilisateur](https://mobisurvstd.github.io/MobiSurvStd/howto.html) pour plus
 de détails.
 
+📌 **Citation**
+
+Si vous utiliser MobiSurvStd dans une publication ou un projet, merci de mentionner l'outil comme
+suit :
+« Ce travail a utilisé la bibliothèque MobiSurvStd développée par Lucas Javaudin, disponible à
+l'adresse [https://github.com/MobiSurvStd/MobiSurvStd](). »
+
 ---
 
 ## Étude de cas : Usage du vélo

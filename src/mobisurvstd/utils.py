@@ -5,6 +5,7 @@ import tempfile
 from contextlib import contextmanager
 from zipfile import BadZipFile, ZipFile
 
+import polars as pl
 import requests
 from loguru import logger
 
@@ -120,8 +121,49 @@ def guess_survey_type(source: str | ZipFile) -> str | None:
         return "egt2010"
     if find_file(source, ".*_std_faf_men.csv", subdir="Csv", as_url=True):
         return "edgt"
-    if find_file(
-        source, ".*_std_men.csv", subdir=os.path.join("Csv", "Fichiers_Standard"), as_url=True
-    ):
+    if find_file(source, ".*evreux_2018_std_men.csv", subdir="Csv", as_url=True):
+        # Special case for Evreux 2018 which is an EMC2 survey but is defined as an EDVM survey in
+        # the IDM1 variable.
         return "emc2"
+    if find_file(source, ".*gap_2018_std_men.csv", subdir="Csv", as_url=True):
+        # Special case for Gap 2018 which is an EMC2 survey but is defined as an EDVM survey in
+        # the IDM1 variable.
+        return "emc2"
+    if find_file(source, ".*poitiers_2018_std_men.csv", subdir="Csv", as_url=True):
+        # Special case for Poitiers 2018 which is an EMC2 survey but is defined as an EDVM survey in
+        # the IDM1 variable.
+        return "emc2"
+    if bytes := find_file(source, ".*_std_men.csv", subdir=os.path.join("Csv"), as_url=False):
+        survey_type = (
+            pl.scan_csv(bytes, separator=";", schema_overrides={"IDM1": pl.UInt8})
+            .select(pl.col("IDM1").first())
+            .collect()
+            .item()
+        )
+        if survey_type == 1:
+            # EMD.
+            logger.warning(
+                "Survey type EMD detected (IDM1 = 1) but standardization is not yet supported"
+            )
+            return None
+        elif survey_type == 2:
+            # EDGT.
+            logger.warning(
+                "Survey is of type EDGT (IDM1 = 2) but the files are not organized as expected"
+            )
+            return None
+        elif survey_type == 3:
+            # EDVM.
+            return "edvm"
+        elif survey_type == 4:
+            # Autre.
+            # The only survey I observed with that value is Puisaye-Forterre 2012 which is actually
+            # an EDVM.
+            return "edvm"
+        elif survey_type == 5:
+            # EMC2.
+            return "emc2"
+        elif survey_type == 6:
+            # MC3 (EMC2 surveys disturbed by Covid-19).
+            return "emc2"
     return None

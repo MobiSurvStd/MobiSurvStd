@@ -8,8 +8,8 @@ python -m mobisurvstd SOURCE OUTPUT_DIRECTORY --survey-type TYPE [--bulk]
 
 - `SOURCE` is a path to either a directory or a zipfile where the survey data is stored.
 - `OUTPUT_DIRECTORY` is a path to the directory where the standardized survey should be stored.
-- `--survey-type TYPE` is the type of the original survey ("emc2", "emp2019", "egt2010", or
-  "egt2020"). If omitted, MobiSurvStd will guess the survey type.
+- `--survey-type TYPE` is the type of the original survey ("emc2", "emp2019", "egt2010", "egt2020",
+  "edgt", or "edvm"). If omitted, MobiSurvStd will guess the survey type.
 - `--bulk` must be used when you want to import all surveys located within the SOURCE directory.
 
 ### Examples
@@ -70,7 +70,7 @@ output_directory
 survey_type
     String indicating the type of the survey to be converted.
     If the value is omitted, MobiSurvStd will do its best to guess the survey type.
-    Possible values: "emc2", "emp2019", "egt2020", "egt2010".
+    Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm".
 add_name_subdir
     Whether the standardized survey is stored directly in `output_directory` or within a
     subdirectory of `output_directory`.
@@ -124,7 +124,7 @@ survey_type
     String indicating the type of the surveys to be converted.
     If the directory contains surveys of different types, leave this value to None and
     MobiSurvStd will try to guess the type of each survey.
-    Possible values: "emc2", "emp2019", "egt2020", "egt2010".
+    Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm".
 ```
 
 **Example:** Read all surveys in the `my_surveys` directory and store their standardized version

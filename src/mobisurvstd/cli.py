@@ -20,7 +20,7 @@ def standardizer(
     survey_type: Annotated[
         str | None,
         typer.Option(
-            help="Format of the original survey. Possible values: `emc2`, `emp2019`, `egt2010`, `egt2020`."
+            help="Format of the original survey. Possible values: `emc2`, `emp2019`, `egt2010`, `egt2020`, `edgt`, `edvm`."
         ),
     ] = None,
     bulk: Annotated[

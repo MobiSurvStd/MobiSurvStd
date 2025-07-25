@@ -87,8 +87,8 @@ de détails.
 
 ## Étude de cas : Usage du vélo
 
-Le graphe ci-dessous représente la part de déplacements à vélo pour chaque enquête EMC², EDGT et
-EGT.
+Le graphe ci-dessous représente la part de déplacements à vélo pour chaque enquête EMC², EDGT, EDVM
+et EGT.
 La couleur des cercles représente le numbre moyen de vélo par ménage enquêté.
 La taille des cercles représente le nombre estimé de déplacements dans l'aire d'enquête.
 
@@ -115,8 +115,9 @@ Actuellement :
 * `egt2020`
 * `egt2010`
 * `edgt`
+* `edvm`
 
-À venir : `edvm`, `entd`, `emg`
+À venir : `entd`, `emg`
 
 📬 Vous connaissez un autre format ? Ouvrez un ticket sur GitHub.
 

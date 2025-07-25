@@ -158,8 +158,10 @@ def standardize_trips(filename: str, households: pl.LazyFrame, persons: pl.LazyF
     )
     lf = lf.with_columns(
         original_trip_id=pl.struct("IDCEREMA", "NP", "ND"),
-        origin_purpose=pl.col("ORMOT").replace_strict(PURPOSE_MAP),
-        destination_purpose=pl.col("DESTMOT").replace_strict(PURPOSE_MAP),
+        # TODO: In the current version, home purpose is not specified but almost all nulls purposes
+        # seem to be home.
+        origin_purpose=pl.col("ORMOT").replace_strict(PURPOSE_MAP).fill_null("home:main"),
+        destination_purpose=pl.col("DESTMOT").replace_strict(PURPOSE_MAP).fill_null("home:main"),
         destination_shop_type=pl.col("TLA").replace_strict(SHOP_TYPE_MAP),
         departure_time=(pl.col("ORHOR") // 100) * 60 + pl.col("ORHOR") % 100,
         arrival_time=(pl.col("DESTHOR") // 100) * 60 + pl.col("DESTHOR") % 100,

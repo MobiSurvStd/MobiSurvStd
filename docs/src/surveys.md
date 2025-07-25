@@ -55,8 +55,10 @@ Tested surveys:
 
 Notes:
 
-- The survey detailed zones ("zones fines") usually correspond to IRIS zones.
-- Some surveys include special locations ("GT"), representing e.g., train stations or hospitals.
+- The survey detailed zones correspond to the "zones fines" ("ZF"), which are usually the size of
+  IRIS zones or smaller.
+- For most surveys, there are special locations corresponding to "Générateurs de trafic" ("GT"),
+  which represent e.g., train stations or hospitals.
 - Draw zones correspond to the survey's "zones de tirage".
 - For each trips, the non-walking legs are recorded. MobiSurvStd reconstruct the walking legs using
   the access / egress walking time variables. This means that the leg travel time is known only for
@@ -113,8 +115,59 @@ Tested surveys:
 
 Notes:
 
-- The survey detailed zones ("zones fines") usually correspond to IRIS zones.
-- Some surveys include special locations ("GT"), representing e.g., train stations or hospitals.
+- The survey detailed zones correspond to the "zones fines" ("ZF"), which are usually the size of
+  IRIS zones or smaller.
+- For most surveys, there are special locations corresponding to "Générateurs de trafic" ("GT"),
+  which represent e.g., train stations or hospitals.
+- Draw zones correspond to the survey's "zones de tirage".
+- For each trips, the non-walking legs are recorded. MobiSurvStd reconstruct the walking legs using
+  the access / egress walking time variables. This means that the leg travel time is known only for
+  the walking legs (as it is not a recorded variable for the other legs).
+
+## Enquêtes Déplacements Villes Moyennes (EDVM)
+
+Code: `edvm`
+
+Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2]()
+
+Download link (for researchers): [https://data.progedo.fr/studies?q=edvm]()
+
+Tested surveys:
+
+- Ajaccio 2017
+- Albi 2011
+- Angoulême 2012
+- Arras 2014
+- Beauvais 2010
+- Béziers 2014
+- Bourg-en-Bresse 2017
+- Carcassonne 2015
+- Châlon-sur-Saône 2014
+- Cherbourg 2016
+- Créil 2017
+- Dinan 2010
+- La Rochelle 2011
+- La-Roche-sur-Yon 2013
+- Laval 2011
+- Le Creusot 2012
+- Les Sables d'Olonne 2011
+- Longwy 2014
+- Niort 2016
+- Puisaye-Forterre et Aillantais 2012
+- Quimper 2013
+- Roanne 2012
+- Saint-Brieuc 2012
+- Saintes 2016
+- Saint-Louis 2011
+- Thionville 2012
+- Var 2012
+
+Notes:
+
+- The survey detailed zones correspond to the "zones fines" ("ZF"), which are usually the size of
+  IRIS zones or smaller.
+- For most surveys, there are special locations corresponding to "Générateurs de trafic" ("GT"),
+  which represent e.g., train stations or hospitals.
 - Draw zones correspond to the survey's "zones de tirage".
 - For each trips, the non-walking legs are recorded. MobiSurvStd reconstruct the walking legs using
   the access / egress walking time variables. This means that the leg travel time is known only for

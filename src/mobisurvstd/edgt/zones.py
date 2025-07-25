@@ -15,6 +15,7 @@ ST_ID_COLUMNS = [
     "Ztir",
     "CODSECT",
     "DTIR_160",
+    "Secteur",
 ]
 INSEE_ID_COLUMNS = [
     "INSEE",

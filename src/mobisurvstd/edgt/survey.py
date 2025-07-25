@@ -30,35 +30,29 @@ def standardize(source: str | ZipFile):
     filename = special_locations_filename(source)
     if filename is None:
         special_locations = None
-        special_locations_coords = None
     elif "EDGT_SCOTAM_2017" in source_name or "Angers12" in source_name or "EDGTFVG2016":
         # Note. Special case for Metz 2017 and Angers 2012: I cannot figure out the ids in the GT
         # and ZF files.
         # For Annemasse 2016, the GT id does not seem to be specified.
         logger.warning("Cannot read special locations: ids are invalid")
         special_locations = None
-        special_locations_coords = None
     else:
         logger.debug(f"Reading special locations from `{filename}`")
         special_locations = read_special_locations(filename)
-        special_locations_coords = get_coords(special_locations, "special_location")
     # Detailed zones.
     filename = detailed_zones_filename(source)
     if filename is None:
         logger.debug(f"No file with detailed zones in `{source_name}`")
         detailed_zones = None
-        detailed_zones_coords = None
     elif "EDGT_SCOTAM_2017" in source_name or "Angers12" in source_name or "FaF_Zones_fines":
         # Note. Special case for Metz 2017 and Angers 2012: I cannot figure out the ids in the GT
         # and ZF files.
         # For Bayonne 2010, the ids are missing.
         logger.warning("Cannot read detailed zones: ids are invalid")
         detailed_zones = None
-        detailed_zones_coords = None
     else:
         logger.debug(f"Reading detailed zones from `{filename}`")
         detailed_zones = read_detailed_zones(filename)
-        detailed_zones_coords = get_coords(detailed_zones, "detailed_zone")
     # Draw zones.
     filename = draw_zones_filename(source)
     if filename is None:
@@ -70,7 +64,7 @@ def standardize(source: str | ZipFile):
 
     if special_locations is not None:
         # For the Angers 2022 survey, the ids in the detailed zones shapefile have 3 zeros removed
-        # compared to the # ids in the special locations shapefile.
+        # compared to the ids in the special locations shapefile.
         assert detailed_zones is not None, (
             "Special locations are defined but there is no data on detailed zones"
         )
@@ -85,8 +79,12 @@ def standardize(source: str | ZipFile):
 
     if special_locations is not None:
         special_locations_coords = get_coords(special_locations, "special_location")
+    else:
+        special_locations_coords = None
     if detailed_zones is not None:
         detailed_zones_coords = get_coords(detailed_zones, "detailed_zone")
+    else:
+        detailed_zones_coords = None
 
     # Households.
     filenames = households_filename(source)
@@ -176,7 +174,7 @@ def standardize(source: str | ZipFile):
         special_locations=special_locations,
         detailed_zones=detailed_zones,
         draw_zones=draw_zones,
-        survey_type="EMC2",
+        survey_type="EDGT",
         survey_name=survey_name(source),
         main_insee=main_insee,
     )
@@ -316,7 +314,7 @@ def fix_special_locations(df: pl.LazyFrame, col: str, special_locations: gpd.Geo
 def identify_detailed_zone_id(
     special_locations: gpd.GeoDataFrame, detailed_zones: gpd.GeoDataFrame
 ):
-    """Ads `detailed_zone_id` column to special_locations by finding the detailed zone in which the
+    """Adds `detailed_zone_id` column to special_locations by finding the detailed zone in which the
     special location falls.
     """
     orig_crs = special_locations.crs

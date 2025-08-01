@@ -27,7 +27,7 @@ def read_admin_express():
         with py7zr.SevenZipFile(fn, "r") as archive:
             # Find the COMMUNE.* and ARRONDISSEMENT.* files within the archive.
             allfiles = archive.getnames()
-            filter_pattern = re.compile("(COMMUNE|ARRONDISSEMENT_MUNICIPAL)\.\w*")
+            filter_pattern = re.compile(r"(COMMUNE|ARRONDISSEMENT_MUNICIPAL)\.\w*")
             selected_files = [f for f in allfiles if filter_pattern.match(os.path.basename(f))]
             # Create a temporary directory and extract the selected files within it.
             with tempfile.TemporaryDirectory() as tmpdir:

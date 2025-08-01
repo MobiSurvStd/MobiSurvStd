@@ -98,7 +98,7 @@ def add_professional_occupation(lf: pl.LazyFrame, existing_cols: list[str]):
     ):
         lf = lf.with_columns(
             professional_occupation=pl.col("detailed_professional_occupation").str.extract(
-                "(\w+):?"
+                r"(\w+):?"
             )
         )
         existing_cols.append("professional_occupation")

@@ -36,7 +36,7 @@ def indexing(lf: pl.LazyFrame, existing_cols: list[str]):
 def add_fuel_type_group(lf: pl.LazyFrame, existing_cols: list[str]):
     if "fuel_type" in existing_cols:
         lf = lf.with_columns(
-            fuel_type_group=pl.col("fuel_type").cast(pl.String).str.extract("(\w+):?")
+            fuel_type_group=pl.col("fuel_type").cast(pl.String).str.extract(r"(\w+):?")
         )
         existing_cols.append("fuel_type_group")
     return lf

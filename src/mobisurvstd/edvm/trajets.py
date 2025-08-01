@@ -124,7 +124,7 @@ def standardize_legs(
     )
     idx = ["ECH", "STT", "PER", "NDEP"]
 
-    # For EMC², the walking legs are not recorded explicitly, instead, the walking time before and
+    # For EDVM, the walking legs are not recorded explicitly, instead, the walking time before and
     # after the legs are defined.
     # We create actual walking legs from these walking times.
 

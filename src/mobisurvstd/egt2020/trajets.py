@@ -236,10 +236,10 @@ def standardize_legs(
     lf = lf.with_columns(
         original_leg_id=pl.struct("IDCEREMA", "NP", "ND", "NT"),
         # The extract call is required because some modes are reported as "B616,skate", for example.
-        mode=pl.col("MOYEN").str.extract("(\w+),?").replace_strict(MODE_MAP),
-        car_type=pl.col("UVP").str.extract("(\w+),?").replace_strict(UVP_MAP),
+        mode=pl.col("MOYEN").str.extract(r"(\w+),?").replace_strict(MODE_MAP),
+        car_type=pl.col("UVP").str.extract(r"(\w+),?").replace_strict(UVP_MAP),
         car_index=pl.col("UVP")
-        .str.extract("(\w+),?")
+        .str.extract(r"(\w+),?")
         .replace_strict(VEHICLE_INDEX_MAP, default=None),
         motorcycle_type=pl.col("U2RM").replace_strict(U2RM_MAP),
         motorcycle_index=pl.col("U2RM").replace_strict(
@@ -257,9 +257,9 @@ def standardize_legs(
         .cast(pl.List(pl.UInt8))
         .list.set_difference(pl.lit([99])),
         parking_location=pl.col("TSTAT_VP")
-        .str.extract("(\w+),?")
+        .str.extract(r"(\w+),?")
         .replace_strict(PARKING_LOCATION_MAP),
-        parking_type=pl.col("TSTAT_VP").str.extract("(\w+),?").replace_strict(PARKING_TYPE_MAP),
+        parking_type=pl.col("TSTAT_VP").str.extract(r"(\w+),?").replace_strict(PARKING_TYPE_MAP),
     )
     lf = lf.with_columns(
         # In some cases, the parking location is a paid location but the person reported a

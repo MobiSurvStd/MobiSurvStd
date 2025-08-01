@@ -215,7 +215,7 @@ def legs_filename(source: str | ZipFile):
 def detailed_zones_filename(source: str | ZipFile):
     return find_file(
         source,
-        ".*_(ZF|Zones_Fines|Zones fines|ZInterne)(.*)?\.(TAB|shp|MIF)",
+        r".*_(ZF|Zones_Fines|Zones fines|ZInterne)(.*)?\.(TAB|shp|MIF)",
         subdir=os.path.join("Doc", "SIG"),
         as_url=True,
     )
@@ -228,7 +228,7 @@ def special_locations_filename(source: str | ZipFile):
     # locations for Lyon.)
     return find_file(
         source,
-        "(?!.*ZF_GT).*(_GT|Gener)(.*)?\.(TAB|shp|MIF)",
+        r"(?!.*ZF_GT).*(_GT|Gener)(.*)?\.(TAB|shp|MIF)",
         subdir=os.path.join("Doc", "SIG"),
         as_url=True,
     )
@@ -236,7 +236,7 @@ def special_locations_filename(source: str | ZipFile):
 
 def draw_zones_filename(source: str | ZipFile):
     return find_file(
-        source, ".*_DTIR(_.*)?\.(TAB|shp|MIF)", subdir=os.path.join("Doc", "SIG"), as_url=True
+        source, r".*_DTIR(_.*)?\.(TAB|shp|MIF)", subdir=os.path.join("Doc", "SIG"), as_url=True
     )
 
 

@@ -1017,7 +1017,7 @@ def clean(
     ), "`origin_purpose` is education-related for a non-student person"
     assert trips.select(
         (
-            pl.col("origin_purpose").cast(pl.String).str.extract("(\w+):?")
+            pl.col("origin_purpose").cast(pl.String).str.extract(r"(\w+):?")
             == pl.col("origin_purpose_group")
         ).all()
     ).item(), "Columns `origin_purpose` and `origin_purpose_group` have some inconsistencies"
@@ -1043,7 +1043,7 @@ def clean(
     ), "`destination_purpose` is education-related for a non-student person"
     assert trips.select(
         (
-            pl.col("destination_purpose").cast(pl.String).str.extract("(\w+):?")
+            pl.col("destination_purpose").cast(pl.String).str.extract(r"(\w+):?")
             == pl.col("destination_purpose_group")
         ).all()
     ).item(), (
@@ -1078,7 +1078,7 @@ def clean(
     )
     assert trips.select(
         (
-            pl.col("origin_escort_purpose").cast(pl.String).str.extract("(\w+):?")
+            pl.col("origin_escort_purpose").cast(pl.String).str.extract(r"(\w+):?")
             == pl.col("origin_escort_purpose_group")
         ).all()
     ).item(), (
@@ -1101,7 +1101,7 @@ def clean(
     )
     assert trips.select(
         (
-            pl.col("destination_escort_purpose").cast(pl.String).str.extract("(\w+):?")
+            pl.col("destination_escort_purpose").cast(pl.String).str.extract(r"(\w+):?")
             == pl.col("destination_escort_purpose_group")
         ).all()
     ).item(), (

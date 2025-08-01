@@ -1,5 +1,14 @@
+# Custom 
 data/
-dist/
-**/__pycache__/
 output/
-**/mobisurvstd.egg-info/
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv

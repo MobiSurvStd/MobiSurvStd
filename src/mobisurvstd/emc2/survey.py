@@ -195,19 +195,19 @@ def legs_filename(source: str | ZipFile):
 
 def detailed_zones_filename(source: str | ZipFile):
     return find_file(
-        source, ".*_ZF(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
+        source, r".*_ZF(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
     )
 
 
 def special_locations_filename(source: str | ZipFile):
     return find_file(
-        source, ".*_GT(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
+        source, r".*_GT(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
     )
 
 
 def draw_zones_filename(source: str | ZipFile):
     return find_file(
-        source, ".*_DTIR(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
+        source, r".*_DTIR(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG"), as_url=True
     )
 
 

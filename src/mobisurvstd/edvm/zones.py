@@ -129,7 +129,7 @@ def cast_id(s: gpd.GeoSeries):
         s.astype(str)
         .str.replace(" ", "")
         .str.replace("[.]0$", "", n=1, regex=True)
-        .str.replace("(?<=\d)[.](?=\d)", "", n=1, regex=True)
+        .str.replace(r"(?<=\d)[.](?=\d)", "", n=1, regex=True)
         .astype(int, errors="ignore")
         .astype(str)
     )

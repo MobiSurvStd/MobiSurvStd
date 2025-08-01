@@ -173,6 +173,38 @@ Notes:
   the access / egress walking time variables. This means that the leg travel time is known only for
   the walking legs (as it is not a recorded variable for the other legs).
 
+## Enquêtes Ménages Déplacements (EMD)
+
+Code: `emd`
+
+Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2]()
+
+Download link (for researchers): [https://data.progedo.fr/studies?q=emd]()
+
+Tested surveys:
+
+- Douai 2012
+- Fort-de-France 2014
+- Grenoble 2010
+- Lille 2016
+- Nîmes 2015
+- Rouen 2017
+- Saint-Étienne 2010
+- Strasbourg 2009
+- Toulouse 2013
+- Valenciennes 2011
+
+Notes:
+
+- The survey detailed zones correspond to the "zones fines" ("ZF"), which are usually the size of
+  IRIS zones or smaller.
+- For most surveys, there are special locations corresponding to "Générateurs de trafic" ("GT"),
+  which represent e.g., train stations or hospitals.
+- Draw zones correspond to the survey's "zones de tirage".
+- For each trips, the non-walking legs are recorded. MobiSurvStd reconstruct the walking legs using
+  the access / egress walking time variables. This means that the leg travel time is known only for
+  the walking legs (as it is not a recorded variable for the other legs).
+
 
 ## Enquête Globale Transport 2010
 

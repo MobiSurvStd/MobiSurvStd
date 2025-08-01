@@ -122,7 +122,7 @@ def cast_id(s: gpd.GeoSeries):
     # "012345" -> "12345"
     # "123 456" -> "123456"
     # "123.456" -> "123456"
-    # Altough it would be cleaner to keep the leading zero, it is safer to remove them because in
+    # Although it would be cleaner to keep the leading zero, it is safer to remove them because in
     # some cases there is not the same number of leading zeros in the zone files compared to the
     # survey's CSV files.
     return (

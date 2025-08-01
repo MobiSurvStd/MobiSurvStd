@@ -142,10 +142,7 @@ def guess_survey_type(source: str | ZipFile) -> str | None:
         )
         if survey_type == 1:
             # EMD.
-            logger.warning(
-                "Survey type EMD detected (IDM1 = 1) but standardization is not yet supported"
-            )
-            return None
+            return "emd"
         elif survey_type == 2:
             # EDGT.
             logger.warning(

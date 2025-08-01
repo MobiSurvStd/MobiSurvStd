@@ -34,7 +34,7 @@ Voici quelques exemples :
 - **EGT H2020** : Enquête globale transport en Île-de-France (2018–2020)
 - **EMP** : Enquête mobilité des personnes (enquête nationale, 2019)
 - **EMG** : Enquête par GPS en Île-de-France (2022–2023)
-- et d'autres plus anciennes : EDVM, EDGT, ENTD, etc.
+- et d'autres plus anciennes : EDVM, EDGT, EMD, ENTD, etc.
 
 ---
 
@@ -94,8 +94,8 @@ l'adresse [https://github.com/MobiSurvStd/MobiSurvStd](). »
 
 ## Étude de cas : Usage du vélo
 
-Le graphe ci-dessous représente la part de déplacements à vélo pour chaque enquête EMC², EDGT, EDVM
-et EGT.
+Le graphe ci-dessous représente la part de déplacements à vélo pour chaque enquête EMC², EDGT, EDVM,
+EMD et EGT.
 La couleur des cercles représente le numbre moyen de vélo par ménage enquêté.
 La taille des cercles représente le nombre estimé de déplacements dans l'aire d'enquête.
 
@@ -123,6 +123,7 @@ Actuellement :
 * `egt2010`
 * `edgt`
 * `edvm`
+* `emd`
 
 À venir : `entd`, `emg`
 

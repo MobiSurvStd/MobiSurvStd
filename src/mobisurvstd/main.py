@@ -3,7 +3,7 @@ from zipfile import ZipFile
 
 from loguru import logger
 
-from . import edgt, edvm, egt2010, egt2020, emc2, emp
+from . import edgt, edvm, egt2010, egt2020, emc2, emd, emp
 from .classes import SurveyData
 from .utils import guess_survey_type, read_source
 
@@ -29,7 +29,7 @@ def standardize(
     survey_type
         String indicating the type of the survey to be converted.
         If the value is omitted, MobiSurvStd will do its best to guess the survey type.
-        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm".
+        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd".
     add_name_subdir
         Whether the standardized survey is stored directly in `output_directory` or within a
         subdirectory of `output_directory`.
@@ -71,6 +71,8 @@ def standardize(
         survey_data = edgt.standardize(dir_or_zip)
     elif survey_type == "edvm":
         survey_data = edvm.standardize(dir_or_zip)
+    elif survey_type == "emd":
+        survey_data = emd.standardize(dir_or_zip)
     elif survey_type in ("emp", "emp2019"):
         survey_data = emp.standardize(dir_or_zip)
     elif survey_type in ("egt2020", "egt20", "egt1820"):
@@ -114,7 +116,7 @@ def bulk_standardize(
         String indicating the type of the surveys to be converted.
         If the directory contains surveys of different types, leave this value to None and
         MobiSurvStd will try to guess the type of each survey.
-        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm".
+        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd".
 
     Examples
     --------

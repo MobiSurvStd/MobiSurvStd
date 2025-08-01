@@ -46,6 +46,7 @@ Also surveys based on previous formats are still in use today:
   (until 2018);
 - **EDGT** (Enquêtes Déplacements Grands Territoires, CEREMA): mobility surveys for periphery areas
   (until 2018);
+- **EMD** (Enquêtes Ménages Déplacements, CEREMA): other mobility surveys from CEREMA (until 2018);
 - [**EGT 2010**](https://omnil.fr/egt-2010) (Enquête Globale Transport, Île-de-France Mobilités):
   previous version of the Île-de-France mobility survey;
 - [**ENTD**](https://www.statistiques.developpement-durable.gouv.fr/enquete-nationale-transports-et-deplacements-entd-2008)
@@ -127,7 +128,8 @@ If you use MobiSurvStd in a publication or project, please include the following
 
 ## Case Study: Bicycle Use
 
-The following graph represents the share of bicycle trips for EMC², EDGT, EDVM, and EGT surveys.
+The following graph represents the share of bicycle trips for EMC², EDGT, EDVM, EMD, and EGT
+surveys.
 The circle colors represent the average number of bicycles in the surveyed households.
 The circle sizes represent the expected number of trips in the surveyed area.
 
@@ -156,6 +158,7 @@ Currently, MobiSurvStd supports the following survey types:
 - `egt2010`
 - `edgt`
 - `edvm`
+- `emd`
 
 See [Survey Types](https://mobisurvstd.github.io/MobiSurvStd/surveys.html) for more.
 

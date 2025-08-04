@@ -13,7 +13,7 @@ from .trajets import standardize_legs
 from .voitures import standardize_cars
 
 
-def standardize(source: str | ZipFile):
+def standardize(source: str | ZipFile, skip_spatial: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EGT2020 survey from `{source_name}`")
     # Households.

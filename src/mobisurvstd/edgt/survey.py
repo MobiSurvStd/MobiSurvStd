@@ -23,59 +23,15 @@ from .trajets import standardize_legs
 from .zones import read_detailed_zones, read_draw_zones, read_special_locations
 
 
-def standardize(source: str | ZipFile):
+def standardize(source: str | ZipFile, skip_spatial: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EDGT survey from `{source_name}`")
-    # Special locations.
-    filename = special_locations_filename(source)
-    if filename is None:
+    if skip_spatial:
         special_locations = None
-    elif "EDGT_SCOTAM_2017" in source_name or "Angers12" in source_name or "EDGTFVG2016":
-        # Note. Special case for Metz 2017 and Angers 2012: I cannot figure out the ids in the GT
-        # and ZF files.
-        # For Annemasse 2016, the GT id does not seem to be specified.
-        logger.warning("Cannot read special locations: ids are invalid")
-        special_locations = None
-    else:
-        logger.debug(f"Reading special locations from `{filename}`")
-        special_locations = read_special_locations(filename)
-    # Detailed zones.
-    filename = detailed_zones_filename(source)
-    if filename is None:
-        logger.debug(f"No file with detailed zones in `{source_name}`")
         detailed_zones = None
-    elif "EDGT_SCOTAM_2017" in source_name or "Angers12" in source_name or "FaF_Zones_fines":
-        # Note. Special case for Metz 2017 and Angers 2012: I cannot figure out the ids in the GT
-        # and ZF files.
-        # For Bayonne 2010, the ids are missing.
-        logger.warning("Cannot read detailed zones: ids are invalid")
-        detailed_zones = None
-    else:
-        logger.debug(f"Reading detailed zones from `{filename}`")
-        detailed_zones = read_detailed_zones(filename)
-    # Draw zones.
-    filename = draw_zones_filename(source)
-    if filename is None:
-        logger.debug(f"No file with draw zones in `{source_name}`")
         draw_zones = None
     else:
-        logger.debug(f"Reading draw zones from `{filename}`")
-        draw_zones = read_draw_zones(filename)
-
-    if special_locations is not None:
-        # For the Angers 2022 survey, the ids in the detailed zones shapefile have 3 zeros removed
-        # compared to the ids in the special locations shapefile.
-        assert detailed_zones is not None, (
-            "Special locations are defined but there is no data on detailed zones"
-        )
-        if "detailed_zone_id" not in special_locations.columns:
-            special_locations = identify_detailed_zone_id(special_locations, detailed_zones)
-        dz_gcd = np.gcd.reduce(detailed_zones["detailed_zone_id"].astype(int))
-        sl_gcd = np.gcd.reduce(special_locations["detailed_zone_id"].astype(int))
-        if dz_gcd < sl_gcd and np.log10(sl_gcd).is_integer():
-            detailed_zones["detailed_zone_id"] = (
-                detailed_zones["detailed_zone_id"].astype(int) * sl_gcd
-            ).astype(str)
+        special_locations, detailed_zones, draw_zones = read_spatial_data(source, source_name)
 
     if special_locations is not None:
         special_locations_coords = get_coords(special_locations, "special_location")
@@ -180,6 +136,61 @@ def standardize(source: str | ZipFile):
     )
 
 
+def read_spatial_data(source: str | ZipFile, source_name: str):
+    # Special locations.
+    filename = special_locations_filename(source)
+    if filename is None:
+        special_locations = None
+    elif "EDGT_SCOTAM_2017" in source_name or "Angers12" in source_name or "EDGTFVG2016":
+        # Note. Special case for Metz 2017 and Angers 2012: I cannot figure out the ids in the GT
+        # and ZF files.
+        # For Annemasse 2016, the GT id does not seem to be specified.
+        logger.warning("Cannot read special locations: ids are invalid")
+        special_locations = None
+    else:
+        logger.debug(f"Reading special locations from `{filename}`")
+        special_locations = read_special_locations(filename)
+    # Detailed zones.
+    filename = detailed_zones_filename(source)
+    if filename is None:
+        logger.debug(f"No file with detailed zones in `{source_name}`")
+        detailed_zones = None
+    elif "EDGT_SCOTAM_2017" in source_name or "Angers12" in source_name or "FaF_Zones_fines":
+        # Note. Special case for Metz 2017 and Angers 2012: I cannot figure out the ids in the GT
+        # and ZF files.
+        # For Bayonne 2010, the ids are missing.
+        logger.warning("Cannot read detailed zones: ids are invalid")
+        detailed_zones = None
+    else:
+        logger.debug(f"Reading detailed zones from `{filename}`")
+        detailed_zones = read_detailed_zones(filename)
+    # Draw zones.
+    filename = draw_zones_filename(source)
+    if filename is None:
+        logger.debug(f"No file with draw zones in `{source_name}`")
+        draw_zones = None
+    else:
+        logger.debug(f"Reading draw zones from `{filename}`")
+        draw_zones = read_draw_zones(filename)
+
+    if special_locations is not None:
+        # For the Angers 2022 survey, the ids in the detailed zones shapefile have 3 zeros removed
+        # compared to the ids in the special locations shapefile.
+        assert (
+            detailed_zones is not None
+        ), "Special locations are defined but there is no data on detailed zones"
+        if "detailed_zone_id" not in special_locations.columns:
+            special_locations = identify_detailed_zone_id(special_locations, detailed_zones)
+        dz_gcd = np.gcd.reduce(detailed_zones["detailed_zone_id"].astype(int))
+        sl_gcd = np.gcd.reduce(special_locations["detailed_zone_id"].astype(int))
+        if dz_gcd < sl_gcd and np.log10(sl_gcd).is_integer():
+            detailed_zones["detailed_zone_id"] = (
+                detailed_zones["detailed_zone_id"].astype(int) * sl_gcd
+            ).astype(str)
+
+    return special_locations, detailed_zones, draw_zones
+
+
 def survey_main_insee(source: str | bytes):
     return pl.scan_csv(source, separator=";").select("IDM4").first().collect().item()
 
@@ -267,15 +278,13 @@ def fix_special_locations_with_gcd(
                 pl.from_pandas(special_locations["detailed_zone_id"].astype(int)),
                 default=None,
             )
-        )
-        .alias(f"{col}_detailed_zone"),
+        ).alias(f"{col}_detailed_zone"),
         # When the ZF is an actual ZF
         pl.when(mask)
         # Then the GT is null
         .then(pl.lit(None))
         # Otherwise use that GT as GT.
-        .otherwise(f"{col}_detailed_zone")
-        .alias(f"{col}_special_location"),
+        .otherwise(f"{col}_detailed_zone").alias(f"{col}_special_location"),
     )
     return df
 
@@ -298,15 +307,13 @@ def fix_special_locations(df: pl.LazyFrame, col: str, special_locations: gpd.Geo
                 pl.from_pandas(special_locations["detailed_zone_id"].astype(int)),
                 default=None,
             )
-        )
-        .alias(f"{col}_detailed_zone"),
+        ).alias(f"{col}_detailed_zone"),
         # When the ZF is an actual ZF
         pl.when(mask)
         # Then the GT is null
         .then(pl.lit(None))
         # Otherwise use that GT as GT.
-        .otherwise(f"{col}_detailed_zone")
-        .alias(f"{col}_special_location"),
+        .otherwise(f"{col}_detailed_zone").alias(f"{col}_special_location"),
     )
     return df
 

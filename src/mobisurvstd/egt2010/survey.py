@@ -13,15 +13,18 @@ from .trajets import standardize_legs
 from .zones import read_detailed_zones
 
 
-def standardize(source: str | ZipFile):
+def standardize(source: str | ZipFile, skip_spatial: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EGT2010 survey from `{source_name}`")
-    # Detailed zones.
-    filename = detailed_zones_filename(source)
-    if filename is None:
-        logger.error("Missing detailed zones file")
-        return None
-    detailed_zones = read_detailed_zones(filename)
+    if skip_spatial:
+        detailed_zones = None
+    else:
+        # Detailed zones.
+        filename = detailed_zones_filename(source)
+        if filename is None:
+            logger.error("Missing detailed zones file")
+            return None
+        detailed_zones = read_detailed_zones(filename)
     # Households.
     filename = households_filename(source)
     if filename is None:

@@ -13,7 +13,7 @@ from .personnes import standardize_persons
 from .voitures import standardize_cars
 
 
-def standardize(source: str | ZipFile):
+def standardize(source: str | ZipFile, skip_spatial: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EMP survey from `{source_name}`")
     # Households.

@@ -28,40 +28,15 @@ from .zones import (
 )
 
 
-def standardize(source: str | ZipFile):
+def standardize(source: str | ZipFile, skip_spatial: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EDVM survey from `{source_name}`")
-    if filename := special_locations_and_detailed_zones_filename(source):
-        # Special case for Beauvais 2011.
-        detailed_zones, special_locations = read_special_locations_and_detailed_zones(filename)
-    else:
-        # Special locations.
-        if filename := special_locations_filename(source):
-            logger.debug(f"Reading special locations from `{filename}`")
-            special_locations = read_special_locations(filename)
-        else:
-            special_locations = None
-        # Detailed zones.
-        if filename := detailed_zones_filename(source):
-            logger.debug(f"Reading detailed zones from `{filename}`")
-            detailed_zones = read_detailed_zones(filename)
-        else:
-            logger.debug(f"No file with detailed zones in `{source_name}`")
-            detailed_zones = None
-    # Draw zones.
-    if filename := draw_zones_filename(source):
-        logger.debug(f"Reading draw zones from `{filename}`")
-        draw_zones = read_draw_zones(filename)
-    else:
-        logger.debug(f"No file with draw zones in `{source_name}`")
+    if skip_spatial:
+        special_locations = None
+        detailed_zones = None
         draw_zones = None
-
-    if special_locations is not None:
-        assert detailed_zones is not None, (
-            "Special locations are defined but there is no data on detailed zones"
-        )
-        if "detailed_zone_id" not in special_locations.columns:
-            special_locations = identify_detailed_zone_id(special_locations, detailed_zones)
+    else:
+        special_locations, detailed_zones, draw_zones = read_spatial_data(source, source_name)
 
     if special_locations is not None:
         special_locations_coords = get_coords(special_locations, "special_location")
@@ -106,21 +81,6 @@ def standardize(source: str | ZipFile):
 
     households = add_survey_dates(households, persons)
 
-    if special_locations is not None:
-        # For Lille 2015, some GT ids also have corresponding zones. We remove these zones to
-        # prevent any issue.
-        detailed_zones = detailed_zones.loc[
-            ~detailed_zones["detailed_zone_id"].isin(special_locations["special_location_id"])
-        ]
-        assert (
-            len(
-                set(special_locations["special_location_id"]).intersection(
-                    set(detailed_zones["detailed_zone_id"])
-                )
-            )
-            == 0
-        ), "Special locations and detailed zones have common ids"
-
     return clean(
         households=households,
         persons=persons,
@@ -135,6 +95,58 @@ def standardize(source: str | ZipFile):
         survey_name=survey_name(source),
         main_insee=main_insee,
     )
+
+
+def read_spatial_data(source: str | ZipFile, source_name: str):
+    if filename := special_locations_and_detailed_zones_filename(source):
+        # Special case for Beauvais 2011.
+        detailed_zones, special_locations = read_special_locations_and_detailed_zones(filename)
+    else:
+        # Special locations.
+        if filename := special_locations_filename(source):
+            logger.debug(f"Reading special locations from `{filename}`")
+            special_locations = read_special_locations(filename)
+        else:
+            special_locations = None
+        # Detailed zones.
+        if filename := detailed_zones_filename(source):
+            logger.debug(f"Reading detailed zones from `{filename}`")
+            detailed_zones = read_detailed_zones(filename)
+        else:
+            logger.debug(f"No file with detailed zones in `{source_name}`")
+            detailed_zones = None
+    # Draw zones.
+    if filename := draw_zones_filename(source):
+        logger.debug(f"Reading draw zones from `{filename}`")
+        draw_zones = read_draw_zones(filename)
+    else:
+        logger.debug(f"No file with draw zones in `{source_name}`")
+        draw_zones = None
+
+    if special_locations is not None:
+        assert (
+            detailed_zones is not None
+        ), "Special locations are defined but there is no data on detailed zones"
+        if "detailed_zone_id" not in special_locations.columns:
+            special_locations = identify_detailed_zone_id(special_locations, detailed_zones)
+
+    if special_locations is not None:
+        # For Lille 2015, some GT ids also have corresponding zones. We remove these zones to
+        # prevent any issue.
+        assert detailed_zones is not None
+        detailed_zones = detailed_zones.loc[
+            ~detailed_zones["detailed_zone_id"].isin(special_locations["special_location_id"])
+        ]
+        assert (
+            len(
+                set(special_locations["special_location_id"]).intersection(
+                    set(detailed_zones["detailed_zone_id"])
+                )
+            )
+            == 0
+        ), "Special locations and detailed zones have common ids"
+
+    return special_locations, detailed_zones, draw_zones
 
 
 def survey_name(source: str | ZipFile):
@@ -214,15 +226,13 @@ def fix_special_locations_with_gcd(
                 pl.from_pandas(special_locations["detailed_zone_id"].astype(int)),
                 default=None,
             )
-        )
-        .alias(f"{col}_detailed_zone"),
+        ).alias(f"{col}_detailed_zone"),
         # When the ZF is an actual ZF
         pl.when(mask)
         # Then the GT is null
         .then(pl.lit(None))
         # Otherwise use that GT as GT.
-        .otherwise(f"{col}_detailed_zone")
-        .alias(f"{col}_special_location"),
+        .otherwise(f"{col}_detailed_zone").alias(f"{col}_special_location"),
     )
     return df
 
@@ -245,15 +255,13 @@ def fix_special_locations(df: pl.LazyFrame, col: str, special_locations: gpd.Geo
                 pl.from_pandas(special_locations["detailed_zone_id"].astype(int)),
                 default=None,
             )
-        )
-        .alias(f"{col}_detailed_zone"),
+        ).alias(f"{col}_detailed_zone"),
         # When the ZF is an actual ZF
         pl.when(mask)
         # Then the GT is null
         .then(pl.lit(None))
         # Otherwise use that GT as GT.
-        .otherwise(f"{col}_detailed_zone")
-        .alias(f"{col}_special_location"),
+        .otherwise(f"{col}_detailed_zone").alias(f"{col}_special_location"),
     )
     return df
 

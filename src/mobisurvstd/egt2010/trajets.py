@@ -155,7 +155,7 @@ def standardize_legs(
     trips: pl.LazyFrame,
     cars: pl.LazyFrame,
     motorcycles: pl.LazyFrame,
-    detailed_zones: gpd.GeoDataFrame,
+    detailed_zones: gpd.GeoDataFrame | None,
 ):
     lf = scan_legs(filename)
     # Add household_id, person_id, and trip_id.

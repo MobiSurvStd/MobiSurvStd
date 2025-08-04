@@ -13,6 +13,7 @@ def standardize(
     output_directory: str | None = None,
     survey_type: str | None = None,
     add_name_subdir: bool = False,
+    skip_spatial: bool = False,
 ) -> SurveyData | None:
     """Converts a mobility survey to a clean standardized format.
 
@@ -37,6 +38,11 @@ def standardize(
         If True, the standardized survey is stored in a subdirectory within `output_directory`. The
         subdirectory name is the survey name.
         If False (default), the standardized survey is stored directly in `output_directory`.
+    skip_spatial
+        If True, MobiSurvStd will not try to read spatial data from the survey.
+        This means that special locations, detailed zones, and draw zones will not be read and
+        proposed as an output.
+        Some variables (e.g., home_lng, home_lat) might also be missing as a result.
 
     Returns
     -------
@@ -67,19 +73,19 @@ def standardize(
     # Note that I actually define here some aliases for the `survey_type` argument that are not
     # documented (because why not?).
     if survey_type == "emc2":
-        survey_data = emc2.standardize(dir_or_zip)
+        survey_data = emc2.standardize(dir_or_zip, skip_spatial=skip_spatial)
     elif survey_type == "edgt":
-        survey_data = edgt.standardize(dir_or_zip)
+        survey_data = edgt.standardize(dir_or_zip, skip_spatial=skip_spatial)
     elif survey_type == "edvm":
-        survey_data = edvm.standardize(dir_or_zip)
+        survey_data = edvm.standardize(dir_or_zip, skip_spatial=skip_spatial)
     elif survey_type == "emd":
-        survey_data = emd.standardize(dir_or_zip)
+        survey_data = emd.standardize(dir_or_zip, skip_spatial=skip_spatial)
     elif survey_type in ("emp", "emp2019"):
-        survey_data = emp.standardize(dir_or_zip)
+        survey_data = emp.standardize(dir_or_zip, skip_spatial=skip_spatial)
     elif survey_type in ("egt2020", "egt20", "egt1820"):
-        survey_data = egt2020.standardize(dir_or_zip)
+        survey_data = egt2020.standardize(dir_or_zip, skip_spatial=skip_spatial)
     elif survey_type in ("egt2010", "egt10"):
-        survey_data = egt2010.standardize(dir_or_zip)
+        survey_data = egt2010.standardize(dir_or_zip, skip_spatial=skip_spatial)
     else:
         logger.error(f"Unsupported survey type: {survey_type}")
         return None
@@ -99,6 +105,7 @@ def bulk_standardize(
     directory: str,
     output_directory: str,
     survey_type: str | None = None,
+    skip_spatial: bool = False,
 ):
     """Standardizes mobility surveys in bulk from a given directory.
 
@@ -119,6 +126,11 @@ def bulk_standardize(
         If the directory contains surveys of different types, leave this value to None and
         MobiSurvStd will try to guess the type of each survey.
         Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd".
+    skip_spatial
+        If True, MobiSurvStd will not try to read spatial data from the surveys.
+        This means that special locations, detailed zones, and draw zones will not be read and
+        proposed as an output.
+        Some variables (e.g., home_lng, home_lat) might also be missing as a result.
 
     Examples
     --------
@@ -129,7 +141,7 @@ def bulk_standardize(
     >>> import mobisurvstd
     >>> mobisurvstd.bulk_standardize("my_surveys", "standardized_surveys")
     """
-    n = bulk_standardize_impl(directory, output_directory, survey_type, n=0)
+    n = bulk_standardize_impl(directory, output_directory, survey_type, skip_spatial, n=0)
     if n > 0:
         logger.success(f"Successfully read {n} surveys from `{directory}`")
     if n == 0:
@@ -140,6 +152,7 @@ def bulk_standardize_impl(
     directory: str,
     output_directory: str,
     survey_type: str | None = None,
+    skip_spatial: bool = False,
     n: int = 0,
 ):
     if not os.path.isdir(directory):
@@ -152,13 +165,25 @@ def bulk_standardize_impl(
             if maybe_type is None:
                 # The directory does not seem to be a valid survey.
                 # We try to iteratively read that directory.
-                n = bulk_standardize_impl(source, output_directory, survey_type, n)
+                n = bulk_standardize_impl(source, output_directory, survey_type, skip_spatial, n)
             else:
-                data = standardize(source, output_directory, survey_type, add_name_subdir=True)
+                data = standardize(
+                    source,
+                    output_directory,
+                    survey_type,
+                    add_name_subdir=True,
+                    skip_spatial=skip_spatial,
+                )
                 if data is not None:
                     n += 1
         if source.endswith(".zip"):
-            data = standardize(source, output_directory, survey_type, add_name_subdir=True)
+            data = standardize(
+                source,
+                output_directory,
+                survey_type,
+                add_name_subdir=True,
+                skip_spatial=skip_spatial,
+            )
             if data is not None:
                 n += 1
     return n

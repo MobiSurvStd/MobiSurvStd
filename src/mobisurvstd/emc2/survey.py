@@ -24,57 +24,24 @@ from .trajets import standardize_legs
 from .zones import read_detailed_zones, read_draw_zones, read_special_locations
 
 
-def standardize(source: str | ZipFile):
+def standardize(source: str | ZipFile, skip_spatial: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EMC2 survey from `{source_name}`")
-    # Special locations.
-    filename = special_locations_filename(source)
-    if filename is None:
+    if skip_spatial:
         special_locations = None
-        special_locations_coords = None
-    else:
-        logger.debug(f"Reading special locations from `{filename}`")
-        special_locations = read_special_locations(filename)
-        special_locations_coords = get_coords(special_locations, "special_location")
-    # Detailed zones.
-    filename = detailed_zones_filename(source)
-    if filename is None:
-        logger.debug(f"No file with detailed zones in `{source_name}`")
         detailed_zones = None
-        detailed_zones_coords = None
-    else:
-        logger.debug(f"Reading detailed zones from `{filename}`")
-        detailed_zones = read_detailed_zones(filename)
-        detailed_zones_coords = get_coords(detailed_zones, "detailed_zone")
-    # Draw zones.
-    filename = draw_zones_filename(source)
-    if filename is None:
-        logger.debug(f"No file with draw zones in `{source_name}`")
         draw_zones = None
     else:
-        logger.debug(f"Reading draw zones from `{filename}`")
-        draw_zones = read_draw_zones(filename)
-
-    if special_locations is not None:
-        # For the Angers 2022 survey, the ids in the detailed zones shapefile have 3 zeros removed
-        # compared to the # ids in the special locations shapefile.
-        assert detailed_zones is not None, (
-            "Special locations are defined but there is no data on detailed zones"
-        )
-        assert "detailed_zone_id" in special_locations.columns, (
-            "Special locations are defined and used but the corresponding detailed zone are unknown"
-        )
-        dz_gcd = np.gcd.reduce(detailed_zones["detailed_zone_id"].astype(int))
-        sl_gcd = np.gcd.reduce(special_locations["detailed_zone_id"].astype(int))
-        if dz_gcd < sl_gcd and np.log10(sl_gcd).is_integer():
-            detailed_zones["detailed_zone_id"] = (
-                detailed_zones["detailed_zone_id"].astype(int) * sl_gcd
-            ).astype(str)
+        special_locations, detailed_zones, draw_zones = read_spatial_data(source, source_name)
 
     if special_locations is not None:
         special_locations_coords = get_coords(special_locations, "special_location")
+    else:
+        special_locations_coords = None
     if detailed_zones is not None:
         detailed_zones_coords = get_coords(detailed_zones, "detailed_zone")
+    else:
+        detailed_zones_coords = None
 
     # Households.
     filename = households_filename(source)
@@ -112,6 +79,7 @@ def standardize(source: str | ZipFile):
 
     # Fix the special locations which are being used as detailed zones.
     if special_locations is not None:
+        assert detailed_zones is not None
         assert (
             len(
                 set(special_locations["special_location_id"]).intersection(
@@ -126,6 +94,7 @@ def standardize(source: str | ZipFile):
         # In some cases, not all GTs are defined.
         # For example, `origin_detailed_zone` can be defined as 70103 but there is no special
         # location with that id. In this case, we can guess that the ZF id is 70100.
+        sl_gcd = np.gcd.reduce(special_locations["detailed_zone_id"].astype(int))
         if np.log10(sl_gcd).is_integer() and sl_gcd > 1:
             # All ZF ids are ending with zeros. In principle, all GT ids do _not_ end with zeros.
             # We raise an error if at least 2 GT ids end with zeros.
@@ -168,6 +137,50 @@ def standardize(source: str | ZipFile):
         survey_name=survey_name(source),
         main_insee=main_insee,
     )
+
+
+def read_spatial_data(source: str | ZipFile, source_name: str):
+    # Special locations.
+    filename = special_locations_filename(source)
+    if filename is None:
+        special_locations = None
+    else:
+        logger.debug(f"Reading special locations from `{filename}`")
+        special_locations = read_special_locations(filename)
+    # Detailed zones.
+    filename = detailed_zones_filename(source)
+    if filename is None:
+        logger.debug(f"No file with detailed zones in `{source_name}`")
+        detailed_zones = None
+    else:
+        logger.debug(f"Reading detailed zones from `{filename}`")
+        detailed_zones = read_detailed_zones(filename)
+    # Draw zones.
+    filename = draw_zones_filename(source)
+    if filename is None:
+        logger.debug(f"No file with draw zones in `{source_name}`")
+        draw_zones = None
+    else:
+        logger.debug(f"Reading draw zones from `{filename}`")
+        draw_zones = read_draw_zones(filename)
+
+    if special_locations is not None:
+        # For the Angers 2022 survey, the ids in the detailed zones shapefile have 3 zeros removed
+        # compared to the # ids in the special locations shapefile.
+        assert (
+            detailed_zones is not None
+        ), "Special locations are defined but there is no data on detailed zones"
+        assert (
+            "detailed_zone_id" in special_locations.columns
+        ), "Special locations are defined and used but the corresponding detailed zone are unknown"
+        dz_gcd = np.gcd.reduce(detailed_zones["detailed_zone_id"].astype(int))
+        sl_gcd = np.gcd.reduce(special_locations["detailed_zone_id"].astype(int))
+        if dz_gcd < sl_gcd and np.log10(sl_gcd).is_integer():
+            detailed_zones["detailed_zone_id"] = (
+                detailed_zones["detailed_zone_id"].astype(int) * sl_gcd
+            ).astype(str)
+
+    return special_locations, detailed_zones, draw_zones
 
 
 def survey_name(source: str | ZipFile):
@@ -238,15 +251,13 @@ def fix_special_locations_with_gcd(
                 pl.from_pandas(special_locations["detailed_zone_id"].astype(int)),
                 default=None,
             )
-        )
-        .alias(f"{col}_detailed_zone"),
+        ).alias(f"{col}_detailed_zone"),
         # When the ZF is an actual ZF
         pl.when(mask)
         # Then the GT is null
         .then(pl.lit(None))
         # Otherwise use that GT as GT.
-        .otherwise(f"{col}_detailed_zone")
-        .alias(f"{col}_special_location"),
+        .otherwise(f"{col}_detailed_zone").alias(f"{col}_special_location"),
     )
     return df
 
@@ -269,14 +280,12 @@ def fix_special_locations(df: pl.LazyFrame, col: str, special_locations: gpd.Geo
                 pl.from_pandas(special_locations["detailed_zone_id"].astype(int)),
                 default=None,
             )
-        )
-        .alias(f"{col}_detailed_zone"),
+        ).alias(f"{col}_detailed_zone"),
         # When the ZF is an actual ZF
         pl.when(mask)
         # Then the GT is null
         .then(pl.lit(None))
         # Otherwise use that GT as GT.
-        .otherwise(f"{col}_detailed_zone")
-        .alias(f"{col}_special_location"),
+        .otherwise(f"{col}_detailed_zone").alias(f"{col}_special_location"),
     )
     return df

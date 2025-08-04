@@ -59,8 +59,14 @@ def find_file_in_directory(directory: str, regex: str) -> str | None:
     """
     pattern = re.compile(regex, flags=re.IGNORECASE)
     for filename in os.listdir(directory):
-        if pattern.match(filename):
-            return os.path.join(directory, filename)
+        inner = os.path.join(directory, filename)
+        if os.path.isfile(inner) and pattern.match(filename):
+            return inner
+        elif os.path.isdir(inner):
+            # Go recursive.
+            if match := find_file_in_directory(inner, regex):
+                return match
+    return None
 
 
 def find_file_in_zipfile(z: ZipFile, subdir: str, regex: str, as_url=False) -> str | bytes | None:
@@ -133,7 +139,7 @@ def guess_survey_type(source: str | ZipFile) -> str | None:
         # Special case for Poitiers 2018 which is an EMC2 survey but is defined as an EDVM survey in
         # the IDM1 variable.
         return "emc2"
-    if bytes := find_file(source, ".*_std_men.csv", subdir=os.path.join("Csv"), as_url=False):
+    if bytes := find_file(source, ".*_std_men.csv", subdir="Csv", as_url=False):
         survey_type = (
             pl.scan_csv(bytes, separator=";", schema_overrides={"IDM1": pl.UInt8})
             .select(pl.col("IDM1").first())

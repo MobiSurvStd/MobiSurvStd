@@ -10,7 +10,7 @@ from .utils import guess_survey_type, read_source
 
 def standardize(
     source: str,
-    output_directory: str,
+    output_directory: str | None = None,
     survey_type: str | None = None,
     add_name_subdir: bool = False,
 ) -> SurveyData | None:
@@ -26,6 +26,7 @@ def standardize(
     output_directory
         Path to the directory where the standardized survey should be stored.
         If the directory does not exist, MobiSurvStd will create it (recursively).
+        If None, the standardized survey will not be saved.
     survey_type
         String indicating the type of the survey to be converted.
         If the value is omitted, MobiSurvStd will do its best to guess the survey type.
@@ -86,9 +87,10 @@ def standardize(
         source_name = source.filename if isinstance(source, ZipFile) else source
         logger.error(f"Failed to read survey from `{source_name}`")
         return None
-    if add_name_subdir:
-        output_directory = os.path.join(output_directory, survey_data.metadata["name"])
-    survey_data.save(output_directory)
+    if output_directory is not None:
+        if add_name_subdir:
+            output_directory = os.path.join(output_directory, survey_data.metadata["name"])
+        survey_data.save(output_directory)
     # survey_data = survey_data.clean()
     return survey_data
 

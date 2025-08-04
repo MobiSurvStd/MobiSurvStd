@@ -42,6 +42,9 @@ def clean(data):
         )
     assert (
         data.trips["travel_time"]
-        .eq_missing(data.trips["arrival_time"] - data.trips["departure_time"])
+        .cast(pl.Int32)
+        .eq_missing(
+            data.trips["arrival_time"].cast(pl.Int32) - data.trips["departure_time"].cast(pl.Int32)
+        )
         .all()
     ), "`travel_time` is not equal to `arrival_time - departure_time`"

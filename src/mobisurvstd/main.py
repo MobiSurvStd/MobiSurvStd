@@ -97,7 +97,7 @@ def standardize(
         if add_name_subdir:
             output_directory = os.path.join(output_directory, survey_data.metadata["name"])
         survey_data.save(output_directory)
-    # survey_data = survey_data.clean()
+    survey_data.clean()
     return survey_data
 
 

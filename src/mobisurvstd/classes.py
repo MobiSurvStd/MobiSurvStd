@@ -54,19 +54,7 @@ class SurveyData:
         )
 
     def clean(self):
-        data = clean(
-            households=self.households,
-            cars=self.cars,
-            motorcycles=self.motorcycles,
-            persons=self.persons,
-            trips=self.trips,
-            legs=self.legs,
-            special_locations=self.special_locations,
-            detailed_zones=self.detailed_zones,
-            draw_zones=self.draw_zones,
-        )
-        data["metadata"] = self.metadata
-        return self.__class__.from_dict(data)
+        clean(self)
 
     def save(self, output_directory: str):
         """Saves the MobiSurvStd survey to the given directory."""

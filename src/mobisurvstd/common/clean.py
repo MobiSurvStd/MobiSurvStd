@@ -222,7 +222,8 @@ def count_nb_trips(persons: pl.LazyFrame, trips: pl.LazyFrame):
         persons = persons.with_columns(
             traveled_during_surveyed_day=pl.when(pl.col("nb_trips") > 0)
             .then(pl.lit("yes"))
-            .otherwise(pl.lit("no"))
+            .when("is_surveyed")
+            .then(pl.lit("no"))
         )
     return persons
 

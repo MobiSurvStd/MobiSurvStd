@@ -534,5 +534,14 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         .when(pl.col("ETUDIE").eq(1).and_(pl.col("SITUA").ne(2)))
         .then(pl.lit("education")),
     )
+    lf = lf.with_columns(
+        # Only specify the education-level for non-students.
+        education_level=pl.when(
+            pl.col("detailed_professional_occupation").str.starts_with("student").not_()
+        ).then("education_level"),
+        detailed_education_level=pl.when(
+            pl.col("detailed_professional_occupation").str.starts_with("student").not_()
+        ).then("detailed_education_level"),
+    )
     lf = clean(lf)
     return lf

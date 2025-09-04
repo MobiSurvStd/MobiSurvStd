@@ -196,13 +196,17 @@ PARKING_TYPE_MAP = {
 def scan_legs(filename: str):
     # We use the inefficient `read_csv().lazy()` because we need to use `encoding="latin1"`, which
     # does not exist with `scan_csv()`.
-    lf = pl.read_csv(
-        filename,
-        separator=";",
-        encoding="latin1",
-        schema_overrides=SCHEMA,
-        null_values=["-1"],
-    ).lazy()
+    lf = (
+        pl.read_csv(
+            filename,
+            separator=";",
+            encoding="latin1",
+            schema_overrides=SCHEMA,
+            null_values=["-1"],
+        )
+        .lazy()
+        .sort("IDCEREMA", "NP", "ND")
+    )
     return lf
 
 
@@ -229,8 +233,6 @@ def standardize_legs(
             "SORLNG": "end_lng",
             "SORLAT": "end_lat",
             "TPORTEE": "leg_euclidean_distance_km",
-            "NBPV_M": "nb_household_members_in_vehicle",
-            "NBPV_A": "nb_non_household_members_in_vehicle",
         }
     )
     lf = lf.with_columns(
@@ -245,12 +247,10 @@ def standardize_legs(
         motorcycle_index=pl.col("U2RM").replace_strict(
             VEHICLE_INDEX_MAP, return_dtype=pl.UInt8, default=None
         ),
-        # The value of NBPV_A can be null when NBPV = NBPV_M. We set it to 0 in this case.
-        nb_non_household_members_in_vehicle=pl.when(
-            pl.col("nb_household_members_in_vehicle").is_not_null()
-        )
-        .then(pl.col("nb_non_household_members_in_vehicle").fill_null(0))
-        .otherwise(None),
+        # There is no NULL values for columns NBPV, NBPV_M, NBPV_A: 0 is used instead.
+        nb_persons_in_vehicle=pl.when(pl.col("NBPV") > 0).then("NBPV"),
+        nb_household_members_in_vehicle=pl.when(pl.col("NBPV") > 0).then("NBPV_M"),
+        nb_non_household_members_in_vehicle=pl.when(pl.col("NBPV") > 0).then("NBPV_A"),
         in_vehicle_person_index=pl.col("LISTE_PV")
         .str.replace_all(".", ",", literal=True)
         .str.split(",")
@@ -269,11 +269,23 @@ def standardize_legs(
         parking_type=pl.when(pl.col("PSTAT_CVP").eq(0.0), pl.col("parking_type").eq("free"))
         .then(pl.lit("free"))
         .otherwise("parking_type"),
-        # In some cases, there are more person listed to be in the vehicle (variable LISTE_PV) than
-        # the reported number of persons in the car (NBPV, NBPV_M, NBPV_A).
-        nb_household_members_in_vehicle=pl.max_horizontal(
-            "nb_household_members_in_vehicle", pl.col("in_vehicle_person_index").list.len()
-        ),
+        # In some cases, NBPV > NBPV_M + NBPV_A.
+        # In such cases, we set `nb_household_members_in_vehicle` and
+        # `nb_non_household_members_in_vehicle` to null.
+        nb_household_members_in_vehicle=pl.when(
+            pl.col("nb_persons_in_vehicle")
+            > pl.col("nb_household_members_in_vehicle")
+            + pl.col("nb_non_household_members_in_vehicle")
+        )
+        .then(None)
+        .otherwise("nb_household_members_in_vehicle"),
+        nb_non_household_members_in_vehicle=pl.when(
+            pl.col("nb_persons_in_vehicle")
+            > pl.col("nb_household_members_in_vehicle")
+            + pl.col("nb_non_household_members_in_vehicle")
+        )
+        .then(None)
+        .otherwise("nb_non_household_members_in_vehicle"),
     )
     # Add car id.
     lf = lf.join(
@@ -300,7 +312,7 @@ def standardize_legs(
             coalesce=True,
         )
         # Group by leg_id to end up again with one row per leg.
-        .group_by("original_leg_id")
+        .group_by("original_leg_id", maintain_order=True)
         .agg(
             # Take the first value for all columns except `in_vehicle_person_id` (all values are
             # equal so taking the first one is good).
@@ -311,6 +323,18 @@ def standardize_legs(
             in_vehicle_person_ids=pl.col("in_vehicle_person_id").filter(
                 pl.col("in_vehicle_person_index").list.contains(pl.col("person_index"))
             ),
+        )
+        .with_columns(
+            in_vehicle_person_ids=pl.when(pl.col("in_vehicle_person_ids").list.len() == 0)
+            .then(None)
+            # In some cases, there are less persons in `in_vehicle_person_ids` than
+            # `nb_household_members_in_vehicle`.
+            .when(
+                pl.col("in_vehicle_person_ids").list.len()
+                != pl.col("nb_household_members_in_vehicle")
+            )
+            .then(None)
+            .otherwise("in_vehicle_person_ids")
         )
     )
     lf = clean(lf)

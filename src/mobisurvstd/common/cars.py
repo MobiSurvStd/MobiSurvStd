@@ -5,9 +5,12 @@ from mobisurvstd.schema import CAR_SCHEMA
 from . import DEBUG
 
 
-def clean(lf: pl.LazyFrame):
+def clean(lf: pl.LazyFrame, extra_cols: list[str] | None = None):
     existing_cols = lf.collect_schema().names()
-    lf = lf.sort("original_car_id")
+    columns = [variable.name for variable in CAR_SCHEMA if variable.name in existing_cols]
+    if extra_cols is not None:
+        columns.extend(extra_cols)
+    lf = lf.select(columns).sort("original_car_id").collect().lazy()
     lf = indexing(lf, existing_cols)
     lf = add_fuel_type_group(lf, existing_cols)
     lf = add_mileage_bounds(lf, existing_cols)
@@ -16,19 +19,15 @@ def clean(lf: pl.LazyFrame):
         # Try to collect the schema to check if it is valid.
         lf.collect_schema()
         lf.collect()
-    return lf
+    return lf.collect().lazy()
 
 
 def indexing(lf: pl.LazyFrame, existing_cols: list[str]):
     if "car_id" not in existing_cols:
-        lf = lf.with_columns(car_id=pl.int_range(1, pl.len() + 1, dtype=CAR_SCHEMA["car_id"]))
+        lf = lf.with_columns(car_id=pl.int_range(1, pl.len() + 1))
         existing_cols.append("car_id")
     if "car_index" not in existing_cols:
-        lf = lf.with_columns(
-            car_index=pl.int_range(1, pl.len() + 1, dtype=CAR_SCHEMA["car_index"]).over(
-                "household_id"
-            )
-        )
+        lf = lf.with_columns(car_index=pl.int_range(1, pl.len() + 1).over("household_id"))
         existing_cols.append("car_index")
     return lf
 

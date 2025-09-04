@@ -172,7 +172,7 @@ def scan_cars(filename: str):
         encoding="utf8-lossy",
         schema_overrides=SCHEMA,
         null_values=".",
-    )
+    ).sort("IDENT_MEN", "IDENT_NUMVEH")
     return lf
 
 
@@ -185,26 +185,24 @@ def standardize_cars(filename: str, households: pl.LazyFrame):
         how="left",
         coalesce=True,
     )
-    lf = lf.rename(
-        {"NUM_VEH": "car_index", "ANNEE_1mec": "year", "puis_fisc_fin": "tax_horsepower"}
-    )
+    lf = lf.rename({"ANNEE_1mec": "year", "puis_fisc_fin": "tax_horsepower"})
     lf = lf.with_columns(
-        original_car_id=pl.struct("IDENT_NUMVEH"),
+        original_car_id=pl.struct("IDENT_MEN", "IDENT_NUMVEH"),
         fuel_type=pl.col("energie_agrege").replace_strict(FUEL_TYPE_MAP),
         total_mileage=pl.col("KVKMV").round(),
-        total_mileage_lower_bound=pl.col("KVKMV").fill_null(
-            pl.col("KVKMVT").replace_strict(TOT_MILEAGE_LB_MAP, default=None)
-        ),
-        total_mileage_upper_bound=pl.col("KVKMV").fill_null(
-            pl.col("KVKMVT").replace_strict(TOT_MILEAGE_UB_MAP, default=None)
-        ),
+        total_mileage_lower_bound=pl.col("KVKMV")
+        .round()
+        .fill_null(pl.col("KVKMVT").replace_strict(TOT_MILEAGE_LB_MAP, default=None)),
+        total_mileage_upper_bound=pl.col("KVKMV")
+        .round()
+        .fill_null(pl.col("KVKMVT").replace_strict(TOT_MILEAGE_UB_MAP, default=None)),
         annual_mileage=pl.col("KVKM1ANV").round(),
-        annual_mileage_lower_bound=pl.col("KVKM1ANV").fill_null(
-            pl.col("KVKM1ANVT").replace_strict(AN_MILEAGE_LB_MAP, default=None)
-        ),
-        annual_mileage_upper_bound=pl.col("KVKM1ANV").fill_null(
-            pl.col("KVKM1ANVT").replace_strict(AN_MILEAGE_UB_MAP, default=None)
-        ),
+        annual_mileage_lower_bound=pl.col("KVKM1ANV")
+        .round()
+        .fill_null(pl.col("KVKM1ANVT").replace_strict(AN_MILEAGE_LB_MAP, default=None)),
+        annual_mileage_upper_bound=pl.col("KVKM1ANV")
+        .round()
+        .fill_null(pl.col("KVKM1ANVT").replace_strict(AN_MILEAGE_UB_MAP, default=None)),
         parking_location=pl.col("KVGARENUIT").replace_strict(PARKING_LOCATION_MAP),
         parking_type=pl.col("KVGARENUIT").replace_strict(PARKING_TYPE_MAP),
     )

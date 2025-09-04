@@ -140,8 +140,8 @@ Upper bound for the estimated annual mileage of the motorcycle, in kilometers.
 
 - **Type:** UInt32
 - **Guarantees:**
-  - The value is not small than `annual_mileage_lower_bound`.
-  - The value is not larger than `annual_mileage`.
+  - The value is not smaller than `annual_mileage_lower_bound`.
+  - The value is not smaller than `annual_mileage`.
 
 ## Parking
 

@@ -10,6 +10,7 @@ from mobisurvstd.schema import (
     CAR_SCHEMA,
     HOUSEHOLD_SCHEMA,
     LEG_SCHEMA,
+    MODE_GROUPS,
     MOTORCYCLE_SCHEMA,
     PERSON_SCHEMA,
     TRIP_SCHEMA,
@@ -54,10 +55,10 @@ def clean(
         short_name = name[:-1]
         existing_columns = lf.collect_schema().names()
         columns = [
-            cast_column(col, dtype)
-            if col in existing_columns
-            else pl.lit(None, dtype=dtype).alias(col)
-            for col, dtype in schema.items()
+            cast_column(variable.name, variable.dtype)
+            if variable.name in existing_columns
+            else pl.lit(None, dtype=variable.dtype).alias(variable.name)
+            for variable in schema
         ]
         data[name] = lf.select(columns).sort(f"{short_name}_id").collect()
     if special_locations is not None:
@@ -228,35 +229,50 @@ def count_nb_trips(persons: pl.LazyFrame, trips: pl.LazyFrame):
 
 def add_worked_during_surveyed_day(persons: pl.LazyFrame, trips: pl.LazyFrame):
     persons_cols = persons.collect_schema().names()
-    persons = persons.join(
-        trips.group_by("person_id").agg(
-            has_work_activity=pl.col("destination_purpose")
-            .is_in(("work:declared", "work:secondary", "work:other", "work:professional_tour"))
-            .any(),
-            has_telework_activity=pl.col("destination_purpose").eq("work:telework").any(),
-        ),
-        on="person_id",
-        how="left",
-        coalesce=True,
-    )
+    # Fill null values of `traveled_during_surveyed_day` (when `is_surveyed` is True) according
+    # to the existence of trips.
+    if "traveled_during_surveyed_day" not in persons_cols:
+        persons = persons.with_columns(traveled_during_surveyed_day=pl.lit(None))
     persons = persons.with_columns(
-        worked_during_surveyed_day=pl.when("has_work_activity")
-        .then(pl.lit("yes:outside"))
-        .when(
-            "work_only_at_home" if "work_only_at_home" in persons_cols else False,
-            "has_telework_activity",
+        traveled_during_surveyed_day=pl.col("traveled_during_surveyed_day").fill_null(
+            pl.when(pl.col("nb_trips") > 0)
+            .then(pl.lit("yes"))
+            .when("is_surveyed")
+            .then(pl.lit("no"))
         )
-        .then(pl.lit("yes:home:usual"))
-        .when(
-            pl.col("work_only_at_home").not_() if "work_only_at_home" in persons_cols else False,
-            "has_telework_activity",
-        )
-        .then(pl.lit("yes:home:telework"))
-        .when("work_only_at_home" not in persons_cols, "has_telework_activity")
-        .then(pl.lit("yes:home:other"))
-        .when("is_surveyed", pl.col("professional_occupation").eq("worker"))
-        .then(pl.lit("no:unspecified"))
     )
+    if "worked_during_surveyed_day" not in persons_cols:
+        persons = persons.join(
+            trips.group_by("person_id").agg(
+                has_work_activity=pl.col("destination_purpose")
+                .is_in(("work:declared", "work:secondary", "work:other", "work:professional_tour"))
+                .any(),
+                has_telework_activity=pl.col("destination_purpose").eq("work:telework").any(),
+            ),
+            on="person_id",
+            how="left",
+            coalesce=True,
+        )
+        persons = persons.with_columns(
+            worked_during_surveyed_day=pl.when("has_work_activity")
+            .then(pl.lit("yes:outside"))
+            .when(
+                "work_only_at_home" if "work_only_at_home" in persons_cols else False,
+                "has_telework_activity",
+            )
+            .then(pl.lit("yes:home:usual"))
+            .when(
+                pl.col("work_only_at_home").not_()
+                if "work_only_at_home" in persons_cols
+                else False,
+                "has_telework_activity",
+            )
+            .then(pl.lit("yes:home:telework"))
+            .when("work_only_at_home" not in persons_cols, "has_telework_activity")
+            .then(pl.lit("yes:home:other"))
+            .when("is_surveyed", pl.col("professional_occupation").eq("worker"))
+            .then(pl.lit("no:unspecified"))
+        )
     return persons
 
 
@@ -271,7 +287,7 @@ def count_nb_legs(trips: pl.LazyFrame, legs: pl.LazyFrame):
         agg_cols.extend(
             [
                 pl.col("mode_group").eq(mode_group).sum().alias(f"nb_legs_{mode_group}")
-                for mode_group in LEG_SCHEMA["mode_group"].categories
+                for mode_group in MODE_GROUPS
             ]
         )
     leg_counts = legs.group_by("trip_id").agg(agg_cols)

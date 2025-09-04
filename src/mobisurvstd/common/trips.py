@@ -1,11 +1,10 @@
 import polars as pl
 
-from mobisurvstd.common.modes import MODE_TO_GROUP
 from mobisurvstd.common.zones import add_lng_lat_columns
 from mobisurvstd.resources.admin_express import find_insee
 from mobisurvstd.resources.insee_data import add_insee_data
 from mobisurvstd.resources.nuts import add_nuts_data
-from mobisurvstd.schema import TRIP_SCHEMA
+from mobisurvstd.schema import MODE_GROUPS, MODE_TO_GROUP, TRIP_SCHEMA
 
 from . import DEBUG
 
@@ -19,7 +18,8 @@ def clean(
     detailed_zones: pl.DataFrame | None = None,
 ):
     existing_cols = lf.collect_schema().names()
-    lf = lf.sort("original_trip_id")
+    columns = [variable.name for variable in TRIP_SCHEMA if variable.name in existing_cols]
+    lf = lf.select(columns).collect().lazy()
     lf = add_indexing(lf, existing_cols)
     lf = add_purpose_groups(lf, existing_cols)
     lf = add_home_sequence_index(lf)
@@ -36,20 +36,16 @@ def clean(
         # Try to collect the schema to check if it is valid.
         lf.collect_schema()
         lf.collect()
-    return lf
+    return lf.collect().lazy()
 
 
 def add_indexing(lf: pl.LazyFrame, existing_cols: list[str]):
     """Add columns `trip_id`, `trip_index`, `first_trip`, `last_trip` to a trip LazyFrame."""
     if "trip_id" not in existing_cols:
-        lf = lf.with_columns(trip_id=pl.int_range(1, pl.len() + 1, dtype=TRIP_SCHEMA["trip_id"]))
+        lf = lf.with_columns(trip_id=pl.int_range(1, pl.len() + 1))
         existing_cols.append("trip_id")
     if "trip_index" not in existing_cols:
-        lf = lf.with_columns(
-            trip_index=pl.int_range(1, pl.len() + 1, dtype=TRIP_SCHEMA["trip_index"]).over(
-                "person_id"
-            )
-        )
+        lf = lf.with_columns(trip_index=pl.int_range(1, pl.len() + 1).over("person_id"))
         existing_cols.append("trip_index")
     if "first_trip" not in existing_cols:
         lf = lf.with_columns(first_trip=pl.col("trip_index").eq(1))
@@ -68,11 +64,19 @@ def add_durations(lf: pl.LazyFrame, existing_cols: list[str]):
     """
     if "departure_time" in existing_cols and "arrival_time" in existing_cols:
         lf = lf.with_columns(
-            travel_time=pl.col("arrival_time") - pl.col("departure_time"),
-            origin_activity_duration=pl.col("departure_time")
-            - pl.col("arrival_time").shift(1).over("person_id"),
-            destination_activity_duration=pl.col("departure_time").shift(-1).over("person_id")
-            - pl.col("arrival_time"),
+            prev_arrival_time=pl.col("arrival_time").shift(1).over("person_id"),
+            next_departure_time=pl.col("departure_time").shift(-1).over("person_id"),
+        )
+        lf = lf.with_columns(
+            travel_time=pl.when(pl.col("arrival_time") >= pl.col("departure_time")).then(
+                pl.col("arrival_time") - pl.col("departure_time")
+            ),
+            origin_activity_duration=pl.when(
+                pl.col("departure_time") >= pl.col("prev_arrival_time")
+            ).then(pl.col("departure_time") - pl.col("prev_arrival_time")),
+            destination_activity_duration=pl.when(
+                pl.col("next_departure_time") >= pl.col("arrival_time")
+            ).then(pl.col("next_departure_time") - pl.col("arrival_time")),
         )
     return lf
 
@@ -203,7 +207,7 @@ def add_intermodality_column(lf: pl.LazyFrame):
     lf = lf.with_columns(
         intermodality=sum(
             pl.col(f"nb_legs_{mode_group}") > 0
-            for mode_group in TRIP_SCHEMA["main_mode_group"].categories
+            for mode_group in MODE_GROUPS
             if mode_group != "walking"
         )
         >= 2

@@ -93,7 +93,7 @@ def scan_motorcycles(filename: str):
         encoding="utf8-lossy",
         schema_overrides=SCHEMA,
         null_values=".",
-    )
+    ).sort("IDENT_MEN", "IDENT_NUMVEH")
     return lf
 
 
@@ -106,9 +106,9 @@ def standardize_motorcycles(filename: str, households: pl.LazyFrame):
         how="left",
         coalesce=True,
     )
-    lf = lf.rename({"NUM_VEH": "motorcycle_index", "ANNEE_1mec": "year"})
+    lf = lf.rename({"ANNEE_1mec": "year"})
     lf = lf.with_columns(
-        original_motorcycle_id=pl.struct("IDENT_NUMVEH"),
+        original_motorcycle_id=pl.struct("IDENT_MEN", "IDENT_NUMVEH"),
         type=pl.col("KVAVCAT2R").replace_strict(TYPE_MAP),
         cm3_lower_bound=pl.col("KVCYLIND2R").round(),
         cm3_upper_bound=pl.col("KVCYLIND2R").round(),

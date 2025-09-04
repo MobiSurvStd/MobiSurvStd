@@ -8,7 +8,7 @@ import geopandas as gpd
 import polars as pl
 from loguru import logger
 
-from .clean import clean
+from .validation import validate
 
 
 class SurveyData:
@@ -53,8 +53,8 @@ class SurveyData:
             data["metadata"],
         )
 
-    def clean(self):
-        clean(self)
+    def validate(self):
+        return validate(self)
 
     def save(self, output_directory: str):
         """Saves the MobiSurvStd survey to the given directory."""

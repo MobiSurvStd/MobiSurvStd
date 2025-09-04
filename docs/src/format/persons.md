@@ -171,6 +171,8 @@ in the surveys without having too many modalities and without losing too much in
     further specification)
   - `"higher:bac+3_or_+4"`: the person's highest diploma is at level BAC+3 or BAC+4
   - `"higher:at_least_bac+5"`: the person's highest diploma is at least BAC+5
+- **Guarantees:**
+  - The value is null if `education_level` is null.
 
 ## Occupancy
 
@@ -187,8 +189,6 @@ details.
   - `"worker"`: the person has a full-time or part-time job
   - `"student"`: the person is a student
   - `"other"`: other status
-- **Guarantees:**
-  - The value is `"student"` *if and only if* `education_level` is `"in_school"`
 
 ### `detailed_professional_occupation`
 
@@ -241,6 +241,7 @@ The `detailed_professional_occupation` variable should be used instead if you ne
 status.
 Note that unemployed and retired people might still be assigned to the group corresponding to their
 previous jobs.
+Students can be assigned a PCS only if they have an apprenticeship contract.
 
 - **Modalities:**
   - `"agriculteurs_exploitants"`
@@ -252,7 +253,8 @@ previous jobs.
   - `"retraités"`
   - `"autres_personnes_sans_activité_professionnelle"`
 - **Guarantees:**
-  - If the `professional_occupation` is `"student"`, then `pcs_group` is null.
+  - If the `professional_occupation` is `"student"` and `detailed_professional_occupation` is not
+    `"student:apprenticeship"`, then `pcs_group` is null.
 
 ### `pcs_group_code`
 
@@ -277,7 +279,7 @@ This variable is used when the codes from the survey follow the
 
 - **Type:** UInt8
 - **Guarantees:**
-  - Possible values: 10, 21, 22, 23, 31, 33, 34, 35, 37, 38, 42, 43, 44, 45, 46, 47, 47, 52, 53,
+  - Possible values: 10, 21, 22, 23, 31, 33, 34, 35, 37, 38, 42, 43, 44, 45, 46, 47, 48, 52, 53,
     54, 55, 56, 62, 63, 64, 65, 67, 68, 69.
   - If `pcs_group_code` is null, then the value is null.
   - If the value is not null, then its first digit is equal to the value of `pcs_group_code`.
@@ -543,7 +545,7 @@ Group indicating the current education level for students.
   - If `professional_occupation` is *not* `"student"`, then the value is null.
   - The values are consistent with `detailed_professional_occupation` (`"student:higher"` implies
     `"supérieur"`; `"student:primary_or_secondary"` implies `"primaire"`, `"collège"`, or `"lycée"`;
-    `"student:apprenticeship"` implies `"lycée"` or `"supérieur"`).
+    `"student:apprenticeship"` implies `"collège"`, `"lycée"` or `"supérieur"`).
 
 ### `student_category`
 

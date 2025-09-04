@@ -229,7 +229,7 @@ def scan_trips(filename: str):
         encoding="utf8-lossy",
         schema_overrides=SCHEMA,
         null_values=["NA", "Z", "ZZ", "ZZZ", ".", ""],
-    )
+    ).sort("IDENT_DEP")
     return lf
 
 
@@ -376,6 +376,7 @@ def standardize_legs(filename: str, trips: pl.LazyFrame):
         original_leg_id=pl.struct("IDENT_DEP", "leg_index"),
         mode=pl.col("mode").replace_strict(MODE_MAP),
     )
+    lf = lf.sort("original_leg_id")
     lf = clean_legs(lf)
     return lf
 

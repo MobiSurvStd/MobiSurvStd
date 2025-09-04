@@ -123,17 +123,6 @@ DETAILED_PROFESSIONAL_OCCUPATION_MAP = {
     0: "other:unspecified",  # Inactif, pensionné
 }
 
-PCS_GROUP_MAP = {
-    1: "agriculteurs_exploitants",  # Agriculteurs exploitants
-    2: "artisans_commerçants_chefs_d'entreprise",  # Artisans, commerçants et chefs d'entreprise
-    3: "cadres_et_professions_intellectuelles_supérieures",  # Cadres et professions intellectuelles supérieures
-    4: "professions_intermédiaires",  # Professions Intermédiaires
-    5: "employés",  # Employés
-    6: "ouvriers",  # Ouvriers
-    7: "retraités",  # Retraités
-    8: "autres_personnes_sans_activité_professionnelle",  # Autres personnes sans activité professionelle
-}
-
 WORKPLACE_SINGULARITY_MAP = {
     1: "unique:outside",  # Oui, j'ai un seul lieu de travail / d'études habituel en dehors du domicile
     2: "unique:home",  # Oui, j'ai un seul lieu de travail / d'études habituel à domicile
@@ -229,7 +218,6 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         }
     )
     lf = lf.with_columns(
-        person_index="NP",
         original_person_id=pl.struct("NQUEST", "NP"),
         reference_person_link=pl.col("LIENPREF").replace_strict(REFERENCE_PERSON_LINK_MAP),
         resident_type=pl.col("TYPEP").replace_strict(RESIDENT_TYPE_MAP),
@@ -301,7 +289,24 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
     lf = lf.with_columns(
         # `sample_weight_surveyed` can be read from `sample_weight_all` because the only
         # non-surveyed persons are people below 5 (except for 2 other persons mentionned above).
-        sample_weight_surveyed=pl.when("is_surveyed").then("sample_weight_all")
+        sample_weight_surveyed=pl.when("is_surveyed").then("sample_weight_all"),
+        # Set pcs_group_code to NULL for students.
+        pcs_group_code=pl.when(
+            pl.col("detailed_professional_occupation").str.starts_with("student"),
+            pl.col("detailed_professional_occupation").ne("student:apprenticeship"),
+        )
+        .then(None)
+        .otherwise("pcs_group_code"),
+    )
+    lf = lf.with_columns(
+        # For retired, set the pcs_group_code to the code matching pcs_category_code2003 (instead of
+        # 7).
+        pcs_group_code=pl.when(
+            pl.col("detailed_professional_occupation").eq("other:retired"),
+            pl.col("pcs_category_code2003").is_not_null(),
+        )
+        .then(pl.col("pcs_category_code2003") // 10)
+        .otherwise("pcs_group_code")
     )
     lf = clean(lf)
     return lf

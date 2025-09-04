@@ -1,34 +1,33 @@
 import polars as pl
+from loguru import logger
 
 from mobisurvstd.common.trips import clean
 
-from .common import MODE_MAP
-
 SCHEMA = {
     "DP1": pl.UInt8,  # Code fichier = 3 (déplacement)
-    "DMET": pl.UInt8,  # Méthode d'enquête du ménage
+    "DMET": pl.UInt8,  # Méthode d'enquête du ménage (EMC2 only)
     "IDD3": pl.UInt16,  # Année de fin d'enquête
     "IDD4": pl.String,  # Code Insee ville centre
-    "ZFD": pl.UInt32,  # Zone fine de résidence
+    "ZFD": pl.String,  # Zone fine de résidence
     "ECH": pl.UInt32,  # Numéro d’échantillon
     "PER": pl.UInt8,  # Numéro de personne
     "NDEP": pl.UInt8,  # Numéro de déplacement
     "GD1": pl.String,  # Insee Zone fine du lieu de résidence de la personne concernée par le déplacement
-    "STD": pl.UInt32,  # Secteur de tirage dans l’enquête d’origine  (résidence)
+    "STD": pl.String,  # Secteur de tirage dans l’enquête d’origine  (résidence)
     "D2A": pl.UInt8,  # Motif Origine du déplacement
     "D2B": pl.UInt8,  # Motif Origine de la personne accompagnée
-    "D3": pl.UInt32,  # Zone fine Origine du déplacement
+    "D3": pl.String,  # Zone fine Origine du déplacement
     "GDO1": pl.String,  # Insee Zone fine Origine du déplacement
-    "STDO": pl.UInt32,  # Secteur de tirage dans l’enquête d’origine (origine du déplacement)
-    "D4": pl.UInt16,  # Heure de départ du déplacement
+    "STDO": pl.String,  # Secteur de tirage dans l’enquête d’origine (origine du déplacement)
+    "D4": pl.Int32,  # Heure de départ du déplacement
     "D5A": pl.UInt8,  # Motif Destination du déplacement
     "D5B": pl.UInt8,  # Motif Destination de la personne accompagnée
     "D6": pl.UInt8,  # Nombre d’arrêts sur la tournée
-    "D7": pl.UInt32,  # Zone fine Destination du déplacement
+    "D7": pl.String,  # Zone fine Destination du déplacement
     "GDD1": pl.String,  # Insee Zone fine Destination du déplacement
-    "STDD": pl.UInt32,  # Secteur de tirage dans l’enquête d’origine (destination du déplacement)
-    "D8": pl.UInt16,  # Heure d'arrivée du déplacement
-    "D9": pl.UInt16,  # Durée du déplacement
+    "STDD": pl.String,  # Secteur de tirage dans l’enquête d’origine (destination du déplacement)
+    "D8": pl.Int32,  # Heure d'arrivée du déplacement
+    "D9": pl.Int32,  # Durée du déplacement
     "D10": pl.UInt8,  # Nombre de trajets (en modes mécanisés)
     "D11": pl.Float64,  # Longueur à vol d'oiseau
     "D12": pl.Float64,  # Distance parcourue
@@ -106,58 +105,87 @@ TRIP_PERIMETER_MAP = {
 }
 
 
-def scan_trips(source: str | bytes):
-    lf = pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["aa"])
-    return lf
+def scan_trips_impl(source: str | bytes):
+    return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["aa", "aaaaa"])
 
 
-def standardize_trips(
-    source: str | bytes,
-    persons: pl.LazyFrame,
-    special_locations_coords: pl.DataFrame | None,
-    detailed_zones_coords: pl.DataFrame | None,
-):
-    lf = scan_trips(source)
-    # Add household_id, person_id, and trip date.
-    lf = lf.with_columns(
-        original_person_id=pl.struct(PMET="DMET", ECH="ECH", STP="STD", PER="PER")
-    ).join(
-        persons.select("original_person_id", "person_id", "household_id", "trip_date"),
-        on="original_person_id",
-        how="left",
-        coalesce=True,
-    )
-    lf = lf.rename(
-        {
-            "D3": "origin_detailed_zone",
-            "GDO1": "origin_insee",
-            "STDO": "origin_draw_zone",
-            "D6": "nb_tour_stops",
-            "D7": "destination_detailed_zone",
-            "GDD1": "destination_insee",
-            "STDD": "destination_draw_zone",
-        }
-    )
-    lf = lf.with_columns(
-        original_trip_id=pl.struct("DMET", "ECH", "STD", "PER", "NDEP"),
-        origin_purpose=pl.col("D2A").replace_strict(PURPOSE_MAP),
-        origin_escort_purpose=pl.col("D2B").replace_strict(PURPOSE_MAP),
-        origin_shop_type=pl.col("D2A").replace(SHOP_TYPE_MAP, default=None),
-        departure_time=60 * (pl.col("D4") // 100) + pl.col("D4") % 100,
-        destination_purpose=pl.col("D5A").replace_strict(PURPOSE_MAP),
-        destination_escort_purpose=pl.col("D5B").replace_strict(PURPOSE_MAP),
-        destination_shop_type=pl.col("D5A").replace(SHOP_TYPE_MAP, default=None),
-        arrival_time=60 * (pl.col("D8") // 100) + pl.col("D8") % 100,
-        trip_euclidean_distance_km=pl.col("D11") / 1e3,
-        trip_travel_distance_km=pl.col("D12") / 1e3,
-        main_mode=pl.col("MODP").replace_strict(MODE_MAP),
-        trip_perimeter=pl.col("TYPD").replace_strict(TRIP_PERIMETER_MAP),
-    )
-    year = int(lf.select(pl.col("trip_date").dt.year().mean().round()).collect().item())
-    lf = clean(
-        lf,
-        year=year,
-        special_locations=special_locations_coords,
-        detailed_zones=detailed_zones_coords,
-    )
-    return lf
+class TripsReader:
+    def scan_trips(self):
+        lfs_iter = map(scan_trips_impl, self.trips_filenames())
+        lf = pl.concat(lfs_iter, how="vertical")
+        return lf
+
+    def standardize_trips(self):
+        lf = self.scan_trips()
+        # Add household_id, person_id, and trip date.
+        lf = lf.with_columns(
+            original_person_id=pl.struct(**self.get_person_index_cols_from_trips())
+        ).join(
+            self.persons.select("original_person_id", "person_id", "household_id", "trip_date"),
+            on="original_person_id",
+            how="left",
+            coalesce=True,
+        )
+        lf = lf.rename(
+            {
+                "D3": "origin_detailed_zone",
+                "GDO1": "origin_insee",
+                "STDO": "origin_draw_zone",
+                "D7": "destination_detailed_zone",
+                "GDD1": "destination_insee",
+                "STDD": "destination_draw_zone",
+                "D6": "nb_tour_stops",
+            }
+        )
+        lf = lf.with_columns(
+            original_trip_id=pl.struct(self.get_trip_index_cols()),
+            origin_purpose=pl.col("D2A").replace_strict(PURPOSE_MAP),
+            origin_escort_purpose=pl.col("D2B").replace_strict(PURPOSE_MAP),
+            origin_shop_type=pl.col("D2A").replace(SHOP_TYPE_MAP, default=None),
+            departure_time=60 * (pl.col("D4") // 100) + pl.col("D4") % 100,
+            destination_purpose=pl.col("D5A").replace_strict(PURPOSE_MAP),
+            destination_escort_purpose=pl.col("D5B").replace_strict(PURPOSE_MAP),
+            destination_shop_type=pl.col("D5A").replace(SHOP_TYPE_MAP, default=None),
+            arrival_time=60 * (pl.col("D8") // 100) + pl.col("D8") % 100,
+            trip_euclidean_distance_km=pl.col("D11") / 1e3,
+            trip_travel_distance_km=pl.col("D12") / 1e3,
+            main_mode=pl.col("MODP").replace_strict(self.get_mode_map()),
+            trip_perimeter=pl.col("TYPD").replace_strict(TRIP_PERIMETER_MAP),
+        )
+        lf = lf.with_columns(
+            # In some cases, the departure and arrival times are switched.
+            departure_time=pl.when(
+                pl.col("D9") == pl.col("departure_time") - pl.col("arrival_time")
+            )
+            .then("arrival_time")
+            .otherwise("departure_time"),
+            arrival_time=pl.when(pl.col("D9") == pl.col("departure_time") - pl.col("arrival_time"))
+            .then("departure_time")
+            .otherwise("arrival_time"),
+            # When destination purpose is 52 (« Faire une promenade, du « lèche-vitrines », prendre
+            # une leçon de conduite. ») and `nb_tour_stops` is defined, then we know that purpose is
+            # « lèche-vitrines » so we can set purpose to "shopping:tour_no_purchase".
+            destination_purpose=pl.when(pl.col("D5A").eq(52), pl.col("nb_tour_stops").is_not_null())
+            .then(pl.lit("shopping:tour_no_purchase"))
+            .otherwise("destination_purpose"),
+            # Special case for Saint-Brieuc 2012: there is no NULL value in the D6 column
+            # (nb_tour_stops). It seems that the column represents either the trip travel time or
+            # the actual number of tour stops. To be safe, we just throw away all the values.
+            nb_tour_stops=pl.when(pl.col("nb_tour_stops").is_not_null().all())
+            .then(pl.lit(None))
+            .otherwise("nb_tour_stops"),
+        )
+        lf = lf.sort("original_trip_id")
+        df = lf.collect()
+        year = round(df["trip_date"].dt.year().mean())
+        # For Besançon 2018, there is one missing person.
+        n = df["person_id"].null_count()
+        if n > 0:
+            logger.warning(f"{n} trips are assigned to an unknown person. They are dropped.")
+            df = df.filter(pl.col("person_id").is_not_null())
+        self.trips = clean(
+            df.lazy(),
+            year=year,
+            special_locations=self.special_locations_coords,
+            detailed_zones=self.detailed_zones_coords,
+        )

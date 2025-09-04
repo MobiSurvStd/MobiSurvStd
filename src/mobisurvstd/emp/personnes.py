@@ -481,6 +481,7 @@ def scan_persons(filename1: str, filename2: str, filename3: str):
             how="left",
             coalesce=False,
         )
+        .sort("ident_men", "ident_ind")
     )
     return lf
 
@@ -494,15 +495,9 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         how="left",
         coalesce=True,
     )
-    lf = lf.rename(
-        {
-            "NOI": "person_index",
-            "AGE": "age",
-            "pond_indC": "sample_weight_surveyed",
-        }
-    )
+    lf = lf.rename({"AGE": "age", "pond_indC": "sample_weight_surveyed"})
     lf = lf.with_columns(
-        original_person_id=pl.struct("IDENT_IND"),
+        original_person_id=pl.struct(IDENT_IND="ident_ind"),
         reference_person_link=pl.col("LIEN_01").replace_strict(REFERENCE_PERSON_LINK_MAP),
         resident_type=pl.col("TYPOLOG").replace_strict(RESIDENT_TYPE_MAP),
         woman=pl.col("SEXE") == 2,

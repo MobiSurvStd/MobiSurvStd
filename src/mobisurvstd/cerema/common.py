@@ -28,6 +28,7 @@ MODE_MAP = {
     61: "taxi",  # Passager taxi.
     62: "VTC",  # Passager VTC
     71: "employer_transport",  # Transport employeur (exclusivement)
+    72: "public_transit:school",  # For Thionville 2012
     81: "truck:driver",  # Conducteur de fourgon, camionnette, camion (pour tournées professionnelles ou déplacements privés).
     82: "truck:passenger",  # Passager de fourgon, camionnette, camion (pour tournées professionnelles ou déplacements privés)..
     91: "water_transport",  # Transport Fluvial ou maritime.
@@ -38,3 +39,16 @@ MODE_MAP = {
     96: "personal_transporter:motorized",  # Petits engins électriques (trottinette, segway, solowheel, etc)
     97: "personal_transporter:unspecified",  # Roller, skate, trottinette électrique ou non (ancien code)
 }
+
+
+# For the EMC2 surveys, categories 17 and 18 have moved to 19 and 20, while 17 and 18 are now
+# representing electric bicycle.
+EMC2_MODE_MAP = MODE_MAP.copy()
+EMC2_MODE_MAP.update(
+    {
+        17: "bicycle:driver:electric",  # Conducteur de vélo Assistance Electrique
+        18: "bicycle:driver:electric:shared",  # Conducteur de vélo Assistance Electrique en Libre Service
+        19: "motorcycle:driver",  # Conducteur de deux ou trois roues motorisés (si pas de détail sur la cylindrée).
+        20: "motorcycle:passenger",  # Passager de deux ou trois roues motorisés (si pas de détail sur la cylindrée)..
+    }
+)

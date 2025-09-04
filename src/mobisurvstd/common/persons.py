@@ -4,7 +4,7 @@ from mobisurvstd.common.zones import add_lng_lat_columns
 from mobisurvstd.resources.admin_express import find_insee
 from mobisurvstd.resources.insee_data import add_insee_data
 from mobisurvstd.resources.nuts import add_nuts_data
-from mobisurvstd.schema import PERSON_SCHEMA
+from mobisurvstd.schema import AGE_CLASS_TO_CODE, PCS_CODES, PERSON_SCHEMA, STUDENT_GROUP_MAP
 
 from . import DEBUG
 
@@ -13,9 +13,13 @@ def clean(
     lf: pl.LazyFrame,
     special_locations: pl.DataFrame | None = None,
     detailed_zones: pl.DataFrame | None = None,
+    extra_cols: list[str] | None = None,
 ):
     existing_cols = lf.collect_schema().names()
-    lf = lf.sort("original_person_id")
+    columns = [variable.name for variable in PERSON_SCHEMA if variable.name in existing_cols]
+    if extra_cols is not None:
+        columns.extend(extra_cols)
+    lf = lf.select(columns).collect().lazy()
     lf = indexing(lf, existing_cols)
     lf = add_age_class(lf, existing_cols)
     lf = add_pcs_group(lf, existing_cols)
@@ -31,21 +35,15 @@ def clean(
         # Try to collect the schema to check if it is valid.
         lf.collect_schema()
         lf.collect()
-    return lf
+    return lf.collect().lazy()
 
 
 def indexing(lf: pl.LazyFrame, existing_cols: list[str]):
     if "person_id" not in existing_cols:
-        lf = lf.with_columns(
-            person_id=pl.int_range(1, pl.len() + 1, dtype=PERSON_SCHEMA["person_id"])
-        )
+        lf = lf.with_columns(person_id=pl.int_range(1, pl.len() + 1))
         existing_cols.append("person_id")
     if "person_index" not in existing_cols:
-        lf = lf.with_columns(
-            person_index=pl.int_range(1, pl.len() + 1, dtype=PERSON_SCHEMA["person_index"]).over(
-                "household_id"
-            )
-        )
+        lf = lf.with_columns(person_index=pl.int_range(1, pl.len() + 1).over("household_id"))
         existing_cols.append("person_index")
     return lf
 
@@ -65,19 +63,7 @@ def age_to_age_class(expr: pl.Expr):
         .when(expr < 75)
         .then(pl.lit("65-74"))
         .otherwise(pl.lit("75+"))
-        .cast(PERSON_SCHEMA["age_class"])
     )
-
-
-AGE_CLASS_TO_CODE = {
-    "17-": 1,
-    "18-24": 2,
-    "25-34": 3,
-    "35-49": 4,
-    "50-64": 5,
-    "65-74": 6,
-    "75+": 7,
-}
 
 
 def add_age_class(lf: pl.LazyFrame, existing_cols: list[str]):
@@ -105,47 +91,11 @@ def add_professional_occupation(lf: pl.LazyFrame, existing_cols: list[str]):
     return lf
 
 
-PCS_CODES = {
-    1: "agriculteurs_exploitants",
-    2: "artisans_commerçants_chefs_d'entreprise",
-    3: "cadres_et_professions_intellectuelles_supérieures",
-    4: "professions_intermédiaires",
-    5: "employés",
-    6: "ouvriers",
-    7: "retraités",
-    8: "autres_personnes_sans_activité_professionnelle",
-}
-
-
 def add_pcs_group(lf: pl.LazyFrame, existing_cols: list[str]):
     if "pcs_group_code" in existing_cols and "pcs_group" not in existing_cols:
         lf = lf.with_columns(pcs_group=pl.col("pcs_group_code").replace_strict(PCS_CODES))
         existing_cols.append("pcs_group")
     return lf
-
-
-STUDENT_GROUP_MAP = {
-    "maternelle": "primaire",
-    "primaire": "primaire",
-    "collège:6e": "collège",
-    "collège:5e": "collège",
-    "collège:4e": "collège",
-    "collège:3e": "collège",
-    "collège:SEGPA": "collège",
-    "lycée:seconde": "lycée",
-    "lycée:première": "lycée",
-    "lycée:terminale": "lycée",
-    "lycée:CAP": "lycée",
-    "supérieur:technique": "supérieur",
-    "supérieur:prépa1": "supérieur",
-    "supérieur:prépa2": "supérieur",
-    "supérieur:BAC+1": "supérieur",
-    "supérieur:BAC+2": "supérieur",
-    "supérieur:BAC+3": "supérieur",
-    "supérieur:BAC+4": "supérieur",
-    "supérieur:BAC+5": "supérieur",
-    "supérieur:BAC+6&+": "supérieur",
-}
 
 
 def add_student_group(lf: pl.LazyFrame, existing_cols: list[str]):

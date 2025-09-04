@@ -1,11 +1,10 @@
 import polars as pl
 
-from mobisurvstd.common.modes import MODE_TO_GROUP
 from mobisurvstd.common.zones import add_lng_lat_columns
 from mobisurvstd.resources.admin_express import find_insee
 from mobisurvstd.resources.insee_data import add_insee_data
 from mobisurvstd.resources.nuts import add_nuts_data
-from mobisurvstd.schema import LEG_SCHEMA
+from mobisurvstd.schema import LEG_SCHEMA, MODE_TO_GROUP
 
 from . import DEBUG
 
@@ -16,7 +15,8 @@ def clean(
     detailed_zones: pl.DataFrame | None = None,
 ):
     existing_cols = lf.collect_schema().names()
-    lf = lf.sort("original_leg_id")
+    columns = [variable.name for variable in LEG_SCHEMA if variable.name in existing_cols]
+    lf = lf.select(columns).collect().lazy()
     lf = add_indexing(lf, existing_cols)
     lf = add_nb_persons_in_vehicle(lf, existing_cols)
     lf = add_mode_groups(lf, existing_cols)
@@ -28,18 +28,16 @@ def clean(
         # Try to collect the schema to check if it is valid.
         lf.collect_schema()
         lf.collect()
-    return lf
+    return lf.collect().lazy()
 
 
 def add_indexing(lf: pl.LazyFrame, existing_cols: list[str]):
     """Add columns `leg_index`, `first_leg`, `last_leg` to a leg LazyFrame."""
     if "leg_id" not in existing_cols:
-        lf = lf.with_columns(leg_id=pl.int_range(1, pl.len() + 1, dtype=LEG_SCHEMA["trip_id"]))
+        lf = lf.with_columns(leg_id=pl.int_range(1, pl.len() + 1))
         existing_cols.append("leg_id")
     if "leg_index" not in existing_cols:
-        lf = lf.with_columns(
-            leg_index=pl.int_range(1, pl.len() + 1, dtype=LEG_SCHEMA["leg_index"]).over("trip_id")
-        )
+        lf = lf.with_columns(leg_index=pl.int_range(1, pl.len() + 1).over("trip_id"))
         existing_cols.append("leg_index")
     if "first_leg" not in existing_cols:
         lf = lf.with_columns(first_leg=pl.col("leg_index").eq(1))

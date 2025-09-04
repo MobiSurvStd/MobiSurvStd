@@ -105,13 +105,17 @@ REVENU_UB_MAP = {
 def scan_households(filename: str):
     # We use the inefficient `read_csv().lazy()` because we need to use `encoding="latin1"`, which
     # does not exist with `scan_csv()`.
-    lf = pl.read_csv(
-        filename,
-        separator=";",
-        encoding="latin1",
-        schema_overrides=SCHEMA,
-        null_values=["-1", "-2"],
-    ).lazy()
+    lf = (
+        pl.read_csv(
+            filename,
+            separator=";",
+            encoding="latin1",
+            schema_overrides=SCHEMA,
+            null_values=["-1", "-2"],
+        )
+        .lazy()
+        .sort("IDCEREMA")
+    )
     return lf
 
 

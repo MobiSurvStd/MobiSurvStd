@@ -207,5 +207,14 @@ def standardize_legs(
         how="left",
         coalesce=True,
     )
+    # In 3 cases, the motorcycle index TYPV is not an existing motorcycle of the household so the
+    # `motorcycle_type` is changed from "household" to "other_household".
+    lf = lf.with_columns(
+        motorcycle_type=pl.when(
+            pl.col("motorcycle_index").is_not_null(), pl.col("motorcycle_id").is_null()
+        )
+        .then(pl.lit("other_household"))
+        .otherwise("motorcycle_type")
+    )
     lf = clean(lf, detailed_zones)
     return lf

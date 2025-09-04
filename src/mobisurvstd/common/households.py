@@ -15,7 +15,8 @@ def clean(
     detailed_zones: pl.DataFrame | None = None,
 ):
     existing_cols = lf.collect_schema().names()
-    lf = lf.sort("original_household_id")
+    columns = [variable.name for variable in HOUSEHOLD_SCHEMA if variable.name in existing_cols]
+    lf = lf.select(columns).collect().lazy()
     lf = indexing(lf)
     lf = add_bicycle_counts(lf, existing_cols)
     lf = add_lng_lat(lf, existing_cols, special_locations, detailed_zones)
@@ -27,13 +28,11 @@ def clean(
         # Try to collect the schema to check if it is valid.
         lf.collect_schema()
         lf.collect()
-    return lf
+    return lf.collect().lazy()
 
 
 def indexing(lf: pl.LazyFrame):
-    lf = lf.with_columns(
-        household_id=pl.int_range(1, pl.len() + 1, dtype=HOUSEHOLD_SCHEMA["household_id"])
-    )
+    lf = lf.with_columns(household_id=pl.int_range(1, pl.len() + 1))
     return lf
 
 

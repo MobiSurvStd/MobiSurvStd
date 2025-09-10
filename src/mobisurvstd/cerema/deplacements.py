@@ -128,10 +128,8 @@ class TripsReader:
         )
         lf = lf.rename(
             {
-                "D3": "origin_detailed_zone",
                 "GDO1": "origin_insee",
                 "STDO": "origin_draw_zone",
-                "D7": "destination_detailed_zone",
                 "GDD1": "destination_insee",
                 "STDD": "destination_draw_zone",
                 "D6": "nb_tour_stops",
@@ -142,6 +140,8 @@ class TripsReader:
             origin_purpose=pl.col("D2A").replace_strict(PURPOSE_MAP),
             origin_escort_purpose=pl.col("D2B").replace_strict(PURPOSE_MAP),
             origin_shop_type=pl.col("D2A").replace(SHOP_TYPE_MAP, default=None),
+            origin_detailed_zone=self.clean_detailed_zone("D3"),
+            destination_detailed_zone=self.clean_detailed_zone("D7"),
             departure_time=60 * (pl.col("D4") // 100) + pl.col("D4") % 100,
             destination_purpose=pl.col("D5A").replace_strict(PURPOSE_MAP),
             destination_escort_purpose=pl.col("D5B").replace_strict(PURPOSE_MAP),

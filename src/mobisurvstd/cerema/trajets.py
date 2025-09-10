@@ -43,7 +43,7 @@ PARKING_LOCATION_MAP = {
     3: "parking_lot:unsheltered",  # Dans un parc de stationnement à ciel ouvert (ou place publique)
     4: "parking_lot:sheltered",  # Dans un parc de stationnement couvert accessible au public
     5: "P+R",  # Dans un parking relais
-    6: "none",  # Aucun : emporté dans le mode suivant
+    6: "stop_only",  # Aucun : emporté dans le mode suivant
     9: "other",  # Autre
 }
 
@@ -265,6 +265,11 @@ class LegsReader:
         # Concatenate the 5 leg types.
         lf = pl.concat((lf1, lf2, lf3, lf4, lf5), how="diagonal")
         lf = lf.sort("trip_id", "tmp_leg_index")
+        # Clean detailed zone ids.
+        lf = lf.with_columns(
+            start_detailed_zone=self.clean_detailed_zone("start_detailed_zone"),
+            end_detailed_zone=self.clean_detailed_zone("end_detailed_zone"),
+        )
         # Add car and motorcycle types.
         lf = lf.with_columns(
             car_type=pl.when(pl.col("mode").str.starts_with("car:")).then(

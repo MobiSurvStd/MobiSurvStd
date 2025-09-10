@@ -74,5 +74,5 @@ MOTORCYCLE_SCHEMA = [
     # Type of location used to park the motorcycle overnight.
     Variable("parking_location", PARKING_LOCATION_ENUM),
     # Type of parking (paid or free) used to park the motorcycle overnight.
-    Variable("parking_type", PARKING_TYPE_ENUM, [Null(when=pl.col("parking_location").is_null())]),
+    Variable("parking_type", PARKING_TYPE_ENUM),
 ]

@@ -1,4 +1,3 @@
-import geopandas as gpd
 import polars as pl
 
 from mobisurvstd.common.legs import clean
@@ -155,7 +154,7 @@ def standardize_legs(
     trips: pl.LazyFrame,
     cars: pl.LazyFrame,
     motorcycles: pl.LazyFrame,
-    detailed_zones: gpd.GeoDataFrame | None,
+    detailed_zones: pl.DataFrame | None,
 ):
     lf = scan_legs(filename)
     # Add household_id, person_id, and trip_id.

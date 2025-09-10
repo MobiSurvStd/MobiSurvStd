@@ -235,7 +235,7 @@ class SurveyDataReader:
             filename = os.path.join(self.directory, "special_locations.geo.parquet")
             if os.path.isfile(filename):
                 logger.debug(f"Reading special locations from `{filename}`")
-                self._special_locations = pl.read_parquet(filename)
+                self._special_locations = gpd.read_parquet(filename)
         return self._special_locations
 
     @property
@@ -244,7 +244,7 @@ class SurveyDataReader:
             filename = os.path.join(self.directory, "detailed_zones.geo.parquet")
             if os.path.isfile(filename):
                 logger.debug(f"Reading detailed zones from `{filename}`")
-                self._detailed_zones = pl.read_parquet(filename)
+                self._detailed_zones = gpd.read_parquet(filename)
         return self._detailed_zones
 
     @property
@@ -253,7 +253,7 @@ class SurveyDataReader:
             filename = os.path.join(self.directory, "draw_zones.geo.parquet")
             if os.path.isfile(filename):
                 logger.debug(f"Reading draw zones from `{filename}`")
-                self._draw_zones = pl.read_parquet(filename)
+                self._draw_zones = gpd.read_parquet(filename)
         return self._draw_zones
 
     def mean_date(self) -> date:

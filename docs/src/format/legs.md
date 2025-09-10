@@ -550,7 +550,6 @@ Location type where the car was parked at the end of the leg.
   - `"parking_lot:unsheltered"`: the car was park in an unsheltered parking lot
   - `"parking_lot:sheltered"`: the car was park in a sheltered parking lot
   - `"P+R"`: the car was park in a Park and Ride (P+R)
-  - `"none"`: TODO
   - `"other"`: other parking location
 - **Guarantees:**
   - If `mode` does not use a personal vehicle (car, motorcycle, bicycle, truck, personal
@@ -567,7 +566,7 @@ Type of parking (paid or free) used to park the car.
   - `"paid_by_other"`: the car was parked in a paid location, someone else paid
   - `"other"`: other types
 - **Guarantees:**
-  - If `parking_location` is `"stop_only"`, `"none"` or null, then the value is null.
+  - If `parking_location` is `"stop_only"`, null, then the value is null.
 
 ### `parking_search_time`
 

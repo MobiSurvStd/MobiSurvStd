@@ -30,7 +30,6 @@ LEG_PARKING_LOCATION_ENUM = pl.Enum(
         "parking_lot:unsheltered",
         "parking_lot:sheltered",
         "P+R",
-        "none",
         "other",
     ]
 )
@@ -179,6 +178,23 @@ LEG_SCHEMA = [
             ),
         ],
     ),
+    # Ids of the person that were in the vehicle.
+    Variable(
+        "in_vehicle_person_ids",
+        pl.List(pl.UInt32),
+        [
+            Null(when=pl.col("mode_group").is_in(("walking", "public_transit"))),
+            ListContains(
+                pl.col("person_id"),
+                alias="the leg' `person_id`",
+                when=pl.col("in_vehicle_person_ids").is_not_null(),
+            ),
+            ListLengthIs(
+                pl.col("nb_household_members_in_vehicle"),
+                when=pl.col("in_vehicle_person_ids").is_not_null(),
+            ),
+        ],
+    ),
     # Number of majors that were present in the vehicle used.
     Variable(
         "nb_majors_in_vehicle",
@@ -213,6 +229,7 @@ LEG_SCHEMA = [
         [
             Null(when=pl.col("mode_group").is_in(("walking", "public_transit"))),
             SmallerThan(pl.col("nb_persons_in_vehicle"), strict=False),
+            Defined(when=pl.col("in_vehicle_person_ids").is_not_null()),
         ],
     ),
     # Number of persons not from the household that were present in the vehicle.
@@ -233,24 +250,6 @@ LEG_SCHEMA = [
             ),
         ],
     ),
-    # Ids of the person that were in the vehicle.
-    Variable(
-        "in_vehicle_person_ids",
-        pl.List(pl.UInt32),
-        [
-            Null(when=pl.col("mode_group").is_in(("walking", "public_transit"))),
-            Null(when=pl.col("nb_household_members_in_vehicle").is_null()),
-            ListContains(
-                pl.col("person_id"),
-                alias="the leg' `person_id`",
-                when=pl.col("in_vehicle_person_ids").is_not_null(),
-            ),
-            ListLengthIs(
-                pl.col("nb_household_members_in_vehicle"),
-                when=pl.col("in_vehicle_person_ids").is_not_null(),
-            ),
-        ],
-    ),
     # Location type where the car was parked at the end of the leg.
     Variable(
         "parking_location",
@@ -261,12 +260,7 @@ LEG_SCHEMA = [
     Variable(
         "parking_type",
         PARKING_TYPE_ENUM,
-        [
-            Null(
-                when=pl.col("parking_location").eq("none") | pl.col("parking_location").is_null(),
-                when_alias='`parking_location` is "none" or NULL',
-            )
-        ],
+        [Null(when=pl.col("mode_group").is_in(("walking", "public_transit")))],
     ),
     # Time spent searching for a parking spot.
     Variable(

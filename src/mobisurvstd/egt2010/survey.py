@@ -4,6 +4,7 @@ from zipfile import ZipFile
 from loguru import logger
 
 from mobisurvstd.common.clean import clean
+from mobisurvstd.common.zones import get_coords
 from mobisurvstd.utils import find_file
 
 from .deplacements import standardize_trips
@@ -18,6 +19,7 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
     logger.info(f"Standardizing EGT2010 survey from `{source_name}`")
     if skip_spatial:
         detailed_zones = None
+        detailed_zone_coords = None
     else:
         # Detailed zones.
         filename = detailed_zones_filename(source)
@@ -25,12 +27,13 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
             logger.error("Missing detailed zones file")
             return None
         detailed_zones = read_detailed_zones(filename)
+        detailed_zone_coords = get_coords(detailed_zones, "detailed_zone")
     # Households.
     filename = households_filename(source)
     if filename is None:
         logger.error("Missing households file")
         return None
-    households = standardize_households(filename)
+    households = standardize_households(filename, detailed_zone_coords)
     # Cars.
     cars = standardize_cars(filename, households)
     # motorcycles.
@@ -40,19 +43,19 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
     if filename is None:
         logger.error("Missing persons file")
         return None
-    persons = standardize_persons(filename, households)
+    persons = standardize_persons(filename, households, detailed_zone_coords)
     # Trips.
     filename = trips_filename(source)
     if filename is None:
         logger.error("Missing trips file")
         return None
-    trips = standardize_trips(filename, persons, households)
+    trips = standardize_trips(filename, persons, households, detailed_zone_coords)
     # Legs.
     filename = legs_filename(source)
     if filename is None:
         logger.error("Missing legs file")
         return None
-    legs = standardize_legs(filename, trips, cars, motorcycles, detailed_zones)
+    legs = standardize_legs(filename, trips, cars, motorcycles, detailed_zone_coords)
     return clean(
         households=households,
         persons=persons,

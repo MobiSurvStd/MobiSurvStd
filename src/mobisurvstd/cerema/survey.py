@@ -199,6 +199,15 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         else:
             return cols
 
+    def clean_detailed_zone(self, col: str):
+        # Usually, the detailed zone ids in the CSVs have two leading zeros that need to be removed
+        # to match the ids in the spatial files.
+        return (
+            pl.when(pl.col(col).str.slice(0, 2) == "00")
+            .then(pl.col(col).str.slice(2))
+            .otherwise(col)
+        )
+
     def finish(self):
         self.add_survey_dates()
         self.fix_main_mode()

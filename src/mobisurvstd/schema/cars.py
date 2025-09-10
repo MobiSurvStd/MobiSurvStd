@@ -8,7 +8,6 @@ from .guarantees import (
     Indexed,
     LargerThan,
     NonDecreasing,
-    Null,
     SmallerThan,
 )
 
@@ -104,5 +103,5 @@ CAR_SCHEMA = [
     # Type of location used to park the car overnight.
     Variable("parking_location", PARKING_LOCATION_ENUM),
     # Type of parking (paid or free) used to park the car overnight.
-    Variable("parking_type", PARKING_TYPE_ENUM, [Null(when=pl.col("parking_location").is_null())]),
+    Variable("parking_type", PARKING_TYPE_ENUM),
 ]

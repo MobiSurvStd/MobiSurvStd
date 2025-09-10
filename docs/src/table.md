@@ -1,315 +1,41 @@
+<style>
+    .content main {
+        max-width: 1050px;
+    }
+</style>
+
 # Availability table
 
-These tables indicate which variables are available for each survey type.
+The tables below show the data availability for each survey type, with cell values representing the
+share of non-NULL values for each variable.
+A value of 100% indicates complete data (no NULL values), while 0% means the variable contains only
+NULL values.
+For conditionally defined variables (e.g., `work_only_at_home`, which applies only to workers), the
+share reflects the relevant subset of observations.
 
-Variables in bold are available in all surveys.
+Variable names are **bolded** when data availability is high (i.e., non-NULL values exceed 90% across
+all survey types).
 
 ## Households
 
-|                             | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
-| --------------------------- | -------- | -------- | -------- | -------- |-------- |
-| **`household_id`**          | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`original_household_id`** | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`survey_method`**         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`interview_date`_          | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`sample_weight`**         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`home_lng`_                | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`home_lat`_                | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`home_special_location`_   | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`home_detailed_zone`_      | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`home_draw_zone`_          | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`home_insee`_              | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`home_insee_name`_         | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`home_dep`**              | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`home_dep_name`**         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`home_nuts2`**            | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`home_nuts2_name`**       | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`home_nuts1`**            | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`home_nuts1_name`**       | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`household_type`**        | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`income_lower_bound`_      | &#x274C; | &#x274C; | &#x2705; | &#x274C; |&#x2705; |
-| _`income_upper_bound`_      | &#x274C; | &#x274C; | &#x2705; | &#x274C; |&#x2705; |
-| _`housing_type`_            | &#x2796; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`housing_status`_          | &#x2796; | &#x2705; | &#x2705; | &#x2796; |&#x2705; |
-| _`has_internet`_            | &#x2796; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`nb_cars`_                 | &#x2796; | &#x2705; | &#x2705; | &#x2796; |&#x2705; |
-| _`nb_motorcycles`_          | &#x2796; | &#x2705; | &#x2705; | &#x2796; |&#x2705; |
-| _`nb_bicycles`_             | &#x2796; | &#x2705; | &#x2705; | &#x2796; |&#x2705; |
-| _`nb_standard_bicycles`_    | &#x2796; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`nb_electric_bicycles`_    | &#x2796; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`has_bicycle_parking`_     | &#x2796; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| **`nb_persons`**            | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`nb_persons_5plus`_        | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| **`nb_majors`**             | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`nb_minors`**             | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
+{{#include tables/households.html}}
 
 ## Persons
 
-|                                         | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
-| --------------------------------------- | -------- | -------- | -------- | -------- |-------- |
-| **`person_id`**                         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`household_id`**                      | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`person_index`**                      | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`original_person_id`**                | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`reference_person_link`**             | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`resident_type`_                       | &#x274C; | &#x2796; | &#x274C; | &#x274C; |&#x2705; |
-| **`woman`**                             | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`age`**                               | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| **`age_class`**                         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`age_class_code`**                    | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`education_level`**                   | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| **`detailed_education_level`**          | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| **`professional_occupation`**           | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| **`detailed_professional_occupation`**  | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| _`secondary_professional_occupation`_   | &#x2796; | &#x2796; | &#x2705; | &#x2796; |&#x274C; |
-| **`pcs_group`**                         | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| **`pcs_group_code`**                    | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| _`pcs_category_code2020`_               | &#x274C; | &#x274C; | &#x274C; | &#x274C; |&#x274C; |
-| _`pcs_category_code2003`_               | &#x2796; | &#x2796; | &#x2705; | &#x2796; |&#x2705; |
-| **`work_only_at_home`**                 | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| _`workplace_singularity`_               | &#x274C; | &#x2796; | &#x2705; | &#x274C; |&#x2705; |
-| _`work_lng`_                            | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`work_lat`_                            | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`work_special_location`_               | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`work_detailed_zone`_                  | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`work_draw_zone`_                      | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`work_insee`_                          | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`work_insee_name`_                     | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`work_dep`_                            | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`work_dep_name`_                       | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`work_nuts2`_                          | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`work_nuts2_name`_                     | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`work_nuts1`_                          | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`work_nuts1_name`_                     | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`work_commute_euclidean_distance_km`_  | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`has_car_for_work_commute`_            | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x274C; |
-| _`telework`_                            | &#x2796; | &#x2796; | &#x274C; | &#x274C; |&#x274C; |
-| _`work_car_parking`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`work_bicycle_parking`_                | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`student_group`_                       | &#x274C; | &#x2796; | &#x2705; | &#x274C; |&#x2705; |
-| _`student_category`_                    | &#x274C; | &#x2796; | &#x2705; | &#x274C; |&#x2705; |
-| _`study_only_at_home`_                  | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`study_lng`_                           | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`study_lat`_                           | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`study_special_location`_              | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`study_detailed_zone`_                 | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`study_draw_zone`_                     | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`study_insee`_                         | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`study_insee_name`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`study_dep`_                           | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`study_dep_name`_                      | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`study_nuts2`_                         | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`study_nuts2_name`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`study_nuts1`_                         | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`study_nuts1_name`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`study_commute_euclidean_distance_km`_ | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`has_car_for_study_commute`_           | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x274C; |
-| _`study_car_parking`_                   | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`study_bicycle_parking`_               | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`has_driving_license`**               | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| _`has_motorcycle_driving_license`_      | &#x274C; | &#x274C; | &#x2705; | &#x274C; |&#x2705; |
-| **`has_public_transit_subscription`**   | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| _`public_transit_subscription`_         | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`has_car_sharing_subscription`_        | &#x274C; | &#x2796; | &#x2705; | &#x274C; |&#x2705; |
-| _`car_sharing_subscription`_            | &#x274C; | &#x2796; | &#x2705; | &#x274C; |&#x274C; |
-| _`has_bike_sharing_subscription`_       | &#x274C; | &#x2796; | &#x2705; | &#x274C; |&#x2705; |
-| _`has_travel_inconvenience`_            | &#x274C; | &#x2796; | &#x2705; | &#x274C; |&#x2705; |
-| **`is_surveyed`**                       | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`traveled_during_surveyed_day`**      | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| **`worked_during_surveyed_day`**        | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| **`nb_trips`**                          | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
-| _`sample_weight_all`_                   | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`sample_weight_surveyed`**            | &#x2705; | &#x2796; | &#x2705; | &#x2705; |&#x2705; |
+{{#include tables/persons.html}}
 
 ## Trips
 
-|                                        | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
-| -------------------------------------- | -------- | -------- | -------- | -------- |-------- |
-| **`trip_id`**                          | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`person_id`**                        | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`household_id`**                     | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`trip_index`**                       | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`first_trip`**                       | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`last_trip`**                        | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`home_sequence_index`**              | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`original_trip_id`**                 | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`origin_purpose`**                   | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`origin_purpose_group`**             | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`origin_activity_duration`**         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_purpose`**              | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_purpose_group`**        | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_activity_duration`**    | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`origin_escort_purpose`_              | &#x2705; | &#x2705; | &#x274C; | &#x2705; |&#x2705; |
-| _`origin_escort_purpose_group`_        | &#x2705; | &#x2705; | &#x274C; | &#x2705; |&#x2705; |
-| _`destination_escort_purpose`_         | &#x2705; | &#x2705; | &#x274C; | &#x2705; |&#x2705; |
-| _`destination_escort_purpose_group`_   | &#x2705; | &#x2705; | &#x274C; | &#x2705; |&#x2705; |
-| **`origin_shop_type`**                 | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_shop_type`**            | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`origin_lng`_                         | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`origin_lat`_                         | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`origin_special_location`_            | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`origin_detailed_zone`_               | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`origin_draw_zone`_                   | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`origin_insee`_                       | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| `origin_insee_name`                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`origin_insee_density`**             | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`origin_insee_aav_type`**            | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`origin_aav`_                         | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`origin_aav_name`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`origin_aav_category`**              | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`origin_dep`_                         | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`origin_dep_name`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`origin_nuts2`**                     | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`origin_nuts2_name`**                | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`origin_nuts1`**                     | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`origin_nuts1_name`**                | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`destination_lng`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`destination_lat`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`destination_special_location`_       | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`destination_detailed_zone`_          | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`destination_draw_zone`_              | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`destination_insee`_                  | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`destination_insee_name`_             | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_insee_density`**        | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_insee_aav_type`**       | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`destination_aav`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`destination_aav_name`_               | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_aav_category`**         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`destination_dep`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`destination_dep_name`_               | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_nuts2`**                | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_nuts2_name`**           | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_nuts1`**                | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`destination_nuts1_name`**           | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`departure_time`**                   | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`arrival_time`**                     | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`travel_time`**                      | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`trip_date`_                          | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`trip_weekday`**                     | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`main_mode`**                        | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`main_mode_group`**                  | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`intermodality`**                    | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`public_transit_access_mode`**       | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`public_transit_access_mode_group`** | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`public_transit_egress_mode`**       | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`public_transit_egress_mode_group`** | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`trip_euclidean_distance_km`**       | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`trip_travel_distance_km`_            | &#x2705; | &#x2796; | &#x274C; | &#x2705; |&#x274C; |
-| **`intra_municipality`**               | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`intra_aav`**                        | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`intra_dep`**                        | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`trip_perimeter`**                   | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`nb_tour_stops`_                      | &#x2705; | &#x2796; | &#x274C; | &#x2705; |&#x2705; |
-| **`nb_legs`**                          | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`nb_legs_walking`**                  | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`nb_legs_bicycle`**                  | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`nb_legs_motorcycle`**               | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`nb_legs_car_driver`**               | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`nb_legs_car_passenger`**            | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`nb_legs_public_transit`**           | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`nb_legs_other`**                    | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
+{{#include tables/trips.html}}
 
 ## Legs
 
-|                                         | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
-| --------------------------------------- | -------- | -------- | -------- | -------- |-------- |
-| **`leg_id`**                            | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`trip_id`**                           | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`person_id`**                         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`household_id`**                      | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`leg_index`**                         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`first_leg`**                         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`last_leg`**                          | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`original_leg_id`**                   | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`mode`**                              | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`mode_group`**                        | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`public_transit_line`_                 | &#x274C; | &#x274C; | &#x2705; | &#x274C; |&#x2705; |
-| _`start_lng`_                           | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`start_lat`_                           | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`start_special_location`_              | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`start_detailed_zone`_                 | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`start_draw_zone`_                     | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`start_insee`_                         | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`start_insee_name`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`start_dep`_                           | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`start_dep_name`_                      | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`start_nuts2`_                         | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`start_nuts2_name`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`start_nuts1`_                         | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`start_nuts1_name`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`end_lng`_                             | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`end_lat`_                             | &#x2705; | &#x274C; | &#x2705; | &#x2796; |&#x2705; |
-| _`end_special_location`_                | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`end_detailed_zone`_                   | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`end_draw_zone`_                       | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x2705; |
-| _`end_insee`_                           | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`end_insee_name`_                      | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`end_dep`_                             | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`end_dep_name`_                        | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`end_nuts2`_                           | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`end_nuts2_name`_                      | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`end_nuts1`_                           | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`end_nuts1_name`_                      | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`leg_travel_time`_                     | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x274C; |
-| _`leg_euclidean_distance_km`_           | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`leg_travel_distance_km`_              | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x274C; |
-| _`car_type`_                            | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`car_id`_                              | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`nolicense_car`_                       | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`nb_persons_in_vehicle`_               | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`nb_majors_in_vehicle`_                | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`nb_minors_in_vehicle`_                | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`nb_household_members_in_vehicle`_     | &#x274C; | &#x274C; | &#x2705; | &#x274C; |&#x274C; |
-| _`nb_non_household_members_in_vehicle`_ | &#x274C; | &#x274C; | &#x2705; | &#x274C; |&#x274C; |
-| _`in_vehicle_person_ids`_               | &#x274C; | &#x274C; | &#x2705; | &#x274C; |&#x274C; |
-| _`motorcycle_type`_                     | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`motorcycle_id`_                       | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`parking_location`_                    | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`parking_type`_                        | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| _`parking_search_time`_                 | &#x2705; | &#x274C; | &#x274C; | &#x2705; |&#x274C; |
+{{#include tables/legs.html}}
 
 ## Cars
 
-|                                | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
-| ------------------------------ | -------- | -------- | -------- | -------- |-------- |
-| **`car_id`**                   | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`household_id`**             | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`car_index`**                | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`original_car_id`**          | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`type`_                       | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x2705; |
-| **`fuel_type`**                | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`fuel_type_group`**          | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`year`**                     | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`tax_horsepower`**           | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`critair`**                  | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`total_mileage`_              | &#x274C; | &#x2705; | &#x274C; | &#x274C; |&#x2705; |
-| _`total_mileage_lower_bound`_  | &#x274C; | &#x2705; | &#x274C; | &#x274C; |&#x2705; |
-| _`total_mileage_upper_bound`_  | &#x274C; | &#x2705; | &#x274C; | &#x274C; |&#x2705; |
-| _`annual_mileage`_             | &#x274C; | &#x2705; | &#x274C; | &#x274C; |&#x2705; |
-| _`annual_mileage_lower_bound`_ | &#x274C; | &#x2705; | &#x2705; | &#x274C; |&#x2705; |
-| _`annual_mileage_upper_bound`_ | &#x274C; | &#x2705; | &#x2705; | &#x274C; |&#x2705; |
-| _`ownership`_                  | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`parking_location`**         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`parking_type`_               | &#x2796; | &#x2705; | &#x2705; | &#x2796; |&#x2705; |
+{{#include tables/cars.html}}
 
 ## Motorcycles
 
-|                                | EMC²     | EMP2019  | EGT2020  | EDGT     | EGT2010 |
-| ------------------------------ | -------- | -------- | -------- | -------- |-------- |
-| **`motorcycle_id`**            | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`household_id`**             | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`motorcycle_index`**         | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`original_motorcycle_id`**   | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`type`_                       | &#x2705; | &#x2705; | &#x274C; | &#x2705; |&#x2705; |
-| _`fuel_type`_                  | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`year`**                     | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`thermic_engine_type`_        | &#x2705; | &#x274C; | &#x2705; | &#x2705; |&#x2705; |
-| **`cm3_lower_bound`**          | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| **`cm3_upper_bound`**          | &#x2705; | &#x2705; | &#x2705; | &#x2705; |&#x2705; |
-| _`kw_lower_bound`_             | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`kw_upper_bound`_             | &#x2796; | &#x274C; | &#x274C; | &#x2796; |&#x274C; |
-| _`annual_mileage`_             | &#x274C; | &#x2705; | &#x274C; | &#x274C; |&#x2705; |
-| _`annual_mileage_lower_bound`_ | &#x274C; | &#x2705; | &#x2705; | &#x274C; |&#x2705; |
-| _`annual_mileage_upper_bound`_ | &#x274C; | &#x2705; | &#x2705; | &#x274C; |&#x2705; |
-| _`parking_location`_           | &#x2796; | &#x2705; | &#x2705; | &#x2796; |&#x2705; |
-| _`parking_type`_               | &#x2796; | &#x2705; | &#x2705; | &#x2796; |&#x2705; |
+{{#include tables/motorcycles.html}}

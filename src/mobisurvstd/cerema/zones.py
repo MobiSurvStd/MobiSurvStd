@@ -9,19 +9,14 @@ def cast_id(s: gpd.GeoSeries):
     # Converts:
     # "ext" -> "ext"
     # 123456.0 -> "123456"
-    # "012345" -> "12345"
+    # "012345" -> "012345"
     # "123 456" -> "123456"
     # "123.456" -> "123456"
-    # Although it would be cleaner to keep the leading zero, it is safer to remove them because in
-    # some cases there is not the same number of leading zeros in the zone files compared to the
-    # survey's CSV files.
     return (
         s.astype(str)
         .str.replace(" ", "")
         .str.replace("[.]0$", "", n=1, regex=True)
         .str.replace(r"(?<=\d)[.](?=\d)", "", n=1, regex=True)
-        .astype(int, errors="ignore")
-        .astype(str)
     )
 
 

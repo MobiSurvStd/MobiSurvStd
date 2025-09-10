@@ -199,7 +199,9 @@ def scan_persons(filename: str):
     return lf
 
 
-def standardize_persons(filename: str, households: pl.LazyFrame):
+def standardize_persons(
+    filename: str, households: pl.LazyFrame, detailed_zones: pl.DataFrame | None
+):
     lf = scan_persons(filename)
     # Add household_id.
     lf = lf.with_columns(original_household_id=pl.struct("NQUEST")).join(
@@ -308,5 +310,13 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         .then(pl.col("pcs_category_code2003") // 10)
         .otherwise("pcs_group_code")
     )
-    lf = clean(lf)
+    lf = lf.with_columns(
+        # Set `pcs_group_code` from `pcs_category_code2003` when `pcs_group_code` is missing.
+        pcs_group_code=pl.when(
+            pl.col("pcs_group_code").is_null(), pl.col("pcs_category_code2003").is_not_null()
+        )
+        .then(pl.col("pcs_category_code2003") // 10)
+        .otherwise("pcs_group_code")
+    )
+    lf = clean(lf, detailed_zones=detailed_zones)
     return lf

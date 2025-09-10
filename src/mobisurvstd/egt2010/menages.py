@@ -256,7 +256,7 @@ def scan_households(filename: str):
     return lf
 
 
-def standardize_households(filename: str):
+def standardize_households(filename: str, detailed_zones: pl.DataFrame | None):
     lf = scan_households(filename)
     lf = lf.rename(
         {
@@ -293,7 +293,7 @@ def standardize_households(filename: str):
         interview_date=pl.concat_str("year", "week_number", "JDEP").str.to_date("%G%V%w")
         + timedelta(days=1),
     )
-    lf = clean_households(lf)
+    lf = clean_households(lf, detailed_zones=detailed_zones)
     return lf
 
 

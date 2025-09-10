@@ -256,7 +256,7 @@ class HouseholdsReader:
         )
         lf = lf.with_columns(
             original_household_id=pl.struct(self.get_household_index_cols()),
-            home_detailed_zone="ZFM",
+            home_detailed_zone=self.clean_detailed_zone("ZFM"),
             home_draw_zone="STM",
             # For EMD, EDVM, EDGT, the IDM2 column will be read here.
             survey_method=pl.col("METH").replace_strict(SURVEY_METHOD_MAP),

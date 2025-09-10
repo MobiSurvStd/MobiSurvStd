@@ -127,7 +127,12 @@ def scan_trips(filename: str):
     return lf
 
 
-def standardize_trips(filename: str, persons: pl.LazyFrame, households: pl.LazyFrame):
+def standardize_trips(
+    filename: str,
+    persons: pl.LazyFrame,
+    households: pl.LazyFrame,
+    detailed_zones: pl.DataFrame | None,
+):
     lf = scan_trips(filename)
     # Add household_id and person_id.
     lf = lf.with_columns(original_person_id=pl.struct("NQUEST", "NP")).join(
@@ -183,5 +188,10 @@ def standardize_trips(filename: str, persons: pl.LazyFrame, households: pl.LazyF
     )
     # For EGT2010, we use the AAV and density data from 2010.
     # The survey perimiters cover excatly the 8 départements of the IDF region.
-    lf = clean(lf, 2010, perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"])
+    lf = clean(
+        lf,
+        2010,
+        perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"],
+        detailed_zones=detailed_zones,
+    )
     return lf

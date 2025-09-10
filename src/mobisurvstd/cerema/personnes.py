@@ -298,8 +298,8 @@ class PersonsReader:
         lf = lf.with_columns(
             work_only_at_home=pl.when("is_not_student").then(pl.col("P14") == 1),
             study_only_at_home=pl.when("is_student").then(pl.col("P14") == 1),
-            work_detailed_zone=pl.when("is_not_student").then("P15"),
-            study_detailed_zone=pl.when("is_student").then("P15"),
+            work_detailed_zone=pl.when("is_not_student").then(self.clean_detailed_zone("P15")),
+            study_detailed_zone=pl.when("is_student").then(self.clean_detailed_zone("P15")),
             work_draw_zone=pl.when("is_not_student").then("STW"),
             study_draw_zone=pl.when("is_student").then("STW"),
             work_insee=pl.when("is_not_student").then("insee"),

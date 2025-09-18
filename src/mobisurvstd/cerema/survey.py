@@ -228,8 +228,8 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         ).with_columns(interview_date=pl.col("trip_date") + timedelta(days=1))
 
     def fix_main_mode(self):
-        # Special case for Douai 2012: The motorcycle trips have "motorcycle" leg but their
-        # `main_mode` is set to "car_driver".
+        # Special case for Douai 2012: Some trips have main mode set to "car_driver" but the legs
+        # have mode set to "motorcycle".
         invalid_trips = (
             self.legs.lazy()
             .select("trip_id", "mode_group")
@@ -260,18 +260,22 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
                 f"The `main_mode_group` value is automatically fixed."
             )
             self.trips = self.trips.with_columns(
-                main_mode_group=pl.when(pl.col("trip_id").is_in(invalid_trips)).then(
+                main_mode_group=pl.when(pl.col("trip_id").is_in(invalid_trips))
+                .then(
                     pl.col("trip_id").replace_strict(
                         fixed_main_modes["trip_id"],
                         fixed_main_modes["main_mode_group"],
                         default=None,
                     )
-                ),
-                main_mode=pl.when(pl.col("trip_id").is_in(invalid_trips)).then(
+                )
+                .otherwise("main_mode_group"),
+                main_mode=pl.when(pl.col("trip_id").is_in(invalid_trips))
+                .then(
                     pl.col("trip_id").replace_strict(
                         fixed_main_modes["trip_id"], fixed_main_modes["main_mode"], default=None
                     )
-                ),
+                )
+                .otherwise("main_mode"),
             )
 
     def fix_detailed_zones(self):

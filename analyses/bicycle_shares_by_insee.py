@@ -18,7 +18,7 @@ def get_trip_origins(data: SurveyDataReader):
 
 
 # Retrive all trips' origin INSEE and main mode group.
-origins = read_many("./output", get_trip_origins, lambda x, y: pl.concat((x, y)))
+origins = read_many("./output/all", get_trip_origins, lambda x, y: pl.concat((x, y)))
 
 # Compute bicycle share by INSEE.
 df = (
@@ -26,6 +26,7 @@ df = (
     .group_by("origin_insee")
     .agg(bicycle_share=pl.col("main_mode_group").eq("bicycle").mean(), count=pl.len())
     .filter(pl.col("count") > 30)
+    .filter(pl.col("origin_insee").str.slice(0, 2).is_in(("97", "98", "99")).not_())
 )
 
 # Create categories.
@@ -38,6 +39,10 @@ gdf = load_insee_geometries().to_crs("epsg:2154")
 gdf = gdf.merge(df.to_pandas(), left_on="insee", right_on="origin_insee", how="inner")
 
 cmap = plt.get_cmap("GnBu", len(labels))
+centroids = gdf.geometry.centroid
+margin = 1e5
+xlim = (centroids.x.min() - margin, centroids.x.max() + margin)
+ylim = (centroids.y.min() - margin, centroids.y.max() + margin)
 
 # Create a map.
 fig, ax = plt.subplots(figsize=(15, 8), subplot_kw={"projection": ccrs.epsg(2154)})
@@ -53,5 +58,6 @@ gdf.plot(
     legend=True,
     legend_kwds={"title": "Bicycle Share"},
 )
-ax.set_global()
+ax.set_xlim(xlim)
+ax.set_ylim(ylim)
 plt.savefig("docs/src/images/bicycle_shares_by_insee.png", bbox_inches="tight", dpi=200)

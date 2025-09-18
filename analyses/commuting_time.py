@@ -30,7 +30,7 @@ def get_commuting_time(data: SurveyDataReader):
     return df
 
 
-df = read_many("./output", get_commuting_time, lambda x, y: pl.concat((x, y)))
+df = read_many("./output/all", get_commuting_time, lambda x, y: pl.concat((x, y)))
 
 # Remove the least used PCS codes (agriculteurs, artisans, retraités).
 df = df.filter(pl.col("pcs_group_code").is_between(3, 6))

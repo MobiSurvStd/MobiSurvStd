@@ -256,7 +256,7 @@ class HouseholdsReader:
         )
         lf = lf.with_columns(
             original_household_id=pl.struct(self.get_household_index_cols()),
-            home_detailed_zone=self.clean_detailed_zone("ZFM"),
+            home_detailed_zone="ZFM",
             home_draw_zone="STM",
             # For EMD, EDVM, EDGT, the IDM2 column will be read here.
             survey_method=pl.col("METH").replace_strict(SURVEY_METHOD_MAP),
@@ -264,11 +264,25 @@ class HouseholdsReader:
             housing_status=pl.col("M2").replace_strict(HOUSING_STATUS_MAP),
             has_internet=pl.col("M5") == 1,
             has_bicycle_parking=pl.col("M23") == 1,
+            # Values 99000, 99999, 99095, 99300 do not represent any known INSEE / country.
+            home_insee=pl.col("home_insee").replace(["99000", "99999", "99095", "99300"], None),
         )
         self.households = clean_households(
             lf,
             special_locations=self.special_locations_coords,
             detailed_zones=self.detailed_zones_coords,
+        )
+        # When the INSEE code ends with "000" or "999" it means "rest of the département".
+        # We drop these values because they do not add any additional information compared to `_dep`
+        # columns.
+        # This is done after the automatic cleaning so that the département is correctly read.
+        self.households = self.households.with_columns(
+            home_insee=pl.when(
+                pl.col("home_insee").str.ends_with("000")
+                | pl.col("home_insee").str.ends_with("999")
+            )
+            .then(None)
+            .otherwise("home_insee")
         )
 
     def standardize_cars(self):

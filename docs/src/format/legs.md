@@ -134,27 +134,18 @@ See [`start_lng`](#start_lng) for details on the accuracy of the value.
 Identifier of the special location corresponding to the leg start point.
 
 - **Type:** String
-- **Guarantees:**
-  - The start special location intersects with the start detailed zone, draw zone, and INSEE zone
-    (only checked if the zones are known).
 
 ### `start_detailed_zone`
 
 Identifier of the detailed zone corresponding to the leg start point.
 
 - **Type:** String
-- **Guarantees:**
-  - The start detailed zone intersects with the start draw zone and INSEE zone (only checked if the
-    zones are known).
 
 ### `start_draw_zone`
 
 Identifier of the draw zone corresponding to the leg start point.
 
 - **Type:** String
-- **Guarantees:**
-  - The start detailed zone intersects with the start draw zone and INSEE zone (only checked if the
-    zones are known).
 
 ### `start_insee`
 
@@ -162,7 +153,7 @@ INSEE code of the municipality corresponding to the leg start point.
 
 - **Type:** String
 - **Guarantees:**
-  - String is a [valid INSEE code](TODO).
+  - String is a [valid INSEE code](../miscellaneous.md#insee-codes).
 
 ### `start_insee_name`
 
@@ -177,8 +168,8 @@ _Département_ code of the leg start point.
 - **Type:** String
 - **Guarantees:**
   - The value is a valid _département_ code.
-  - If `start_insee` is not null, then the value is equal to the _département_ of the start point INSEE
-    municipality.
+  - If `start_insee` is not null, then the value is equal to the _département_ of the start point
+    INSEE municipality.
 
 ### `start_dep_name`
 
@@ -257,29 +248,18 @@ from one to the other and did not report that as a dedicate leg.
 MobiSurvStd will show warning messages indicating how many legs does not match the constraint.
 
 - **Type:** String
-- **Guarantees:**
-  - The end special location intersects with the end detailed zone, draw zone, and INSEE zone
-    (only checked if the zones are known).
 
 ### `end_detailed_zone`
 
 Identifier of the detailed zone corresponding to the leg end point.
 
 - **Type:** String
-- **Guarantees:**
-  - The end detailed zone intersects with the end draw zone and INSEE zone (only checked if the
-    zones are known).
-  - The value is equal to the `start_detailed_zone` of the next leg (if any).
 
 ### `end_draw_zone`
 
 Identifier of the draw zone corresponding to the leg end point.
 
 - **Type:** String
-- **Guarantees:**
-  - The end detailed zone intersects with the end draw zone and INSEE zone (only checked if the
-    zones are known).
-  - The value is equal to the `start_draw_zone` of the next leg (if any).
 
 ### `end_insee`
 
@@ -287,8 +267,7 @@ INSEE code of the municipality corresponding to the leg end point.
 
 - **Type:** String
 - **Guarantees:**
-  - String is a [valid INSEE code](TODO).
-  - The value is equal to the `start_insee` of the next leg (if any).
+  - String is a [valid INSEE code](../miscellaneous.md#insee-codes).
 
 ### `end_insee_name`
 
@@ -389,7 +368,7 @@ The details regardings how this value is computed depends on the surveys.
 - **Type:** Float64
 - **Guarantees:**
   - All values are non-negative.
-  - The value is not small than `leg_euclidean_distance_km`.
+
 ## Car
 
 ### `car_type`
@@ -477,6 +456,18 @@ Number of persons that were present in the vehicle used.
   - If `mode` is passenger related (`"car:passenger"`, `"motorcycle:passenger"`, etc.), then the
     value is at least 2.
 
+### `in_vehicle_person_ids`
+
+Identifiers of the household members that were present in the vehicle for this leg.
+
+- **Type:** List of UInt32
+- **Guarantees:**
+  - If `mode` does not use a personal vehicle (car, motorcycle, bicycle, truck, personal
+    transporter), then the value is null.
+  - The list includes the id of the current person.
+  - The number of elements in the list is equal to `nb_household_members_in_vehicle`.
+  - All values are valid ids of persons belonging to the same household as the current person.
+
 ### `nb_majors_in_vehicle`
 
 Number of majors (age ≥ 18) that were present in the vehicle used.
@@ -524,18 +515,6 @@ Number of persons in the vehicle used that _do not_ belong to the person's house
   - If `nb_persons_in_vehicle` and `nb_household_members_in_vehicle` are non-null, then the value is
     `nb_persons_in_vehicle - nb_household_members_in_vehicle`.
 
-### `in_vehicle_person_ids`
-
-Identifiers of the person that were present in the vehicle for this leg.
-
-- **Type:** List of UInt32
-- **Guarantees:**
-  - If `mode` does not use a personal vehicle (car, motorcycle, bicycle, truck, personal
-    transporter), then the value is null.
-  - The list includes the id of the current person.
-  - The number of elements in the list is equal to `nb_household_members_in_vehicle`.
-  - All values are valid ids of persons belonging to the same household as the current person.
-
 ## Parking
 
 ### `parking_location`
@@ -566,7 +545,8 @@ Type of parking (paid or free) used to park the car.
   - `"paid_by_other"`: the car was parked in a paid location, someone else paid
   - `"other"`: other types
 - **Guarantees:**
-  - If `parking_location` is `"stop_only"`, null, then the value is null.
+  - If `mode` does not use a personal vehicle (car, motorcycle, bicycle, truck, personal
+    transporter), then the value is null.
 
 ### `parking_search_time`
 

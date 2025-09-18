@@ -102,6 +102,10 @@ It will standardize the EMP 2019 survey and save the resulting Parquet files in 
 These Parquet files can then be analyzed using e.g., [polars](https://pola.rs/) or
 [pandas](https://pandas.pydata.org) in Python or [arrow](https://arrow.apache.org/docs/r/) in R.
 
+**Note:** During standardization, MobiSurvStd may issue warnings when certain variable guarantees
+are not initially satisfied but are automatically fixed.
+These warnings can usually be safely ignored, unless they pertain to a large number of observations.
+
 A detailed definition of the Parquet format used by MobiSurvStd is available
 [here](https://mobisurvstd.github.io/MobiSurvStd/format/index.html).
 
@@ -112,7 +116,6 @@ import mobisurvstd
 mobisurvstd.standardize(
     "emp_2019_donnees_individuelles_anonymisees_novembre2024.zip",
     "standardized_emp2019",
-    survey_type="emp2019",
 )
 ```
 

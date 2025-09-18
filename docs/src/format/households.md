@@ -17,6 +17,8 @@ Unique identifier of the household.
 Identifier of the household in the original data.
 
 - **Type:** Struct whose fields depend on the survey
+- **Guarantees:**
+  - Values are all unique.
 
 ## Surveying
 
@@ -35,7 +37,7 @@ Method that was used to survey the household.
 Date at which the interview took place.
 
 Note that this is not the date at which the reported trips (if any) took place.
-See TODO.
+See [`trip_date`](trips.md#trip_date).
 
 - **Type:** Date
 
@@ -48,7 +50,7 @@ survey area.
 
 - **Type:** Float64
 - **Guarantees:**
-  - Values are either all null (undefined survey method) or all defined.
+  - Values are either all null or all defined.
   - The value is non-negative.
 
 ## Home location
@@ -59,7 +61,7 @@ Longitude of home coordinates.
 
 The accuracy depends on the survey type.
 For EGT surveys, the coordinates are guaranteed to be within 100 meters of the actual location.
-For other surveys, the coordinates represent the centroid of `home_detailed_zone` (or the exact
+For CEREMA surveys, the coordinates represent the centroid of `home_detailed_zone` (or the exact
 coordinates defined by `home_special_location` when it is non-null).
 
 - **Type:** Float64
@@ -77,30 +79,18 @@ See [`home_lng`](#home_lng) for details on the accuracy of the value.
 Identifier of the special location where the household is located.
 
 - **Type:** String
-- **Guarantees:**
-  - The home special location intersects with the home detailed zone, draw zone, and INSEE zone
-    (only checked if the locations and zones are known).
 
 ### `home_detailed_zone`
 
 Identifier of the detailed zone where the household is located.
 
 - **Type:** String
-- **Guarantees:**
-  - Values are either all null or all defined.
-  - If `detailed_zones.parquet` exists, then the value is a valid `detailed_zone_id`.
-  - The home detailed zone intersects with the home draw zone and INSEE zone (only checked if the
-    zones are known).
 
 ### `home_draw_zone`
 
 Identifier of the draw zone where the household is located.
 
 - **Type:** String
-- **Guarantees:**
-  - Values are either all null or all defined.
-  - If `draw_zones.parquet` exists, then the value is a valid `draw_zone_id`.
-  - The home draw zone intersects with the home INSEE zone (only checked if the zones are known).
 
 ### `home_insee`
 
@@ -108,8 +98,7 @@ INSEE code of the municipality where the household is located.
 
 - **Type:** String
 - **Guarantees:**
-  - Values are either all null or all defined.
-  - String is a [valid INSEE code](TODO).
+  - String is a [valid INSEE code](../miscellaneous.md#insee-codes).
 
 ### `home_insee_name`
 
@@ -124,8 +113,8 @@ _Département_ code of the household home.
 - **Type:** String
 - **Guarantees:**
   - The value is a valid _département_ code.
-  - If `home_insee` is not null, then the value is equal to the _département_ of the home INSEE
-    municipality.
+  - If `home_insee` is a valid municipality, then the value is equal to the _département_ of the
+    home INSEE municipality.
 
 ### `home_dep_name`
 

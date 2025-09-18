@@ -280,8 +280,13 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         original_person_id=pl.struct("IDCEREMA", "NP"),
         reference_person_link=pl.col("LIENP1").replace_strict(REFERENCE_PERSON_LINK_MAP),
         woman=pl.col("SEXE") == 2,
-        education_level=pl.col("DIPL").replace_strict(EDUCATION_LEVEL_MAP),
-        detailed_education_level=pl.col("DIPL").replace_strict(DETAILED_EDUCATION_LEVEL_MAP),
+        # `education_level` and `detailed_education_level` values are not read for students.
+        education_level=pl.when(pl.col("OCCP").is_in((20, 31, 32)).not_()).then(
+            pl.col("DIPL").replace_strict(EDUCATION_LEVEL_MAP)
+        ),
+        detailed_education_level=pl.when(pl.col("OCCP").is_in((20, 31, 32)).not_()).then(
+            pl.col("DIPL").replace_strict(DETAILED_EDUCATION_LEVEL_MAP)
+        ),
         professional_occupation=pl.col("OCCP").replace_strict(PROFESSIONAL_OCCUPATION_MAP),
         detailed_professional_occupation=pl.col("OCCP").replace_strict(
             DETAILED_PROFESSIONAL_OCCUPATION_MAP

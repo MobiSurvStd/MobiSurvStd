@@ -6,6 +6,7 @@
 - [User Guide](./howto.md)
 - [Surveys](./surveys.md)
 - [Availability table](./table.md)
+- [Miscellaneous](./miscellaneous.md)
 - [Format specification](./format/README.md)
   - [Metadata](./format/metadata.md)
   - [Households](./format/households.md)

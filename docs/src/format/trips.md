@@ -112,7 +112,7 @@ Purpose of the activity performed at the trip's origin.
 - **Modalities:**
   - `"home:main"`: the person is at their usual home location
   - `"home:secondary"`: the person is at a secondary home
-  - `"work:declared"`: the person is working at the usual workplace
+  - `"work:usual"`: the person is working at the usual workplace
   - `"work:telework"`: the person is working from home
   - `"work:secondary"`: the person is working at a secondary workplace
   - `"work:business_meal"`: the person is having a meal in a business context
@@ -120,7 +120,7 @@ Purpose of the activity performed at the trip's origin.
   - `"work:professional_tour"`: the person is doing trips for a professional tour ("tournée
     professionnelle")
   - `"education:childcare"`: the person (child) is at a daycare / nursery school
-  - `"education:declared"`: the person is studying at their usual study location
+  - `"education:usual"`: the person is studying at their usual study location
   - `"education:other"`: the person is studying at a different location
   - `"shopping:daily"`: the person is shopping for daily needs (e.g., bread, newspaper)
   - `"shopping:weekly"`: the person is shopping for weekly needs (e.g., groceries)
@@ -157,12 +157,6 @@ Purpose of the activity performed at the trip's origin.
   - `"escort:unspecified:pick_up"`: the person is picking up someone (either from an activity or a
     transportation mode)
   - `"other"`: other purpose not in the list
-- **Guarantees:**
-  - If the person's `professional_occupation` is *not* `"worker"`, then the purpose is not
-    `"work:declared"`
-  - If the person's `professional_occupation` is *not* `"student"`, then the purpose is not
-    `"education:primary"`, `"education:middle_school"`, `"education:high_school"`, or
-    `"education:higher"`.
 
 ### `origin_purpose_group`
 
@@ -224,8 +218,7 @@ Purpose group of the activity performed at the trip's destination.
   - `"escort"`
   - `"other"`
 - **Guarantees:**
-  - The values are consistent with `destination_purpose`.
-  - If `destination_purpose` is not null, then the value is not null.
+  - Same guarantees as [`origin_purpose_group`](#origin_purpose_group).
 
 ### `destination_activity_duration`
 
@@ -266,6 +259,7 @@ Purpose group of the activity performed at the trip's origin by the person who i
   - `"leisure"`
   - `"other"`
 - **Guarantees:**
+  - If `origin_purpose_group` is not `"escort"`, then the value is null.
   - The values are consistent with `origin_escort_purpose`.
 
 ### `destination_escort_purpose`
@@ -297,6 +291,7 @@ Purpose group of the activity performed at the trip's destination by the person 
   - `"leisure"`
   - `"other"`
 - **Guarantees:**
+  - If `destination_purpose_group` is not `"escort"`, then the value is null.
   - The values are consistent with `destination_escort_purpose`.
 
 ## Shopping
@@ -360,27 +355,18 @@ See [`origin_lng`](#origin_lng) for details on the accuracy of the value.
 Identifier of the special location of the trip's origin.
 
 - **Type:** String
-- **Guarantees:**
-  - The origin special location intersects with the origin detailed zone, draw zone, and INSEE zone
-    (only checked if the zones are known).
 
 ### `origin_detailed_zone`
 
 Identifier of the detailed zone of the trip's origin.
 
 - **Type:** String
-- **Guarantees:**
-  - The origin detailed zone intersects with the origin draw zone and INSEE zone (only checked if
-    the zones are known).
 
 ### `origin_draw_zone`
 
 Identifier of the draw zone of the trip's origin.
 
 - **Type:** String
-- **Guarantees:**
-  - The origin detailed zone intersects with the origin draw zone and INSEE zone (only checked if
-    the zones are known).
 
 ### `origin_insee`
 
@@ -388,7 +374,7 @@ INSEE code of the municipality of the trip's origin.
 
 - **Type:** String
 - **Guarantees:**
-  - String is a [valid INSEE code](TODO).
+  - String is a [valid INSEE code](../miscellaneous.md#insee-codes).
 
 ### `origin_insee_name`
 
@@ -539,9 +525,6 @@ performed (e.g., for bus drivers).
 MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
 
 - **Type:** String
-- **Guarantees:**
-  - The destination special location intersects with the destination detailed zone, draw zone, and
-    INSEE zone (only checked if the zones are known).
 
 ### `destination_detailed_zone`
 
@@ -554,9 +537,6 @@ performed (e.g., for bus drivers).
 MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
 
 - **Type:** String
-- **Guarantees:**
-  - The destination detailed zone intersects with the destination draw zone and INSEE zone (only
-    checked if the zones are known).
 
 ### `destination_draw_zone`
 
@@ -569,9 +549,6 @@ performed (e.g., for bus drivers).
 MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
 
 - **Type:** String
-- **Guarantees:**
-  - The destination detailed zone intersects with the destination draw zone and INSEE zone (only
-    checked if the zones are known).
 
 ### `destination_insee`
 
@@ -585,7 +562,7 @@ MobiSurvStd will show warning messages indicating how many trips does not match 
 
 - **Type:** String
 - **Guarantees:**
-  - String is a [valid INSEE code](TODO).
+  - String is a [valid INSEE code](../miscellaneous.md#insee-codes).
 
 ### `destination_insee_name`
 
@@ -906,7 +883,6 @@ The details regardings how this value is computed depends on the surveys.
 - **Type:** Float64
 - **Guarantees:**
   - All values are non-negative.
-  - The value is not small than `trip_euclidean_distance_km`.
 
 ### `intra_municipality`
 
@@ -941,9 +917,6 @@ Perimiter in which the trip is taking place relative to the survey area.
   - `"internal"`: the trip is starting and ending within the survey area
   - `"crossing"`: the trip is either starting or ending within the survey area
   - `"external"`: the trip is not starting nor ending within the survey area
-- **Guarantees:**
-  - The value must be consistent with the trip's origin and destination (only checked when the zones
-    are known).
 
 ## Leg / stop counts
 
@@ -962,7 +935,7 @@ Number of legs that this trip is composed of.
 
 - **Type:** UInt8
 - **Guarantees:**
-  - The value is not null.
+  - The value is not null when `main_mode` is not null.
   - The value is positive.
   - The value is equal to the number of legs in `legs.parquet` for that trip.
 
@@ -972,7 +945,7 @@ Number of legs with mode group `"walking"` in the trip.
 
 - **Type:** UInt8
 - **Guarantees:**
-  - The value is not null.
+  - The value is not null when `main_mode` is not null.
   - The value is equal to the number of legs in the trip whose `mode_group` is `"walking"`.
 
 ### `nb_legs_bicycle`
@@ -981,7 +954,7 @@ Number of legs with mode group `"bicycle"` in the trip.
 
 - **Type:** UInt8
 - **Guarantees:**
-  - The value is not null.
+  - The value is not null when `main_mode` is not null.
   - The value is equal to the number of legs in the trip whose `mode_group` is `"bicycle"`.
 
 ### `nb_legs_motorcycle`
@@ -990,7 +963,7 @@ Number of legs with mode group `"motorcycle"` in the trip.
 
 - **Type:** UInt8
 - **Guarantees:**
-  - The value is not null.
+  - The value is not null when `main_mode` is not null.
   - The value is equal to the number of legs in the trip whose `mode_group` is `"motorcycle"`.
 
 ### `nb_legs_car_driver`
@@ -999,7 +972,7 @@ Number of legs with mode group `"car_driver"` in the trip.
 
 - **Type:** UInt8
 - **Guarantees:**
-  - The value is not null.
+  - The value is not null when `main_mode` is not null.
   - The value is equal to the number of legs in the trip whose `mode_group` is `"car_driver"`.
 
 ### `nb_legs_car_passenger`
@@ -1008,7 +981,7 @@ Number of legs with mode group `"car_passenger"` in the trip.
 
 - **Type:** UInt8
 - **Guarantees:**
-  - The value is not null.
+  - The value is not null when `main_mode` is not null.
   - The value is equal to the number of legs in the trip whose `mode_group` is `"car_passenger"`.
 
 ### `nb_legs_public_transit`
@@ -1019,7 +992,7 @@ For public-transit trips, the number of transfers is thus `nb_legs_public_transi
 
 - **Type:** UInt8
 - **Guarantees:**
-  - The value is not null.
+  - The value is not null when `main_mode` is not null.
   - The value is equal to the number of legs in the trip whose `mode_group` is `"public_transit"`.
 
 ### `nb_legs_other`
@@ -1028,5 +1001,5 @@ Number of legs with mode group `"other"` in the trip.
 
 - **Type:** UInt8
 - **Guarantees:**
-  - The value is not null.
+  - The value is not null when `main_mode` is not null.
   - The value is equal to the number of legs in the trip whose `mode_group` is `"other"`.

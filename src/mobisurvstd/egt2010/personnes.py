@@ -210,15 +210,9 @@ def standardize_persons(
         how="left",
         coalesce=True,
     )
+    is_worker = pl.col("OCCP").is_in((1, 2))
     is_student = pl.col("OCCP").is_in((3, 4, 5))
-    lf = lf.rename(
-        {
-            "AGE": "age",
-            "CS8": "pcs_group_code",
-            "NBDEPL": "nb_trips",
-            "POIDSP": "sample_weight_all",
-        }
-    )
+    lf = lf.rename({"AGE": "age", "CS8": "pcs_group_code", "POIDSP": "sample_weight_all"})
     lf = lf.with_columns(
         original_person_id=pl.struct("NQUEST", "NP"),
         reference_person_link=pl.col("LIENPREF").replace_strict(REFERENCE_PERSON_LINK_MAP),
@@ -232,24 +226,28 @@ def standardize_persons(
         pcs_category_code2003=pl.when(pl.col("CS24L").is_between(1, 69))
         .then("CS24L")
         .otherwise(None),
-        workplace_singularity=pl.when(is_student.not_()).then(
+        workplace_singularity=pl.when(is_worker).then(
             pl.col("ULTRAV").replace_strict(WORKPLACE_SINGULARITY_MAP)
         ),
-        work_detailed_zone=pl.when(is_student.not_()).then("LTRAVC"),
-        work_draw_zone=pl.when(is_student.not_()).then("LTRAVSECT"),
-        work_insee=pl.when(is_student.not_()).then("LTRAVCOMM"),
-        work_commute_euclidean_distance_km=pl.when(is_student.not_()).then("DDOMTRAV"),
-        work_car_parking=pl.when(is_student.not_()).then(
+        # Ignore the workplace location when DDOMTRAV is null because it just represents the home
+        # location in this cases.
+        work_detailed_zone=pl.when(is_worker, pl.col("DDOMTRAV").is_not_null()).then("LTRAVC"),
+        work_draw_zone=pl.when(is_worker, pl.col("DDOMTRAV").is_not_null()).then("LTRAVSECT"),
+        work_insee=pl.when(is_worker, pl.col("DDOMTRAV").is_not_null()).then("LTRAVCOMM"),
+        work_commute_euclidean_distance_km=pl.when(is_worker).then("DDOMTRAV"),
+        work_car_parking=pl.when(is_worker).then(
             pl.col("PKVPTRAV").replace_strict(CAR_PARKING_MAP)
         ),
-        work_bicycle_parking=pl.when(is_student.not_()).then(
+        work_bicycle_parking=pl.when(is_worker).then(
             pl.col("PKVLTRAV").replace_strict(BICYCLE_PARKING_MAP)
         ),
         student_category=pl.col("CS24L").replace_strict(STUDENT_CATEGORY_MAP, default=None),
         study_only_at_home=pl.when(is_student).then(pl.col("ULTRAV").eq(2)),
-        study_detailed_zone=pl.when(is_student).then("LTRAVC"),
-        study_draw_zone=pl.when(is_student).then("LTRAVSECT"),
-        study_insee=pl.when(is_student).then("LTRAVCOMM"),
+        # Ignore the study location when DDOMTRAV is null because it just represents the home
+        # location in this cases.
+        study_detailed_zone=pl.when(is_student, pl.col("DDOMTRAV").is_not_null()).then("LTRAVC"),
+        study_draw_zone=pl.when(is_student, pl.col("DDOMTRAV").is_not_null()).then("LTRAVSECT"),
+        study_insee=pl.when(is_student, pl.col("DDOMTRAV").is_not_null()).then("LTRAVCOMM"),
         study_commute_euclidean_distance_km=pl.when(is_student).then("DDOMTRAV"),
         study_car_parking=pl.when(is_student).then(
             pl.col("PKVPTRAV").replace_strict(CAR_PARKING_MAP)
@@ -299,6 +297,23 @@ def standardize_persons(
         )
         .then(None)
         .otherwise("pcs_group_code"),
+        # It seems that the survey uses "990xx" codes to represent foreign countries but I did not
+        # find the documentation for these codes so we set them all to the special code "99200"
+        # (i.e., any foreign country).
+        work_insee=pl.when(pl.col("work_insee").str.starts_with("99"))
+        .then(pl.lit("99200"))
+        .otherwise("work_insee"),
+        study_insee=pl.when(pl.col("study_insee").str.starts_with("99"))
+        .then(pl.lit("99200"))
+        .otherwise("study_insee"),
+        # Some persons have a declared workplace (different from home) although they indicated only
+        # working at home. We set their `workplace_singularity` to "variable".
+        workplace_singularity=pl.when(
+            pl.col("work_commute_euclidean_distance_km").is_not_null(),
+            workplace_singularity="unique:home",
+        )
+        .then(pl.lit("variable"))
+        .otherwise("workplace_singularity"),
     )
     lf = lf.with_columns(
         # For retired, set the pcs_group_code to the code matching pcs_category_code2003 (instead of

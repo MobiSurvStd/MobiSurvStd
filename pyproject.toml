@@ -22,6 +22,7 @@ dependencies = [
     "Cartopy >= 0.24.1",
     "fastexcel >= 0.14.0",
     "geopandas >= 1.0.1",
+    "humanize >= 4.13.0",
     "loguru >= 0.7.3",
     "matplotlib >= 3.10.1",
     "numpy >= 2.2.4",

@@ -104,8 +104,6 @@ Tax horsepower of the car ("cheval fiscale CV").
   - `"4"`: Vignette Crit'Air 4
   - `"5"`: Vignette Crit'Air 5
   - `"N"`: Unclassified vehicle
-- **Guarantees:**
-  - The vignette Crit'Air is compatible with the fuel type and age of the vehicle.
 
 ## Usage
 

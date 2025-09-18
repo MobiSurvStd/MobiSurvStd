@@ -531,7 +531,7 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
             pl.col("TRAVAILLE").eq(1).and_(pl.col("SITUA").ne(1))
         )
         .then(pl.lit("work"))
-        .when(pl.col("ETUDIE").eq(1).and_(pl.col("SITUA").ne(2)))
+        .when(pl.col("ETUDIE").eq(1).and_(pl.col("SITUA").is_in((2, 3)).not_()))
         .then(pl.lit("education")),
     )
     lf = lf.with_columns(
@@ -542,6 +542,11 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         detailed_education_level=pl.when(
             pl.col("detailed_professional_occupation").str.starts_with("student").not_()
         ).then("detailed_education_level"),
+        # If the household has a single person, then `reference_person_link` must be
+        # "reference_person".
+        reference_person_link=pl.when(pl.len().over("household_id").eq(1))
+        .then(pl.lit("reference_person"))
+        .otherwise("reference_person_link"),
     )
     lf = clean(lf)
     return lf

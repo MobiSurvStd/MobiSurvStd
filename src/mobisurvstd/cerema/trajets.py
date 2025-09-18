@@ -127,6 +127,12 @@ class LegsReader:
             coalesce=True,
         )
 
+        lf = lf.with_columns(
+            # Values 99000, 99999, 99095, 99300 do not represent any known INSEE / country.
+            GTO1=pl.col("GTO1").replace(["99000", "99999", "99095", "99300"], None),
+            GTD1=pl.col("GTD1").replace(["99000", "99999", "99095", "99300"], None),
+        )
+
         # For Cerema surveys, the walking legs are not recorded explicitly, instead, the walking
         # time before and after the legs are defined.
         # We create actual walking legs from these walking times.
@@ -265,11 +271,6 @@ class LegsReader:
         # Concatenate the 5 leg types.
         lf = pl.concat((lf1, lf2, lf3, lf4, lf5), how="diagonal")
         lf = lf.sort("trip_id", "tmp_leg_index")
-        # Clean detailed zone ids.
-        lf = lf.with_columns(
-            start_detailed_zone=self.clean_detailed_zone("start_detailed_zone"),
-            end_detailed_zone=self.clean_detailed_zone("end_detailed_zone"),
-        )
         # Add car and motorcycle types.
         lf = lf.with_columns(
             car_type=pl.when(pl.col("mode").str.starts_with("car:")).then(
@@ -323,56 +324,42 @@ class LegsReader:
             .then(pl.lit("other_household"))
             .otherwise("motorcycle_type")
         )
-        # For some surveys, columns T8A and T8B represent the number of major and minor *passengers*
-        # not the number of majors and minors *persons* in vehicle.
+        # Columns T8A and T8B actually represent the number of major and minor *passengers* not the
+        # number of majors and minors *persons* in vehicle.
         # If the mode is driver-related, we include the driver (their age is known).
-        # If the mode is passenger-related, we have to drop the `nb_majors_in_vehicle` and
-        # `nb_minors_in_vehicle` values (the driver's age is unknown).
+        # If the mode is passenger-related, we assume that the driver is major.
         lf = lf.join(
             self.persons.select("person_id", is_major=pl.col("age") >= 18),
             on="person_id",
             how="left",
-        ).with_columns(
-            driver_is_missing=pl.col("nb_persons_in_vehicle")
-            == pl.col("nb_majors_in_vehicle") + pl.col("nb_minors_in_vehicle") + 1
         )
         lf = lf.with_columns(
-            nb_majors_in_vehicle=pl.when(
-                "driver_is_missing", "is_major", pl.col("mode").str.contains("driver")
-            )
+            nb_majors_in_vehicle=pl.when("is_major" | pl.col("mode").str.contains("passenger"))
             .then(pl.col("nb_majors_in_vehicle") + 1)
             .otherwise("nb_majors_in_vehicle"),
             nb_minors_in_vehicle=pl.when(
-                "driver_is_missing",
-                pl.col("is_major").not_(),
-                pl.col("mode").str.contains("driver"),
+                pl.col("is_major").not_() & pl.col("mode").str.contains("driver"),
             )
             .then(pl.col("nb_minors_in_vehicle") + 1)
             .otherwise("nb_minors_in_vehicle"),
         )
-        lf = lf.with_columns(
-            nb_majors_in_vehicle=pl.when(
-                "driver_is_missing", pl.col("mode").str.contains("passenger")
-            )
-            .then(None)
-            .otherwise("nb_majors_in_vehicle"),
-            nb_minors_in_vehicle=pl.when(
-                "driver_is_missing", pl.col("mode").str.contains("passenger")
-            )
-            .then(None)
-            .otherwise("nb_minors_in_vehicle"),
-        )
-        # For Nantes 2015, the `nb_minors_in_vehicle` in sometimes null when it can be deduced from
-        # `nb_persons_in_vehicle` and `nb_majors_in_vehicle`.
+        # For Nantes 2015 and Saint-Denis-de-la-Réunion 2016, the `nb_minors_in_vehicle` column has
+        # many nulls. The value can be deduced from `nb_persons_in_vehicle` and
+        # `nb_majors_in_vehicle`.
         lf = lf.with_columns(
             nb_minors_in_vehicle=pl.when(
+                pl.col("nb_minors_in_vehicle").is_null(),
                 pl.col("nb_persons_in_vehicle").is_not_null(),
                 pl.col("nb_majors_in_vehicle").is_not_null(),
-                pl.col("nb_minors_in_vehicle").is_null(),
             )
-            .then(pl.col("nb_persons_in_vehicle") - pl.col("nb_majors_in_vehicle"))
+            .then(
+                pl.when(pl.col("nb_persons_in_vehicle") > pl.col("nb_majors_in_vehicle"))
+                .then(pl.col("nb_persons_in_vehicle") - pl.col("nb_majors_in_vehicle"))
+                .otherwise(0)
+            )
             .otherwise("nb_minors_in_vehicle")
         )
+        lf = fix_start_end_detailed_zones(lf)
         df = lf.collect()
         # For Bourg-en-Bresse 2017 et Besançon 2018, some persons are missing.
         n = df["trip_id"].null_count()
@@ -384,3 +371,39 @@ class LegsReader:
             special_locations=self.special_locations_coords,
             detailed_zones=self.detailed_zones_coords,
         )
+        # When the INSEE code ends with "000" or "999" it means "rest of the département".
+        # We drop these values because they do not add any additional information compared to `_dep`
+        # columns.
+        # This is done after the automatic cleaning so that the département is correctly read.
+        self.legs = self.legs.with_columns(
+            start_insee=pl.when(
+                pl.col("start_insee").str.ends_with("000")
+                | pl.col("start_insee").str.ends_with("999")
+            )
+            .then(None)
+            .otherwise("start_insee"),
+            end_insee=pl.when(
+                pl.col("end_insee").str.ends_with("000") | pl.col("end_insee").str.ends_with("999")
+            )
+            .then(None)
+            .otherwise("end_insee"),
+        )
+
+
+def fix_start_end_detailed_zones(lf: pl.LazyFrame):
+    # For external start / end location, the detailed zone id is sometimes set to
+    # "8" + INSEE or "9" + INSEE. In this case, keeping the detailed zone id does not add any
+    # information so we set it to NULL.
+    lf = lf.with_columns(
+        start_detailed_zone=pl.when("8" + pl.col("start_insee") == pl.col("start_detailed_zone"))
+        .then(None)
+        .when("9" + pl.col("start_insee") == pl.col("start_detailed_zone"))
+        .then(None)
+        .otherwise("start_detailed_zone"),
+        end_detailed_zone=pl.when("8" + pl.col("end_insee") == pl.col("end_detailed_zone"))
+        .then(None)
+        .when("9" + pl.col("end_insee") == pl.col("end_detailed_zone"))
+        .then(None)
+        .otherwise("end_detailed_zone"),
+    )
+    return lf

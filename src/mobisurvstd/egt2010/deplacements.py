@@ -66,7 +66,7 @@ PURPOSE_MAP = {
     "2": "home:secondary",  # Un des domiciles correspondant à une garde alternée
     "3": "home:secondary",  # Résidence secondaire, logement occasionnel, hôtel, autre domicile
     # Motifs professionnels
-    "11": "work:declared",  # Travail sur le lieu de travail déclaré dans la fiche personne
+    "11": "work:usual",  # Travail sur le lieu de travail déclaré dans la fiche personne
     "12": "work:secondary",  #  Travail sur un autre lieu (hors affaires professionnelles)
     "13": "work:other",  #  Affaires professionnelles hors lieu de travail habituel (RV professionnel, réunion, etc.)
     "14": "work:professional_tour",  # Tournée professionnelle
@@ -76,9 +76,9 @@ PURPOSE_MAP = {
     "17": "leisure:restaurant",  # Autre restauration hors domicile (restaurant, bar, café, cybercafé…)
     # Etudes -Garde d’enfants
     "21": "education:childcare",  # Nourrice, crèche, garde d’enfants
-    "22": "education:declared",  # Études sur le lieu d'études déclaré (école maternelle et primaire)
-    "23": "education:declared",  # Études sur le lieu d'études déclaré (enseignement secondaire : collège et lycée)
-    "24": "education:declared",  # Études sur le lieu d'études déclaré (enseignement supérieur, universités et grandes écoles)
+    "22": "education:usual",  # Études sur le lieu d'études déclaré (école maternelle et primaire)
+    "23": "education:usual",  # Études sur le lieu d'études déclaré (enseignement secondaire : collège et lycée)
+    "24": "education:usual",  # Études sur le lieu d'études déclaré (enseignement supérieur, universités et grandes écoles)
     "25": "education:other",  # Études sur un autre lieu (école maternelle et primaire)
     "26": "education:other",  # Études sur un autre lieu (enseignement secondaire : collège et lycée)
     "27": "education:other",  # Études sur un autre lieu (enseignement supérieur, universités et grandes écoles)
@@ -150,10 +150,8 @@ def standardize_trips(
     )
     lf = lf.rename(
         {
-            "ORC": "origin_detailed_zone",
             "ORSECT": "origin_draw_zone",
             "ORCOMM": "origin_insee",
-            "DESTC": "destination_detailed_zone",
             "DESTSECT": "destination_draw_zone",
             "DESTCOMM": "destination_insee",
             "NBAT": "nb_tour_stops",
@@ -162,6 +160,8 @@ def standardize_trips(
     )
     lf = lf.with_columns(
         trip_index="ND",
+        origin_detailed_zone=pl.col("ORC").str.to_uppercase(),
+        destination_detailed_zone=pl.col("DESTC").str.to_uppercase(),
         original_trip_id=pl.struct("NQUEST", "NP", "ND"),
         origin_purpose=pl.col("ORMOT").replace_strict(PURPOSE_MAP),
         destination_purpose=pl.col("DESTMOT").replace_strict(PURPOSE_MAP),
@@ -185,6 +185,15 @@ def standardize_trips(
         destination_escort_purpose=pl.when(
             pl.col("destination_purpose").str.starts_with("escort:")
         ).then("destination_escort_purpose"),
+        # It seems that the survey uses "990xx" codes to represent foreign countries but I did not
+        # find the documentation for these codes so we set them all to the special code "99200"
+        # (i.e., any foreign country).
+        origin_insee=pl.when(pl.col("origin_insee").str.starts_with("99"))
+        .then(pl.lit("99200"))
+        .otherwise("origin_insee"),
+        destination_insee=pl.when(pl.col("destination_insee").str.starts_with("99"))
+        .then(pl.lit("99200"))
+        .otherwise("destination_insee"),
     )
     # For EGT2010, we use the AAV and density data from 2010.
     # The survey perimiters cover excatly the 8 départements of the IDF region.
@@ -193,5 +202,17 @@ def standardize_trips(
         2010,
         perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"],
         detailed_zones=detailed_zones,
+    )
+    # When the INSEE code ends with "000" it means "rest of the département".
+    # We drop these values because they do not add any additional information compared to `_dep`
+    # columns.
+    # This is done after the automatic cleaning so that the département is correctly read.
+    lf = lf.with_columns(
+        origin_insee=pl.when(pl.col("origin_insee").str.ends_with("000"))
+        .then(None)
+        .otherwise("origin_insee"),
+        destination_insee=pl.when(pl.col("destination_insee").str.ends_with("000"))
+        .then(None)
+        .otherwise("destination_insee"),
     )
     return lf

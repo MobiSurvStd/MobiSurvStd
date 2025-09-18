@@ -4,7 +4,9 @@ from .common import Variable
 from .guarantees import (
     AllDefinedOrAllNull,
     Defined,
+    EqualTo,
     Indexed,
+    InseeConsistentWithDep,
     LargerThan,
     NonNegative,
     Positive,
@@ -31,11 +33,11 @@ HOUSEHOLD_SCHEMA = [
     # Special location where the household is located.
     Variable("home_special_location", pl.String),
     # Detailed zone where the household is located.
-    Variable("home_detailed_zone", pl.String, [AllDefinedOrAllNull()]),
+    Variable("home_detailed_zone", pl.String, []),
     # Draw zone where the household is located.
-    Variable("home_draw_zone", pl.String, [AllDefinedOrAllNull()]),
+    Variable("home_draw_zone", pl.String, []),
     # INSEE code of the municipality where the household is located.
-    Variable("home_insee", pl.String, [AllDefinedOrAllNull(), ValidInsee()]),
+    Variable("home_insee", pl.String, [ValidInsee(), InseeConsistentWithDep("home_dep")]),
     # Name of the municipality where the household is located.
     Variable("home_insee_name", pl.String),
     # Département code of the household home.
@@ -107,21 +109,55 @@ HOUSEHOLD_SCHEMA = [
             Defined(
                 when=pl.col("nb_standard_bicycles").is_not_null()
                 & pl.col("nb_electric_bicycles").is_not_null()
-            )
+            ),
+            EqualTo(
+                pl.col("nb_standard_bicycles") + pl.col("nb_electric_bicycles"),
+                when=pl.col("nb_standard_bicycles").is_not_null()
+                & pl.col("nb_electric_bicycles").is_not_null(),
+            ),
         ],
     ),
     # Number of standard bicycles (non-electric) owned by the household.
-    Variable("nb_standard_bicycles", pl.UInt8),
+    Variable(
+        "nb_standard_bicycles",
+        pl.UInt8,
+        [
+            Defined(
+                when=pl.col("nb_bicycles").is_not_null()
+                & pl.col("nb_electric_bicycles").is_not_null()
+            )
+        ],
+    ),
     # Number of electric bicycles owned by the household.
-    Variable("nb_electric_bicycles", pl.UInt8),
+    Variable(
+        "nb_electric_bicycles",
+        pl.UInt8,
+        [
+            Defined(
+                when=pl.col("nb_bicycles").is_not_null()
+                & pl.col("nb_standard_bicycles").is_not_null()
+            )
+        ],
+    ),
     # Whether the household can park bicycles at home.
     Variable("has_bicycle_parking", pl.Boolean),
     # Number of persons in the household.
-    Variable("nb_persons", pl.UInt8, [Positive(), Defined()]),
+    Variable(
+        "nb_persons",
+        pl.UInt8,
+        [
+            Positive(),
+            Defined(),
+            EqualTo(
+                pl.col("nb_majors") + pl.col("nb_minors"),
+                when=pl.col("nb_majors").is_not_null() & pl.col("nb_minors").is_not_null(),
+            ),
+        ],
+    ),
     # Number of persons in the household whose age is 6 or more.
     Variable("nb_persons_5plus", pl.UInt8),
     # Number of persons in the household whose age is 18 or more.
-    Variable("nb_majors", pl.UInt8),
+    Variable("nb_majors", pl.UInt8, [Defined(when=pl.col("nb_minors").is_not_null())]),
     # Number of persons in the household whose age is 17 or less.
-    Variable("nb_minors", pl.UInt8),
+    Variable("nb_minors", pl.UInt8, [Defined(when=pl.col("nb_majors").is_not_null())]),
 ]

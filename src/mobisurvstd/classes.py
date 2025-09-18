@@ -58,7 +58,6 @@ class SurveyData:
 
     def save(self, output_directory: str):
         """Saves the MobiSurvStd survey to the given directory."""
-        logger.info(f"Saving standardized survey data to `{output_directory}`")
         if not os.path.isdir(output_directory):
             logger.debug(f"Creating missing directory: `{output_directory}`")
             os.makedirs(output_directory)
@@ -93,6 +92,7 @@ class SurveyData:
         with open(os.path.join(output_directory, "metadata.json"), "w") as f:
             logger.debug("Saving metadata")
             json.dump(self.metadata, f, indent=2)
+        logger.success(f"Standardized survey successfully saved to `{output_directory}`")
 
 
 class SurveyDataReader:

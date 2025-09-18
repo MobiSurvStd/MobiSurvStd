@@ -60,7 +60,7 @@ PURPOSE_MAP = {
     12: "home:secondary",  # Autre domicile de la garde alternée
     13: "home:secondary",  # Résidence secondaire, logement occasionnel, hôtel, autre domicile
     # Travail
-    21: "work:declared",  # Travail / Lieu travail précis
+    21: "work:usual",  # Travail / Lieu travail précis
     31: "work:other",  # Affaires professionnelles (RV pro, réunion, etc.) hors lieu de travail habituel
     32: "work:other",  # Travail chez des particuliers
     33: "work:other",  # Travail dans un espace de co-working
@@ -72,7 +72,7 @@ PURPOSE_MAP = {
     37: "work:business_meal",  # Repas d’affaires, déjeuner professionnel
     # Etudes ou crèche
     41: "education:childcare",  # Garde d'enfants
-    42: "education:declared",  # Etudes
+    42: "education:usual",  # Etudes
     43: "education:other",  # Etudes sur un autre lieu
     # Achats
     51: "shopping:daily",  # Achats quotidiens

@@ -38,17 +38,17 @@ SCHEMA = {
 PURPOSE_MAP = {
     1: "home:main",  # Domicile (partir de, se rendre à).
     2: "home:secondary",  # Résidence secondaire, logement occasionnel, hôtel, autre domicile (partir de, se rendre à).
-    11: "work:declared",  # Travailler sur le lieu d’emploi déclaré.
+    11: "work:usual",  # Travailler sur le lieu d’emploi déclaré.
     12: "work:telework",  # Travailler sur un autre lieu – télétravail.
     13: "work:secondary",  # Travailler sur un autre lieu hors télétravail
     14: "work:other",  # Travailler sur un autre lieu sans distinction
     # NOTE. We discard the information on the exact study location type (middle-school, high-school,
     # etc.) because the information can read from the person characteristics (`student_group`).
     21: "education:childcare",  # Être gardé (Nourrice, crèche...).
-    22: "education:declared",  # Étudier sur le lieu d'études déclaré (école maternelle et primaire).
-    23: "education:declared",  # Étudier sur le lieu d'études déclaré (collège).
-    24: "education:declared",  # Étudier sur le lieu d'études déclaré (lycée).
-    25: "education:declared",  # Étudier sur le lieu d'études déclaré (universités et grandes écoles).
+    22: "education:usual",  # Étudier sur le lieu d'études déclaré (école maternelle et primaire).
+    23: "education:usual",  # Étudier sur le lieu d'études déclaré (collège).
+    24: "education:usual",  # Étudier sur le lieu d'études déclaré (lycée).
+    25: "education:usual",  # Étudier sur le lieu d'études déclaré (universités et grandes écoles).
     26: "education:other",  # Étudier sur un autre lieu (école maternelle et primaire).
     27: "education:other",  # Étudier sur un autre lieu (collège).
     28: "education:other",  # Étudier sur un autre lieu (lycée).
@@ -86,7 +86,7 @@ PURPOSE_MAP = {
     # 96: "escort:middle_high_school",  # Étudier sur le lieu d'études déclaré (collège ou lycée). Cas egt personne accompagnée
     # 97: "escort:middle_high_school:other",  # Étudier sur un autre lieu (collège ou lycée). Cas egt personne accompagnée
     # 98: "escort:shopping",  # Faire des achats sans précision (egt, motif personne accompagnée)
-    # TODO: Fix 96, 97, and 98 if I find these values in a dataset.
+    # Note: Values 96, 97, and 98 are documented but never appear in a survey.
 }
 
 SHOP_TYPE_MAP = {
@@ -129,8 +129,10 @@ class TripsReader:
         lf = lf.rename(
             {
                 "GDO1": "origin_insee",
+                "D3": "origin_detailed_zone",
                 "STDO": "origin_draw_zone",
                 "GDD1": "destination_insee",
+                "D7": "destination_detailed_zone",
                 "STDD": "destination_draw_zone",
                 "D6": "nb_tour_stops",
             }
@@ -140,8 +142,6 @@ class TripsReader:
             origin_purpose=pl.col("D2A").replace_strict(PURPOSE_MAP),
             origin_escort_purpose=pl.col("D2B").replace_strict(PURPOSE_MAP),
             origin_shop_type=pl.col("D2A").replace(SHOP_TYPE_MAP, default=None),
-            origin_detailed_zone=self.clean_detailed_zone("D3"),
-            destination_detailed_zone=self.clean_detailed_zone("D7"),
             departure_time=60 * (pl.col("D4") // 100) + pl.col("D4") % 100,
             destination_purpose=pl.col("D5A").replace_strict(PURPOSE_MAP),
             destination_escort_purpose=pl.col("D5B").replace_strict(PURPOSE_MAP),
@@ -174,8 +174,14 @@ class TripsReader:
             nb_tour_stops=pl.when(pl.col("nb_tour_stops").is_not_null().all())
             .then(pl.lit(None))
             .otherwise("nb_tour_stops"),
+            # Values 99000, 99999, 99095, 99300 do not represent any known INSEE / country.
+            origin_insee=pl.col("origin_insee").replace(["99000", "99999", "99095", "99300"], None),
+            destination_insee=pl.col("destination_insee").replace(
+                ["99000", "99999", "99095", "99300"], None
+            ),
         )
         lf = lf.sort("original_trip_id")
+        lf = fix_origin_destination_detailed_zones(lf)
         df = lf.collect()
         year = round(df["trip_date"].dt.year().mean())
         # For Besançon 2018, there is one missing person.
@@ -189,3 +195,42 @@ class TripsReader:
             special_locations=self.special_locations_coords,
             detailed_zones=self.detailed_zones_coords,
         )
+        # When the INSEE code ends with "000" or "999" it means "rest of the département".
+        # We drop these values because they do not add any additional information compared to `_dep`
+        # columns.
+        # This is done after the automatic cleaning so that the département is correctly read.
+        self.trips = self.trips.with_columns(
+            origin_insee=pl.when(
+                pl.col("origin_insee").str.ends_with("000")
+                | pl.col("origin_insee").str.ends_with("999")
+            )
+            .then(None)
+            .otherwise("origin_insee"),
+            destination_insee=pl.when(
+                pl.col("destination_insee").str.ends_with("000")
+                | pl.col("destination_insee").str.ends_with("999")
+            )
+            .then(None)
+            .otherwise("destination_insee"),
+        )
+
+
+def fix_origin_destination_detailed_zones(lf: pl.LazyFrame):
+    # For external origin / destination location, the detailed zone id is sometimes set to
+    # "8" + INSEE or "9" + INSEE. In this case, keeping the detailed zone id does not add any
+    # information so we set it to NULL.
+    lf = lf.with_columns(
+        origin_detailed_zone=pl.when("8" + pl.col("origin_insee") == pl.col("origin_detailed_zone"))
+        .then(None)
+        .when("9" + pl.col("origin_insee") == pl.col("origin_detailed_zone"))
+        .then(None)
+        .otherwise("origin_detailed_zone"),
+        destination_detailed_zone=pl.when(
+            "8" + pl.col("destination_insee") == pl.col("destination_detailed_zone")
+        )
+        .then(None)
+        .when("9" + pl.col("destination_insee") == pl.col("destination_detailed_zone"))
+        .then(None)
+        .otherwise("destination_detailed_zone"),
+    )
+    return lf

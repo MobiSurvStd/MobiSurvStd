@@ -19,9 +19,9 @@ Identifier of the household the person belongs to.
 - **Type:** UInt32
 - **Guarantees:**
   - The value is not null.
-  - There exists a household with this `household_id`.
   - The values are stored in increasing order (i.e., the persons from households with a smaller id
     are shown first).
+  - There exists a household with this `household_id`.
 
 ### `person_index`
 
@@ -32,8 +32,6 @@ Index of the person within the household's persons.
   - The value is not null.
   - Values are unique *within a household* and range from 1 to the number of persons in the
     household.
-  - The values are stored in increasing order *within a household* (i.e., the persons with smaller
-    indices are shown first).
 
 ### `original_person_id`
 
@@ -83,8 +81,8 @@ Age of the person.
 - **Type:** UInt8
 - **Guarantees:**
   - The value is not larger than 125.
-  - Persons whose `reference_person_link` is `"child"` are not older than the household reference
-    person.
+  - The value is smaller than the household's reference person when `reference_person_link` is
+    `"child"`.
 
 ### `age_class`
 
@@ -99,6 +97,7 @@ Age of the person in 7 classes.
   - `"65-74"`: 65 to 74
   - `"75+"`: 75 or more
 - **Guarantees:**
+  - The value is not null when `age` is not null.
   - The class is compatible with the value of `age`.
 
 ### `age_class_code`
@@ -109,30 +108,8 @@ Value 1 is for `"17-"`, 2 is for `"18-24"`, ..., 7 is for `"75+"`.
 
 - **Type:** UInt8
 - **Guarantees:**
+  - The value is not null when `age` is not null.
   - The value is consistent with `age_class`.
-
-### `education_level`
-
-Highest education level reached by the person.
-
-Note that given the diversity of the surveys regarding this question, some modalities might have
-different meanings depending on the survey (e.g., `"primary"` can mean either that the person did
-go to school after primary education or that their highest diploma earned is "Certificat d'études
-primaires").
-Also see [`detailed_education_level`](#detailed_education_level).
-
-- **Modalities:**
-  - `"no_studies_or_no_diploma"`: the person did no go to school or did not get any diploma
-  - `"primary"`: the person has stopped going to school after primary education ("école primaire")
-    or their highest diploma is "Certificat d'études primaires"
-  - `"secondary:no_bac"`: the person has stopped going to school after middle-school ("collège") or
-    high-school ("lycée") and did not get the baccalauréat
-  - `"secondary:bac"`: the person has stopped going to school after high-school ("lycée") with
-    the baccalauréat diploma
-  - `"higher:at_most_bac+2"`: the person has stopped going to school after at most 2 years of
-    higher education
-  - `"higher:at_least_bac+3"`: the person has stopped going to school after at least 3 years of
-    higher education
 
 ### `detailed_education_level`
 
@@ -172,23 +149,36 @@ in the surveys without having too many modalities and without losing too much in
   - `"higher:bac+3_or_+4"`: the person's highest diploma is at level BAC+3 or BAC+4
   - `"higher:at_least_bac+5"`: the person's highest diploma is at least BAC+5
 - **Guarantees:**
-  - The value is null if `education_level` is null.
+  - The value is null when `professional_occupation` is `"student"`.
 
-## Occupancy
+### `education_level`
 
-### `professional_occupation`
+Highest education level reached by the person.
 
-Professional status of the person.
-
-Note these categories cannot represent some mixed situations (e.g., students with week-end jobs,
-students in apprenticeship, retired people with small jobs).
-Also see `detailed_professional_occupation` and `secondary_professional_occupation` for more
-details.
+Note that given the diversity of the surveys regarding this question, some modalities might have
+different meanings depending on the survey (e.g., `"primary"` can mean either that the person did
+go to school after primary education or that their highest diploma earned is "Certificat d'études
+primaires").
+Also see [`detailed_education_level`](#detailed_education_level).
 
 - **Modalities:**
-  - `"worker"`: the person has a full-time or part-time job
-  - `"student"`: the person is a student
-  - `"other"`: other status
+  - `"no_studies_or_no_diploma"`: the person did no go to school or did not get any diploma
+  - `"primary"`: the person has stopped going to school after primary education ("école primaire")
+    or their highest diploma is "Certificat d'études primaires"
+  - `"secondary:no_bac"`: the person has stopped going to school after middle-school ("collège") or
+    high-school ("lycée") and did not get the baccalauréat
+  - `"secondary:bac"`: the person has stopped going to school after high-school ("lycée") with
+    the baccalauréat diploma
+  - `"higher:at_most_bac+2"`: the person has stopped going to school after at most 2 years of
+    higher education
+  - `"higher:at_least_bac+3"`: the person has stopped going to school after at least 3 years of
+    higher education
+- **Guarantees:**
+  - The value is null when `professional_occupation` is `"student"`.
+  - The value is null when `detailed_education_level` is null.
+  - The value is consistent with `detailed_education_level`.
+
+## Occupancy
 
 ### `detailed_professional_occupation`
 
@@ -206,8 +196,23 @@ Detailed professional status of the person.
   - `"other:retired"`: the person is retired
   - `"other:homemaker"`: the person is not working and not looking for a job
   - `"other:unspecified"`: other unspecified situation
+
+### `professional_occupation`
+
+Professional status of the person.
+
+Note these categories cannot represent some mixed situations (e.g., students with week-end jobs,
+students in apprenticeship, retired people with small jobs).
+Also see `detailed_professional_occupation` and `secondary_professional_occupation` for more
+details.
+
+- **Modalities:**
+  - `"worker"`: the person has a full-time or part-time job
+  - `"student"`: the person is a student
+  - `"other"`: other status
 - **Guarantees:**
-  - The values are consistent with `professional_occupation`.
+  - The values is not null when `detailed_professional_occupation` is not null.
+  - The value is consistent with `detailed_professional_occupation`.
 
 ### `secondary_professional_occupation`
 
@@ -225,6 +230,55 @@ This is useful for students with part-time student job or workers with continuou
 
 ## Work status
 
+### `pcs_category_code2020`
+
+Code of the category of "Professions et Catégories Socioprofessionnelles" the person belongs to.
+
+This variable is used when the codes from the survey follow the
+[INSEE 2020 definition](https://www.insee.fr/fr/metadonnees/pcs2020/groupeSocioprofessionnel/1).
+
+- **Type:** UInt8
+- **Guarantees:**
+  - Possible values: 10, 21, 22, 23, 31, 33, 34, 35, 37, 38, 42, 43, 44, 45, 46, 47, 48, 52, 53,
+    54, 55, 56, 62, 63, 64, 65, 67, 68, 69.
+  - If `professional_occupation` is `"student"`, `detailed_professional_occupation` is not
+    `"student:apprenticeship"`, and `secondary_professional_occupation` is not `"work"`, then the
+    value is null.
+
+### `pcs_category_code2003`
+
+Code of the category of "Professions et Catégories Socioprofessionnelles" the person belongs to.
+
+This variable is used when the codes from the survey follow the
+[INSEE 2003 definition](https://www.insee.fr/fr/metadonnees/pcs2003/categorieSocioprofessionnelleAgregee/1).
+
+- **Type:** UInt8
+- **Guarantees:**
+  - Possible values: 10, 21, 22, 23, 31, 32, 36, 41, 46, 47, 48, 51, 54, 55, 56, 61, 66, 69, 71,
+    72, 73, 76, 81, 82.
+  - If `professional_occupation` is `"student"`, `detailed_professional_occupation` is not
+    `"student:apprenticeship"`, and `secondary_professional_occupation` is not `"work"`, then the
+    value is null.
+
+### `pcs_group_code`
+
+Code of the group of "Professions et Catégories Socioprofessionnelles" the person belongs to.
+
+The codes follow the
+[2003 definition of the groups](https://www.insee.fr/fr/metadonnees/pcs2003/categorieSocioprofessionnelleAgregee/1).
+
+See [`pcs_group`](#pcs_group) for more details.
+
+- **Modalities:** 1, 2, 3, 4, 5, 6, 7, 8
+- **Guarantees:**
+  - If `professional_occupation` is `"student"`, `detailed_professional_occupation` is not
+    `"student:apprenticeship"`, and `secondary_professional_occupation` is not `"work"`, then the
+    value is null.
+  - If `pcs2020` is not null, then the value is not null.
+  - The value is equal to the first digit of `pcs2020` (when not null).
+  - If `pcs2003` is not null, then the value is not null.
+  - The value is equal to the first digit of `pcs2003` (when not null).
+
 ### `pcs_group`
 
 Group of "Professions et Catégories Socioprofessionnelles" the person belongs to.
@@ -241,7 +295,7 @@ The `detailed_professional_occupation` variable should be used instead if you ne
 status.
 Note that unemployed and retired people might still be assigned to the group corresponding to their
 previous jobs.
-Students can be assigned a PCS only if they have an apprenticeship contract.
+Students can be assigned a PCS if they have an apprenticeship contract or student job.
 
 - **Modalities:**
   - `"agriculteurs_exploitants"`
@@ -253,50 +307,8 @@ Students can be assigned a PCS only if they have an apprenticeship contract.
   - `"retraités"`
   - `"autres_personnes_sans_activité_professionnelle"`
 - **Guarantees:**
-  - If the `professional_occupation` is `"student"` and `detailed_professional_occupation` is not
-    `"student:apprenticeship"`, then `pcs_group` is null.
-
-### `pcs_group_code`
-
-Code of the group of "Professions et Catégories Socioprofessionnelles" the person belongs to.
-
-The codes follow the
-[2003 definition of the groups](https://www.insee.fr/fr/metadonnees/pcs2003/categorieSocioprofessionnelleAgregee/1).
-
-- **Type:** UInt8
-- **Guarantees:**
-  - All values are between 1 and 8.
-  - The values are consistent with variable `pcs_group` (e.g., value is 5 if and only if
-    `pcs_group` is `"employés"`).
-  - The value is null *if and only if* `pcs_group` is null.
-
-### `pcs_category_code2020`
-
-Code of the category of "Professions et Catégories Socioprofessionnelles" the person belongs to.
-
-This variable is used when the codes from the survey follow the
-[INSEE 2020 definition](https://www.insee.fr/fr/metadonnees/pcs2020/groupeSocioprofessionnel/1).
-
-- **Type:** UInt8
-- **Guarantees:**
-  - Possible values: 10, 21, 22, 23, 31, 33, 34, 35, 37, 38, 42, 43, 44, 45, 46, 47, 48, 52, 53,
-    54, 55, 56, 62, 63, 64, 65, 67, 68, 69.
-  - If `pcs_group_code` is null, then the value is null.
-  - If the value is not null, then its first digit is equal to the value of `pcs_group_code`.
-
-### `pcs_category_code2003`
-
-Code of the category of "Professions et Catégories Socioprofessionnelles" the person belongs to.
-
-This variable is used when the codes from the survey follow the
-[INSEE 2003 definition](https://www.insee.fr/fr/metadonnees/pcs2003/categorieSocioprofessionnelleAgregee/1).
-
-- **Type:** UInt8
-- **Guarantees:**
-  - Possible values: 10, 21, 22, 23, 31, 32, 36, 41, 46, 47, 48, 51, 54, 55, 56, 61, 66, 69, 71,
-    72, 73, 76, 81, 82.
-  - If `pcs_group_code` is null, then the value is null.
-  - If the value is not null, then its first digit is equal to the value of `pcs_group_code`.
+  - The value is null *if and only if* `pcs_group_code` is null.
+  - The value is consistent with `pcs_group_code`.
 
 ## Workplace location
 
@@ -306,7 +318,8 @@ Whether the person works only at home.
 
 - **Type:** Boolean
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
 
 ### `workplace_singularity`
 
@@ -318,7 +331,8 @@ Whether the person has a unique, fixed workplace location.
   - `"variable"`: the person has multiple usual workplace location or no usual workplace location
     (e.g., moving from client to client)
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
   - If `work_only_at_home` is true, then the value is `"unique:home"`.
 
 ### `work_lng`
@@ -331,6 +345,10 @@ For other surveys, the coordinates represent the centroid of `work_detailed_zone
 coordinates defined by `work_special_location` when it is non-null).
 
 - **Type:** Float64
+- **Guarantees:**
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is true, then the value is null.
 
 ### `work_lat`
 
@@ -339,6 +357,10 @@ Latitude of the usual workplace.
 See [`work_lng`](#work_lng) for details on the accuracy of the value.
 
 - **Type:** Float64
+- **Guarantees:**
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is true, then the value is null.
 
 ### `work_special_location`
 
@@ -346,9 +368,8 @@ Identifier of the special location where the person usually works.
 
 - **Type:** String
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
-  - The work special location intersects with the work detailed zone, draw zone, and INSEE zone
-    (only checked if the zones are known).
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
   - If `work_only_at_home` is true, then the value is null.
 
 ### `work_detailed_zone`
@@ -357,9 +378,8 @@ Identifier of the detailed zone where the person usually works.
 
 - **Type:** String
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
-  - The work detailed zone intersects with the work draw zone and INSEE zone (only checked if the
-    zones are known).
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
   - If `work_only_at_home` is true, then the value is null.
 
 ### `work_draw_zone`
@@ -368,8 +388,8 @@ Identifier of the draw zone where the person usually works.
 
 - **Type:** String
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
-  - The work draw zone intersects with the work INSEE zone (only checked if the zones are known).
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
   - If `work_only_at_home` is true, then the value is null.
 
 ### `work_insee`
@@ -378,8 +398,9 @@ INSEE code of the municipality where the person usually works.
 
 - **Type:** String
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
-  - String is a [valid INSEE code](TODO).
+  - String is a [valid INSEE code](../miscellaneous.md#insee-codes).
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
   - If `work_only_at_home` is true, then the value is null.
 
 ### `work_insee_name`
@@ -388,7 +409,9 @@ Name of the municipality where the person usually works.
 
 - **Type:** String
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is true, then the value is null.
 
 ### `work_dep`
 
@@ -397,6 +420,9 @@ _Département_ code of the usual workplace.
 - **Type:** String
 - **Guarantees:**
   - The value is a valid _département_ code.
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is true, then the value is null.
   - If `work_insee` is not null, then the value is equal to the _département_ of the work INSEE
     municipality.
 
@@ -406,6 +432,9 @@ Name of the _département_ of the usual workplace.
 
 - **Type:** String
 - **Guarantees:**
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is true, then the value is null.
   - The value is consistent with `work_dep`.
 
 ### `work_nuts2`
@@ -416,6 +445,9 @@ In France, NUTS 2 corresponds to the 22 old administrative regions (and 5 overse
 
 - **Type:** String
 - **Guarantees:**
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is true, then the value is null.
   - The value is a valid NUTS 2 code.
   - If `work_dep` is not null, then the value is equal to the NUTS 2 code corresponding to the work
     _département_.
@@ -426,6 +458,9 @@ Name of the NUTS 2 region of the usual workplace.
 
 - **Type:** String
 - **Guarantees:**
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is true, then the value is null.
   - The value is consistent with `work_nuts2`.
 
 ### `work_nuts1`
@@ -436,6 +471,9 @@ In France, NUTS 1 corresponds to the 13 administrative regions (and 1 overseas r
 
 - **Type:** String
 - **Guarantees:**
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is true, then the value is null.
   - The value is a valid NUTS 1 code.
   - If `work_nuts2` is not null, then the value is equal to the NUTS 1 code corresponding to the
     work NUTS 2.
@@ -446,6 +484,9 @@ Name of the NUTS 1 region of the usual workplace.
 
 - **Type:** String
 - **Guarantees:**
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is true, then the value is null.
   - The value is consistent with `work_nuts1`.
 
 ## Work commute
@@ -456,9 +497,10 @@ Euclidean distance, in kilometers, between the person's home location and usual 
 
 - **Type:** Float64
 - **Guarantees:**
-  - All values are non-negative.
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
-  - If `work_only_at_home` is false, then the value is zero.
+  - The value is non-negative.
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is true, then the value is zero.
 
 ### `has_car_for_work_commute`
 
@@ -474,8 +516,9 @@ Whether the person has a car they can use to commute to work.
     work
   - `"no"`: no
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
-  - If `work_only_at_home` is true, then the value is null.
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is false, then the value is zero.
 
 ### `telework`
 
@@ -490,8 +533,9 @@ telework each day (the value is null for them).
   - `"yes:occasionally"`: the person teleworks but only occasionally (less than once a month)
   - `"no"`: the person never telework
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
-  - If `work_only_at_home` is true, then the value is null.
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is false, then the value is zero.
 
 ## Workplace parking
 
@@ -508,8 +552,9 @@ Whether the person has access to a car parking spot at the usual work location.
   - `"no"`: the person cannot park their car at work
   - `"dont_know"`: the person does not know whether they can park their car at work
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
-  - If `work_only_at_home` is true, then the value is null.
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is false, then the value is zero.
 
 ### `work_bicycle_parking`
 
@@ -527,25 +572,11 @@ Whether the person has access to a bicycle parking spot at the usual work locati
     sheltered)
   - `"no"`: the person does not have access to a bicycle parking at workplace or nearby work
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
-  - If `work_only_at_home` is true, then the value is null.
+  - If `professional_occupation` is not `"worker"` and `secondary_professional_occupation` is not
+    `"work"`, then the value is null.
+  - If `work_only_at_home` is false, then the value is zero.
 
 ## Student status
-
-### `student_group`
-
-Group indicating the current education level for students.
-
-- **Modalities:**
-  - `"primaire"`: "maternelle" or primary school
-  - `"collège"`: middle-school
-  - `"lycée"`: high-school
-  - `"supérieur"`: higher education
-- **Guarantees:**
-  - If `professional_occupation` is *not* `"student"`, then the value is null.
-  - The values are consistent with `detailed_professional_occupation` (`"student:higher"` implies
-    `"supérieur"`; `"student:primary_or_secondary"` implies `"primaire"`, `"collège"`, or `"lycée"`;
-    `"student:apprenticeship"` implies `"collège"`, `"lycée"` or `"supérieur"`).
 
 ### `student_category`
 
@@ -574,8 +605,23 @@ Category indicating the detailed current education level for students.
   - `"supérieur:BAC+6&+"`: Other higher education training, "niveau BAC+6 et plus"
 - **Guarantees:**
   - If `professional_occupation` is *not* `"student"`, then the value is null.
-  - The values are consistent with `student_group` (e.g., if `student_category` is
-    `"collège:6e"`, then `student_group` is `"collège"`).
+
+### `student_group`
+
+Group indicating the current education level for students.
+
+- **Modalities:**
+  - `"primaire"`: "maternelle" or primary school
+  - `"collège"`: middle-school
+  - `"lycée"`: high-school
+  - `"supérieur"`: higher education
+- **Guarantees:**
+  - If `professional_occupation` is *not* `"student"`, then the value is null.
+  - The value is consistent with `student_category` (e.g., if `student_category` is
+    `"collège:6e"`, then the value is `"collège"`).
+  - The value is consistent with `detailed_professional_occupation` (`"student:higher"` implies
+    `"supérieur"`; `"student:primary_or_secondary"` implies `"primaire"`, `"collège"`, or `"lycée"`;
+    `"student:apprenticeship"` implies `"collège"`, `"lycée"` or `"supérieur"`).
 
 ## Study location
 
@@ -597,6 +643,9 @@ For other surveys, the coordinates represent the centroid of `study_detailed_zon
 coordinates defined by `study_special_location` when it is non-null).
 
 - **Type:** Float64
+- **Guarantees:**
+  - If `professional_occupation` is *not* `"student"`, then the value is null.
+  - If `study_only_at_home` is true, then the value is null.
 
 ### `study_lat`
 
@@ -605,6 +654,9 @@ Latitude of the usual study_location.
 See [`study_lng`](#study_lng) for details on the accuracy of the value.
 
 - **Type:** Float64
+- **Guarantees:**
+  - If `professional_occupation` is *not* `"student"`, then the value is null.
+  - If `study_only_at_home` is true, then the value is null.
 
 ### `study_special_location`
 
@@ -613,8 +665,6 @@ Identifier of the special location zone where the person usually studies.
 - **Type:** String
 - **Guarantees:**
   - If `professional_occupation` is *not* `"student"`, then the value is null.
-  - The study special location intersects with the study detailed zone, draw zone, and INSEE zone
-    (only checked if the zones are known).
   - If `study_only_at_home` is true, then the value is null.
 
 ### `study_detailed_zone`
@@ -624,8 +674,6 @@ Identifier of the detailed zone where the person usually studies.
 - **Type:** String
 - **Guarantees:**
   - If `professional_occupation` is *not* `"student"`, then the value is null.
-  - The study detailed zone intersects with the study draw zone and INSEE zone (only checked if the
-    zones are known).
   - If `study_only_at_home` is true, then the value is null.
 
 ### `study_draw_zone`
@@ -635,7 +683,6 @@ Identifier of the draw zone where the person usually studies.
 - **Type:** String
 - **Guarantees:**
   - If `professional_occupation` is *not* `"student"`, then the value is null.
-  - The study draw zone intersects with the study INSEE zone (only checked if the zones are known).
   - If `study_only_at_home` is true, then the value is null.
 
 ### `study_insee`
@@ -644,8 +691,8 @@ INSEE code of the municipality where the person usually studies.
 
 - **Type:** String
 - **Guarantees:**
+  - String is a [valid INSEE code](../miscellaneous.md#insee-codes).
   - If `professional_occupation` is *not* `"student"`, then the value is null.
-  - String is a [valid INSEE code](TODO).
   - If `study_only_at_home` is true, then the value is null.
 
 ### `study_insee_name`
@@ -655,6 +702,7 @@ Name of the municipality where the person usually studies.
 - **Type:** String
 - **Guarantees:**
   - If `professional_occupation` is *not* `"student"`, then the value is null.
+  - If `study_only_at_home` is true, then the value is null.
 
 ### `study_dep`
 
@@ -665,6 +713,8 @@ _Département_ code of the usual study location.
   - The value is a valid _département_ code.
   - If `study_insee` is not null, then the value is equal to the _département_ of the study INSEE
     municipality.
+  - If `professional_occupation` is *not* `"student"`, then the value is null.
+  - If `study_only_at_home` is true, then the value is null.
 
 ### `study_dep_name`
 
@@ -672,6 +722,8 @@ Name of the _département_ of the usual study location.
 
 - **Type:** String
 - **Guarantees:**
+  - If `professional_occupation` is *not* `"student"`, then the value is null.
+  - If `study_only_at_home` is true, then the value is null.
   - The value is consistent with `study_dep`.
 
 ### `study_nuts2`
@@ -682,6 +734,8 @@ In France, NUTS 2 corresponds to the 22 old administrative regions (and 5 overse
 
 - **Type:** String
 - **Guarantees:**
+  - If `professional_occupation` is *not* `"student"`, then the value is null.
+  - If `study_only_at_home` is true, then the value is null.
   - The value is a valid NUTS 2 code.
   - If `study_dep` is not null, then the value is equal to the NUTS 2 code corresponding to the
     study _département_.
@@ -692,6 +746,8 @@ Name of the NUTS 2 region of the usual study location.
 
 - **Type:** String
 - **Guarantees:**
+  - If `professional_occupation` is *not* `"student"`, then the value is null.
+  - If `study_only_at_home` is true, then the value is null.
   - The value is consistent with `study_nuts2`.
 
 ### `study_nuts1`
@@ -702,6 +758,8 @@ In France, NUTS 1 corresponds to the 13 administrative regions (and 1 overseas r
 
 - **Type:** String
 - **Guarantees:**
+  - If `professional_occupation` is *not* `"student"`, then the value is null.
+  - If `study_only_at_home` is true, then the value is null.
   - The value is a valid NUTS 1 code.
   - If `study_nuts2` is not null, then the value is equal to the NUTS 1 code corresponding to the
     study NUTS 2.
@@ -712,6 +770,8 @@ Name of the NUTS 1 region of the usual study location.
 
 - **Type:** String
 - **Guarantees:**
+  - If `professional_occupation` is *not* `"student"`, then the value is null.
+  - If `study_only_at_home` is true, then the value is null.
   - The value is consistent with `study_nuts1`.
 
 ## Study commute
@@ -722,9 +782,9 @@ Euclidean distance, in kilometers, between the person's home location and usual 
 
 - **Type:** Float64
 - **Guarantees:**
-  - All values are non-negative.
+  - The value is non-negative.
   - If `professional_occupation` is *not* `"student"`, then the value is null.
-  - If `study_only_at_home` is false, then the value is zero.
+  - If `study_only_at_home` is true, then the value is zero.
 
 ### `has_car_for_study_commute`
 
@@ -809,15 +869,6 @@ Whether the person has a driving license for motorcycles.
   - If the value is `"yes"`, then the person is not younger than 17.
   - If the value is `"in_progress"`, then the person is not younger than 15.
 
-### `has_public_transit_subscription`
-
-Whether the person owns a valid public-transit subscription.
-
-Usually, the question asked is "did you have a valid public-transit subscription yesterday?" which
-means that the subscription was valid during the person's surveyed trips.
-
-- **Type:** Boolean
-
 ### `public_transit_subscription`
 
 Type of public-transit subscription that the person owns.
@@ -832,14 +883,18 @@ Type of public-transit subscription that the person owns.
     bearing)
   - `"yes:unspecified"`: the person owns a public-transit subscription with unspecified cost)
   - `"no"`: the person does not own a public-transit subscription
-- **Guarantees:**
-  - The values are consistent with `has_public_transit_subscription`.
 
-### `has_car_sharing_subscription`
+### `has_public_transit_subscription`
 
-Whether the person has a subscription for a car-sharing service ("autopartage").
+Whether the person owns a valid public-transit subscription.
+
+Usually, the question asked is "did you have a valid public-transit subscription yesterday?" which
+means that the subscription was valid during the person's surveyed trips.
 
 - **Type:** Boolean
+- **Guarantees:**
+  - The value is not null when `public_transit_subscription` is not null.
+  - The value is consistent with `public_transit_subscription`.
 
 ### `car_sharing_subscription`
 
@@ -852,8 +907,15 @@ Type of car-sharing service subscription that the person has.
     ("partage entre particuliers")
   - `"yes:unspecified"`: the person has a car-sharing subscription (no further details)
   - `"no"`: the person does not have a car-sharing subscription
+
+### `has_car_sharing_subscription`
+
+Whether the person has a subscription for a car-sharing service ("autopartage").
+
+- **Type:** Boolean
 - **Guarantees:**
-  - The values are consistent with `has_car_sharing_subscription`.
+  - The value is not null when `car_sharing_subscription` is not null.
+  - The value is consistent with `car_sharing_subscription`.
 
 ### `has_bike_sharing_subscription`
 
@@ -893,12 +955,10 @@ the interview).
   - `"away"`: the person was away from home during that day
 - **Guarantees:**
   - The value is null *if and only if* `is_surveyed` is false.
-  - There is at least one trip defined for this person if the value is `"yes"`.
-  - There is no trip defined for this person if the value is `"no"` or `"away"`.
 
 ### `worked_during_surveyed_day`
 
-Whether the person worked during the surveyd day (usually the day before the interview).
+Whether the person worked during the surveyed day (usually the day before the interview).
 
 - **Modalities:**
   - `"yes:outside"`: the person worked outside from home
@@ -911,8 +971,8 @@ Whether the person worked during the surveyd day (usually the day before the int
     other reason
   - `"no:unspecified"`: the person did not work, for unspecified reason
 - **Guarantees:**
-  - If `professional_occupation` is *not* `"worker"`, then the value is null.
-  - If the value is `"yes:home:usual"`, then `work_only_at_home` must be true.
+  - The value is null when `is_surveyed` is false.
+  - If `work_only_at_home` is false, then the value is not `"yes:home:usual"`.
   - If the value is `"no:weekday"`, then there is not trip with work purpose for that person (for
     `"no:reason"` and `"no:unspecified"` it might happen that the person went to work and realised
     that they could not work because of a strike for example).

@@ -35,9 +35,12 @@ def cast_insee(s: gpd.GeoSeries):
 
 
 def cast_columns(gdf: gpd.GeoDataFrame):
-    for col in ("special_location_id", "detailed_zone_id", "draw_zone_id"):
+    for col in ("special_location_id", "detailed_zone_id"):
         if col in gdf.columns:
             gdf[col] = cast_id(gdf[col])
+    if "draw_zone_id" in gdf.columns:
+        # The DTIR columns always have 4 characters in the CSVs.
+        gdf["draw_zone_id"] = cast_id(gdf["draw_zone_id"]).str.pad(width=4, fillchar="0")
     if "insee_id" in gdf.columns:
         gdf["insee_id"] = cast_insee(gdf["insee_id"])
 
@@ -75,6 +78,12 @@ def find_matching_column(name: str, gdf: gpd.GeoDataFrame):
 def select_name_column(gdf: gpd.GeoDataFrame, col_names: list[str], name: str):
     for zf_name_col in col_names:
         if matching_col := find_matching_column(zf_name_col, gdf):
+            if (
+                gdf[matching_col].astype(str).str.len().eq(0).all()
+                or gdf[matching_col].nunique() == 1
+            ):
+                # A matching column was found but it is empty.
+                continue
             gdf[name] = gdf[matching_col].astype(str)
 
 
@@ -184,6 +193,9 @@ class ZonesReader:
         if gdfs:
             gdf = pd.concat(gdfs)
             if gdf["special_location_id"].nunique() != len(gdf):
+                # La Roche-sur-Yon 2013 will hit this case because 2 special locations have the same
+                # it. It seems that the special locations never appear in the survey so it's fine if
+                # they are discarded here.
                 logger.warning("Special location ids are not unique")
             else:
                 self.special_locations = gdf
@@ -234,7 +246,11 @@ class ZonesReader:
             if gdf is not None:
                 gdfs.append(gdf)
         if gdfs:
-            self.detailed_zones = pd.concat(gdfs)
+            gdf = pd.concat(gdfs)
+            if gdf["detailed_zone_id"].nunique() != len(gdf):
+                logger.warning("Duplicated detailed zone ids in detailed zone file")
+                return
+            self.detailed_zones = gdf
 
     def process_detailed_zones(self, filename: str | ZipExtFile):
         gdf = read_file(filename)
@@ -288,6 +304,13 @@ class ZonesReader:
         if "draw_zone_id" not in columns:
             logger.warning("Missing draw zone id in draw zone file")
             return None
+        if gdf["draw_zone_id"].nunique() != len(gdf):
+            logger.warning(
+                "Duplicated draw zone ids in draw zone file: zones with identical ids are merged"
+            )
+            gdf = gdf.dissolve(by="draw_zone_id", as_index=False)
+            # Try to clean the dissolve.
+            gdf.geometry = gdf.geometry.buffer(10).buffer(-10)
         return gdf[columns].copy()
 
     def preprocess_draw_zones(self, gdf: gpd.GeoDataFrame):
@@ -328,6 +351,9 @@ class ZonesReader:
         if "detailed_zone_id" not in columns:
             logger.warning("Missing detailed zone id in detailed zone file")
             zfs = None
+        if zfs["detailed_zone_id"].nunique() != len(zfs):
+            logger.warning("Duplicated detailed zone ids in detailed zone file")
+            zfs = None
         else:
             assert "geometry" in columns
             zfs = zfs[columns].copy()
@@ -350,6 +376,9 @@ class ZonesReader:
         )
         if "special_location_id" not in columns:
             logger.warning("Missing special location id in special location file")
+            gts = None
+        if gts["special_location_id"].nunique() != len(gts):
+            logger.warning("Duplicated special location ids in special location file")
             gts = None
         else:
             assert "geometry" in columns

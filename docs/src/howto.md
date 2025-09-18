@@ -1,16 +1,45 @@
+<style>
+    .content main {
+        max-width: 900px;
+    }
+</style>
+
 # User Guide
 
 ## Command Line Interface
 
-```bash
-python -m mobisurvstd SOURCE OUTPUT_DIRECTORY --survey-type TYPE [--bulk]
 ```
+ Usage: python -m mobisurvstd [OPTIONS] SOURCE OUTPUT_DIRECTORY
 
-- `SOURCE` is a path to either a directory or a zipfile where the survey data is stored.
-- `OUTPUT_DIRECTORY` is a path to the directory where the standardized survey should be stored.
-- `--survey-type TYPE` is the type of the original survey ("emc2", "emp2019", "egt2010", "egt2020",
-  "edgt", "edvm", or "emd"). If omitted, MobiSurvStd will guess the survey type.
-- `--bulk` must be used when you want to import all surveys located within the SOURCE directory.
+ Mobility Survey Standardizer: a Python command line tool to convert mobility surveys to a clean
+ standardized format.
+
+
+╭─ Arguments ────────────────────────────────────────────────────────────────────────────────────────╮
+│ *    source                TEXT  Path to the directory or the zipfile where the survey data is     │
+│                                  located.                                                          │
+│                                  [default: None]                                                   │
+│                                  [required]                                                        │
+│ *    output_directory      TEXT  Path to the directory where the standardized survey should be     │
+│                                  stored.                                                           │
+│                                  [default: None]                                                   │
+│                                  [required]                                                        │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────╮
+│ --survey-type               TEXT  Format of the original survey. Possible values: `emc2`,          │
+│                                   `emp2019`, `egt2010`, `egt2020`, `edgt`, `edvm`, `emd`.          │
+│                                   [default: None]                                                  │
+│ --bulk                            Import surveys in bulk from the given directory                  │
+│ --skip-spatial                    Do not read spatial data                                         │
+│ --no-validation                   Do not validate the standardized data (some guarantees might not │
+│                                   be satisfied)                                                    │
+│ --clear-cache                     Clear the cache data and exit                                    │
+│ --install-completion              Install completion for the current shell.                        │
+│ --show-completion                 Show completion for the current shell, to copy it or customize   │
+│                                   the installation.                                                │
+│ --help                            Show this message and exit.                                      │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
 
 ### Examples
 
@@ -20,7 +49,7 @@ Read the EGT2020 survey from the `original_egt2020` directory and store the stan
 the `standardized_egt2020` directory.
 
 ```bash
-python -m mobisurvstd original_egt2020 standardized_egt2020 --survey-type egt2020
+python -m mobisurvstd original_egt2020 standardized_egt2020
 ```
 
 #### From zipfile
@@ -29,7 +58,7 @@ Read the EGT2020 survey from the `original_egt2020.zip` file and store the stand
 the `standardized_egt2020` directory.
 
 ```bash
-python -m mobisurvstd original_egt2020.zip standardized_egt2020 --survey-type egt2020
+python -m mobisurvstd original_egt2020.zip standardized_egt2020
 ```
 
 #### Bulk import
@@ -38,7 +67,7 @@ Read all surveys in the `my_surveys` directory and store their standardized vers
 `standardized_surveys` directory.
 
 ```bash
-python -m mobisurvstd my_surveys standardized_surveys --bulk
+python -m mobisurvstd --bulk my_surveys standardized_surveys
 ```
 
 ## Usage from Python
@@ -50,9 +79,11 @@ Converts a mobility survey to a clean standardized format.
 ```python
 mobisurvstd.standardize(
     source: str,
-    output_directory: str,
+    output_directory: str | None = None,
     survey_type: str | None = None,
     add_name_subdir: bool = False,
+    skip_spatial: bool = False,
+    no_validation: bool = False,
 ) -> mobisurvstd.classes.SurveyData | None
 ```
 
@@ -67,16 +98,25 @@ source
 output_directory
     Path to the directory where the standardized survey should be stored.
     If the directory does not exist, MobiSurvStd will create it (recursively).
+    If None, the standardized survey will not be saved.
 survey_type
     String indicating the type of the survey to be converted.
     If the value is omitted, MobiSurvStd will do its best to guess the survey type.
-    Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm".
+    Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd".
 add_name_subdir
     Whether the standardized survey is stored directly in `output_directory` or within a
     subdirectory of `output_directory`.
     If True, the standardized survey is stored in a subdirectory within `output_directory`. The
     subdirectory name is the survey name.
     If False (default), the standardized survey is stored directly in `output_directory`.
+skip_spatial
+    If True, MobiSurvStd will not try to read spatial data from the survey.
+    This means that special locations, detailed zones, and draw zones will not be read and
+    proposed as an output.
+    Some variables (e.g., home_lng, home_lat) might also be missing as a result.
+no_validation
+    If True, MobiSurvStd will not validate the standardized data.
+    This means that guarantees for some variables might not be satisfied.
 
 Returns
 -------
@@ -107,6 +147,8 @@ mobisurvstd.bulk_standardize(
     directory: str,
     output_directory: str,
     survey_type: str | None = None,
+    skip_spatial: bool = False,
+    no_validation: bool = False,
 )
 ```
 
@@ -124,7 +166,15 @@ survey_type
     String indicating the type of the surveys to be converted.
     If the directory contains surveys of different types, leave this value to None and
     MobiSurvStd will try to guess the type of each survey.
-    Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm".
+    Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd".
+skip_spatial
+    If True, MobiSurvStd will not try to read spatial data from the surveys.
+    This means that special locations, detailed zones, and draw zones will not be read and
+    proposed as an output.
+    Some variables (e.g., home_lng, home_lat) might also be missing as a result.
+no_validation
+    If True, MobiSurvStd will not validate the standardized data.
+    This means that guarantees for some variables might not be satisfied.
 ```
 
 **Example:** Read all surveys in the `my_surveys` directory and store their standardized version
@@ -150,7 +200,8 @@ Access the survey's metadata as a dictionary:
 
 ```python
 >>> data.metadata
-{'type': 'EMP2019',
+{'name': 'EMP2019',
+ 'type': 'EMP2019',
  'survey_method': 'face_to_face',
  'nb_households': 13825,
  'nb_cars': 18817,
@@ -161,7 +212,6 @@ Access the survey's metadata as a dictionary:
  'nb_special_locations': 0,
  'nb_detailed_zones': 0,
  'nb_draw_zones': 0,
- 'nb_insee_zones': 0,
  'start_date': '2018-05-01',
  'end_date': '2019-04-30',
  'insee': None}
@@ -244,4 +294,5 @@ import mobisurvstd
 mobisurvstd.read_many("output/", lambda d: d.trips, lambda x, y: pl.concat((x, y)))
 ```
 
-More complex examples on the use of `read_many` can be found in the `analyses` directory.
+More complex examples on the use of `read_many` can be found in the
+[`analyses`](https://github.com/MobiSurvStd/MobiSurvStd/tree/main/analyses) directory.

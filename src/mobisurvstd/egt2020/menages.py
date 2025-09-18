@@ -48,16 +48,6 @@ SURVEY_METHOD_MAP = {
     "CATI": "phone",
 }
 
-HOUSEHOLD_TYPE_MAP = {
-    "Homme seul": "single:man",
-    "Femme seule": "single:woman",
-    "Couple sans enfant": "couple:no_child",
-    "Couple avec enfant": "couple:children",
-    "Famille monoparentale père": "singleparent:father",
-    "Famille monoparentale mère": "singleparent:mother",
-    "Autre": "other",
-}
-
 HOUSING_TYPE_MAP = {
     1: "house",  # Une maison
     2: "apartment",  # Un appartement
@@ -138,7 +128,6 @@ def standardize_households(filename: str):
         original_household_id=pl.struct("IDCEREMA"),
         survey_method=pl.col("TYPE_QUEST").replace_strict(SURVEY_METHOD_MAP),
         interview_date=pl.date(year="ANNEE", month="MOIS", day="JOUR") + timedelta(days=1),
-        household_type=pl.col("TYPE_MEN").replace_strict(HOUSEHOLD_TYPE_MAP),
         income_lower_bound=pl.col("REVENU").replace_strict(REVENU_LB_MAP),
         income_upper_bound=pl.col("REVENU").replace_strict(REVENU_UB_MAP),
         housing_type=pl.col("TYPELOG").replace_strict(HOUSING_TYPE_MAP),

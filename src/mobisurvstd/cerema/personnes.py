@@ -298,8 +298,8 @@ class PersonsReader:
         lf = lf.with_columns(
             work_only_at_home=pl.when("is_not_student").then(pl.col("P14") == 1),
             study_only_at_home=pl.when("is_student").then(pl.col("P14") == 1),
-            work_detailed_zone=pl.when("is_not_student").then(self.clean_detailed_zone("P15")),
-            study_detailed_zone=pl.when("is_student").then(self.clean_detailed_zone("P15")),
+            work_detailed_zone=pl.when("is_not_student").then("P15"),
+            study_detailed_zone=pl.when("is_student").then("P15"),
             work_draw_zone=pl.when("is_not_student").then("STW"),
             study_draw_zone=pl.when("is_student").then("STW"),
             work_insee=pl.when("is_not_student").then("insee"),
@@ -333,6 +333,24 @@ class PersonsReader:
             special_locations=self.special_locations_coords,
             detailed_zones=self.detailed_zones_coords,
             extra_cols=["trip_date"],
+        )
+        # When the INSEE code ends with "000" or "999" it means "rest of the département".
+        # We drop these values because they do not add any additional information compared to `_dep`
+        # columns.
+        # This is done after the automatic cleaning so that the département is correctly read.
+        self.persons = self.persons.with_columns(
+            work_insee=pl.when(
+                pl.col("work_insee").str.ends_with("000")
+                | pl.col("work_insee").str.ends_with("999")
+            )
+            .then(None)
+            .otherwise("work_insee"),
+            study_insee=pl.when(
+                pl.col("study_insee").str.ends_with("000")
+                | pl.col("study_insee").str.ends_with("999")
+            )
+            .then(None)
+            .otherwise("study_insee"),
         )
 
 
@@ -400,6 +418,26 @@ def fix_work_study_location(lf: pl.LazyFrame, households: pl.LazyFrame):
         study_commute_euclidean_distance_km=pl.when("study_only_at_home")
         .then(0.0)
         .otherwise("study_commute_euclidean_distance_km"),
+    )
+    # For external work / study location, the detailed zone id is sometimes set to "8" + INSEE or
+    # "9" + INSEE. In this case, keeping the detailed zone id does not add any information so we set
+    # it to NULL.
+    lf = lf.with_columns(
+        work_detailed_zone=pl.when("8" + pl.col("work_insee") == pl.col("work_detailed_zone"))
+        .then(None)
+        .when("9" + pl.col("work_insee") == pl.col("work_detailed_zone"))
+        .then(None)
+        .otherwise("work_detailed_zone"),
+        study_detailed_zone=pl.when("8" + pl.col("study_insee") == pl.col("study_detailed_zone"))
+        .then(None)
+        .when("9" + pl.col("study_insee") == pl.col("study_detailed_zone"))
+        .then(None)
+        .otherwise("study_detailed_zone"),
+    )
+    # Values 99000, 99999, 99095, 99300 do not represent any known INSEE / country.
+    lf = lf.with_columns(
+        work_insee=pl.col("work_insee").replace(["99000", "99999", "99095", "99300"], None),
+        study_insee=pl.col("study_insee").replace(["99000", "99999", "99095", "99300"], None),
     )
     return lf
 

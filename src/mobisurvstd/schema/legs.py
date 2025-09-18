@@ -8,6 +8,7 @@ from .guarantees import (
     EqualTo,
     EqualToMapping,
     Indexed,
+    InseeConsistentWithDep,
     ListContains,
     ListLengthIs,
     LowerBounded,
@@ -93,7 +94,7 @@ LEG_SCHEMA = [
     # Draw zone from which the leg started (after walking).
     Variable("start_draw_zone", pl.String),
     # INSEE code of the municipality from which the leg started (after walking).
-    Variable("start_insee", pl.String, [ValidInsee()]),
+    Variable("start_insee", pl.String, [ValidInsee(), InseeConsistentWithDep("start_dep")]),
     # Name of the municipality from which the leg started (after walking).
     Variable("start_insee_name", pl.String),
     # Département code of the leg's start point.
@@ -119,7 +120,7 @@ LEG_SCHEMA = [
     # Draw zone at which the leg stopped (before walking).
     Variable("end_draw_zone", pl.String),
     # INSEE code of the municipality at which the leg stopped (before walking).
-    Variable("end_insee", pl.String, [ValidInsee()]),
+    Variable("end_insee", pl.String, [ValidInsee(), InseeConsistentWithDep("end_dep")]),
     # Name of the municipality at which the leg stopped (after walking).
     Variable("end_insee_name", pl.String),
     # Département code of the leg's end point.

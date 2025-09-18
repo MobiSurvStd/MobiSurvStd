@@ -292,6 +292,12 @@ def standardize_households(filename: str, detailed_zones: pl.DataFrame | None):
         # The interview date is 1 day after that date.
         interview_date=pl.concat_str("year", "week_number", "JDEP").str.to_date("%G%V%w")
         + timedelta(days=1),
+        # It seems that the survey uses "990xx" codes to represent foreign countries but I did not
+        # find the documentation for these codes so we set them all to the special code "99200"
+        # (i.e., any foreign country).
+        home_insee=pl.when(pl.col("home_insee").str.starts_with("99"))
+        .then(pl.lit("99200"))
+        .otherwise("home_insee"),
     )
     lf = clean_households(lf, detailed_zones=detailed_zones)
     return lf

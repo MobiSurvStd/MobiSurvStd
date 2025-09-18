@@ -85,6 +85,7 @@ class EDVMReader(CeremaReader):
             "num_gene",
             "num_zone_fine",
             "num_zf",
+            "codage",
             "numerozf",
             "zonefine",
             "zone_fine",
@@ -243,6 +244,10 @@ class EDVMReader(CeremaReader):
             for dtir_col in ("zone_fine", "codage", "num_zf", "code_pole_gen"):
                 if matching_col := find_matching_column(dtir_col, gdf):
                     gdf["draw_zone_id"] = gdf[matching_col].str.slice(0, 3)
+            # For Saint-Louis 2011, the draw_zone_id can be read from the first 4 characters of the
+            # ZF column.
+            if matching_col := find_matching_column("zone", gdf):
+                gdf["draw_zone_id"] = gdf[matching_col].str.slice(0, 4)
 
     def select_insee_column(self, gdf: gpd.GeoDataFrame):
         # This is the standard case.

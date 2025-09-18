@@ -84,7 +84,7 @@ class EDGTReader(CeremaReader):
             return [
                 find_file(
                     self.source,
-                    ".*(_zf|_zf_.*|zf08_.*|zones[_ ]fines)[.](tab|shp|mif)",
+                    ".*(_zf|_zf_.*|zf08_.*|(?<!tel_)zones[_ ]fines)[.](tab|shp|mif)",
                     subdir=subdir,
                     as_url=True,
                 )
@@ -224,7 +224,8 @@ class EDGTReader(CeremaReader):
         if "draw_zone_id" not in gdf.columns:
             # For Nice 2009, Saint-Denis-de-la-Réunion 2016, and Saint-Quentin-en-Yvelines 2010,
             # the draw_zone_id can be read from the first 3 characters of the GT column.
-            for dtir_col in ("num_generateur08", "num_gene_2015", "pôle_génér"):
+            # For Angers 2012, it can be read from the first 3 characters of the ZF column.
+            for dtir_col in ("num_generateur08", "num_gene_2015", "pôle_génér", "code"):
                 if matching_col := find_matching_column(dtir_col, gdf):
                     gdf["draw_zone_id"] = gdf[matching_col].astype(str).str.slice(0, 3)
 
@@ -256,6 +257,9 @@ class EDGTReader(CeremaReader):
         # For Montpellier 2014, the external zones are included in the ZF file. We remove them.
         if "ID_ENQ" in gdf.columns:
             gdf = gdf.loc[gdf["ID_ENQ"] == 1].copy()
+        if "ZONE_FINE" in gdf.columns and (gdf["ZONE_FINE"].str.len() == 7).all():
+            # For Saint-Quentin-en-Yvelines 2010, there is a leading zero that needs to be removed.
+            gdf["ZONE_FINE"] = gdf["ZONE_FINE"].str.slice(1)
         return gdf
 
     def postprocess_special_locations_and_detailed_zones(

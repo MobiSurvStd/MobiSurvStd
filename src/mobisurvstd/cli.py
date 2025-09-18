@@ -1,7 +1,16 @@
+from typing import Optional
+
 import typer
 from typing_extensions import Annotated
 
 from .main import bulk_standardize, standardize
+from .resources import clear_cache
+
+
+def clear_cache_callback(value: bool):
+    if value:
+        clear_cache()
+        raise typer.Exit()
 
 
 def standardizer(
@@ -32,6 +41,12 @@ def standardizer(
         "--no-validation",
         help="Do not validate the standardized data (some guarantees might not be satisfied)",
     ),
+    clear_cache: Annotated[
+        Optional[bool],
+        typer.Option(
+            "--clear-cache", callback=clear_cache_callback, help="Clear the cache data and exit"
+        ),
+    ] = None,
 ):
     """Mobility Survey Standardizer: a Python command line tool to convert mobility surveys to a
     clean standardized format.

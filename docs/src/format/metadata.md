@@ -14,10 +14,13 @@ Survey name.
 Survey type
 
 - **Modalities:**
-  - `"emp2019"`
-  - `"emc2"`
-  - `"egt2020"`
-  - `"egt2010"`
+  - `"EMP2019"`
+  - `"EMC2"`
+  - `"EGT2020"`
+  - `"EDVM"`
+  - `"EDGT"`
+  - `"EGT2010"`
+  - `"EMD"`
 
 ### `survey_method`
 

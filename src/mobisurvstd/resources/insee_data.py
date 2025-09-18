@@ -66,6 +66,14 @@ def get_insee_changes():
                 schema_overrides={"CODGEO_INI": pl.String, "CODGEO_2025": pl.String},
             )
     df = df.rename({"CODGEO_INI": "insee", "CODGEO_2025": "parent_insee"})
+    # Construct the département from the INSEE code.
+    # This is done so that former communes which switched to a new département during a merge are
+    # registered in their former département.
+    df = df.with_columns(
+        dep=pl.when(pl.col("insee").str.slice(0, 2).is_in(("97", "98")))
+        .then(pl.col("insee").str.slice(0, 3))
+        .otherwise(pl.col("insee").str.slice(0, 2))
+    )
     return df
 
 
@@ -225,7 +233,7 @@ def download_insee_data():
     df_aav = get_insee_aav()
     # Add INSEE codes missing from code géo.
     missing = df_changes.join(df_codes, on="insee", how="anti").join(
-        df_codes.drop("parent_insee"), left_on="parent_insee", right_on="insee", how="left"
+        df_codes.drop("dep", "parent_insee"), left_on="parent_insee", right_on="insee", how="left"
     )
     df = pl.concat((df_codes, missing), how="diagonal")
     # Add density data.

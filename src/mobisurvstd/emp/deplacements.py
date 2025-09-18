@@ -146,7 +146,7 @@ PURPOSE_MAP = {
     "8.2": "home:secondary",  # Se rendre dans une résidence secondaire
     "8.3": "home:secondary",  # Se rendre dans une résidence occasionnelle
     "8.4": "task:other",  # Autres motifs personnels
-    "9.1": "work:declared",  # Travailler dans son lieu fixe et habituel
+    "9.1": "work:usual",  # Travailler dans son lieu fixe et habituel
     "9.2": "work:secondary",  # Travailler en dehors d’un lieu fixe et habituel, sauf ients ou visite à des fournisseurs, repas d’affaires, etc.)
     "9.3": "work:other",  # Stages, conférence, congrès, formations, exposition
     "9.4": "work:professional_tour",  # Tournées professionnelles (VRP) ou visites de patients

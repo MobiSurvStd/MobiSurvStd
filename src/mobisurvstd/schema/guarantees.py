@@ -215,10 +215,11 @@ class LargerThan(Guarantee):
 
     def _fail_msg(self, df: pl.DataFrame, col: str) -> str:
         invalid_values = df.filter(self.is_valid_expr(col).not_()).select(col, self.expr)
+        n = len(invalid_values)
         if self.strict:
-            return f"Some values are not larger than {self.alias}:\n{invalid_values}"
+            return f"{n} values are not larger than {self.alias}:\n{invalid_values}"
         else:
-            return f"Some values are smaller than {self.alias}:\n{invalid_values}"
+            return f"{n} values are smaller than {self.alias}:\n{invalid_values}"
 
     def _auto_fix(self, col: str) -> pl.Expr:
         return pl.when(self.is_valid_expr(col)).then(col).otherwise(pl.lit(self.fix_value))
@@ -245,11 +246,12 @@ class SmallerThan(Guarantee):
         return df.select(self.is_valid_expr(col)).to_series().all()
 
     def _fail_msg(self, df: pl.DataFrame, col: str) -> str:
-        invalid_values = df.filter(self.is_valid_expr(col)).select(col, self.expr)
+        invalid_values = df.filter(self.is_valid_expr(col).not_()).select(col, self.expr)
+        n = len(invalid_values)
         if self.strict:
-            return f"Some values are not smaller than {self.alias}:\n{invalid_values}"
+            return f"{n} values are not smaller than {self.alias}:\n{invalid_values}"
         else:
-            return f"Some values are larger than {self.alias}:\n{invalid_values}"
+            return f"{n} values are larger than {self.alias}:\n{invalid_values}"
 
     def _auto_fix(self, col: str) -> pl.Expr:
         return pl.when(self.is_valid_expr(col)).then(col).otherwise(pl.lit(self.fix_value))
@@ -412,11 +414,19 @@ class ValidInsee(Guarantee):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    def is_valid_expr(self, col: str):
+        return (
+            pl.col(col).str.contains(INSEE_REGEX)
+            & pl.col(col).str.starts_with("96").not_()
+            & pl.col(col).str.ends_with("000").not_()
+            & pl.col(col).str.ends_with("999").not_()
+        )
+
     def _check(self, df: pl.DataFrame, col: str) -> bool:
-        return df[col].str.contains(INSEE_REGEX).all()
+        return df.select(self.is_valid_expr(col).all()).item()
 
     def _fail_msg(self, df: pl.DataFrame, col: str) -> str:
-        invalid_values = df.filter(pl.col(col).str.contains(INSEE_REGEX).not_())[col][:5].to_list()
+        invalid_values = df.filter(self.is_valid_expr(col).not_())[col][:5].to_list()
         return f"Found invalid INSEE codes:\n{invalid_values}"
 
 
@@ -432,6 +442,28 @@ class ValidDepCode(Guarantee):
     def _fail_msg(self, df: pl.DataFrame, col: str) -> str:
         invalid_values = df.filter(pl.col(col).is_in(NUTS_DF["dep_code"]))[col][:5].to_list()
         return f"Found invalid departement codes:\n{invalid_values}"
+
+
+class InseeConsistentWithDep(Guarantee):
+    def __init__(self, dep_col: str, **kwargs):
+        super().__init__(**kwargs)
+        self.dep_col = dep_col
+
+    def is_valid_expr(self, col: str):
+        return (
+            pl.col(col).is_null()
+            | pl.col(col).str.starts_with("99")
+            | pl.col(self.dep_col).eq(pl.col(col).str.slice(0, 2))
+            | pl.col(self.dep_col).eq(pl.col(col).str.slice(0, 3))
+        )
+
+    def _check(self, df: pl.DataFrame, col: str):
+        return df.select(self.is_valid_expr(col).all()).item()
+
+    def _fail_msg(self, df: pl.DataFrame, col: str) -> str:
+        invalids = df.filter(self.is_valid_expr(col).not_()).select(col, self.dep_col)
+        n = len(invalids)
+        return f"{n:,} values are not consistent with `{self.dep_col}`:\n{invalids}"
 
 
 class EqualTo(Guarantee):

@@ -144,7 +144,7 @@ def count_nb_persons(households: pl.LazyFrame, persons: pl.LazyFrame):
     has_age_class = "age_class_code" in persons.collect_schema().names()
     person_counts = persons.group_by("household_id").agg(
         nb_persons=pl.len(),
-        nb_persons_5plus=pl.when(pl.col("age").is_not_null().all()).then(pl.col("age").gt(5).sum())
+        nb_persons_5plus=pl.when(pl.col("age").is_not_null().all()).then(pl.col("age").ge(5).sum())
         if has_age
         else None,
         nb_majors=pl.when(pl.col("age_class_code").is_not_null().all()).then(
@@ -246,7 +246,7 @@ def add_worked_during_surveyed_day(persons: pl.LazyFrame, trips: pl.LazyFrame):
         persons = persons.join(
             trips.group_by("person_id").agg(
                 has_work_activity=pl.col("destination_purpose")
-                .is_in(("work:declared", "work:secondary", "work:other", "work:professional_tour"))
+                .is_in(("work:usual", "work:secondary", "work:other", "work:professional_tour"))
                 .any(),
                 has_telework_activity=pl.col("destination_purpose").eq("work:telework").any(),
             ),

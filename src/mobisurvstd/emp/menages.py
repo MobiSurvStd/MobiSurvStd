@@ -159,14 +159,7 @@ def scan_households(filename1: str, filename2: str):
 
 def standardize_households(filename1: str, filename2: str):
     lf = scan_households(filename1, filename2)
-    lf = lf.rename(
-        {
-            "pond_menC": "sample_weight",
-            "DEP_RES": "home_dep",
-            "NPERS": "nb_persons",
-            "JNBVEH": "nb_cars",
-        }
-    )
+    lf = lf.rename({"pond_menC": "sample_weight", "DEP_RES": "home_dep", "JNBVEH": "nb_cars"})
     lf = lf.with_columns(
         original_household_id=pl.struct("IDENT_MEN"),
         survey_method=pl.lit("face_to_face"),

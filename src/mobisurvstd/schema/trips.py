@@ -8,6 +8,7 @@ from .guarantees import (
     EqualTo,
     EqualToMapping,
     Indexed,
+    InseeConsistentWithDep,
     LargerThan,
     NonDecreasing,
     NonNegative,
@@ -24,14 +25,14 @@ PURPOSE_ENUM = pl.Enum(
     [
         "home:main",
         "home:secondary",
-        "work:declared",
+        "work:usual",
         "work:telework",
         "work:secondary",
         "work:business_meal",
         "work:other",
         "work:professional_tour",
         "education:childcare",
-        "education:declared",
+        "education:usual",
         "education:other",
         "shopping:daily",
         "shopping:weekly",
@@ -231,7 +232,7 @@ TRIP_SCHEMA = [
     # Draw zone of the trip's origin.
     Variable("origin_draw_zone", pl.String),
     # INSEE code of the municipality of trip's origin.
-    Variable("origin_insee", pl.String, [ValidInsee()]),
+    Variable("origin_insee", pl.String, [ValidInsee(), InseeConsistentWithDep("origin_dep")]),
     # Name of the municipality of trip's origin.
     Variable("origin_insee_name", pl.String),
     # Density category of the origin INSEE municipality.
@@ -267,7 +268,9 @@ TRIP_SCHEMA = [
     # Draw zone of the trip's destination.
     Variable("destination_draw_zone", pl.String),
     # INSEE code of the municipality of trip's destination.
-    Variable("destination_insee", pl.String, [ValidInsee()]),
+    Variable(
+        "destination_insee", pl.String, [ValidInsee(), InseeConsistentWithDep("destination_dep")]
+    ),
     # Name of the municipality of trip's destination.
     Variable("destination_insee_name", pl.String),
     # Density category of the destination INSEE municipality.

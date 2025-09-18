@@ -8,9 +8,11 @@ from .guarantees import (
     EqualToMapping,
     ExactlyOneOf,
     Indexed,
+    InseeConsistentWithDep,
     NonDecreasing,
     NonNegative,
     Null,
+    SmallerThan,
     UpperBounded,
     ValidDepCode,
     ValidInsee,
@@ -55,9 +57,11 @@ BICYCLE_PARKING_ENUM = pl.Enum(
 
 FREQUENCY_ENUM = pl.Enum(["each_week", "each_month", "occasionally", "never"])
 
-IS_NOT_WORKER_EXPR = pl.col("professional_occupation").ne("worker") & pl.col(
-    "secondary_professional_occupation"
-).ne_missing("work")
+IS_NOT_WORKER_EXPR = (
+    pl.col("professional_occupation").ne("worker")
+    & pl.col("secondary_professional_occupation").ne_missing("work")
+    & pl.col("detailed_professional_occupation").ne("student:apprenticeship")
+)
 
 AGE_CLASS_TO_CODE = {
     "17-": 1,
@@ -142,7 +146,21 @@ PERSON_SCHEMA = [
     # Whether the person is a woman.
     Variable("woman", pl.Boolean),
     # Age of the person.
-    Variable("age", pl.UInt8, [UpperBounded(125)]),
+    Variable(
+        "age",
+        pl.UInt8,
+        [
+            UpperBounded(125),
+            SmallerThan(
+                pl.col("age")
+                .filter(pl.col("reference_person_link").eq("reference_person"))
+                .first()
+                .over("household_id"),
+                alias="age of the reference person",
+                when=pl.col("reference_person_link") == "child",
+            ),
+        ],
+    ),
     # Age class of the person, in 7 classes.
     Variable(
         "age_class",
@@ -211,6 +229,55 @@ PERSON_SCHEMA = [
         [
             Null(when=pl.col("professional_occupation") == "student"),
             Defined(when=pl.col("detailed_education_level").is_not_null()),
+            ValueIs(
+                "no_studies_or_no_diploma",
+                when=pl.col("detailed_education_level").is_in(("no_studies", "no_diploma")),
+            ),
+            ValueIs(
+                "primary",
+                when=pl.col("detailed_education_level").is_in(
+                    ("primary:unspecified", "primary:CEP")
+                ),
+            ),
+            ValueIs(
+                "secondary:no_bac",
+                when=pl.col("detailed_education_level").is_in(
+                    ("secondary:no_bac:college", "secondary:no_bac:CAP/BEP")
+                ),
+            ),
+            ValueIs(
+                "secondary:bac",
+                when=pl.col("detailed_education_level").is_in(
+                    (
+                        "secondary:bac:techno_or_pro",
+                        "secondary:bac:general",
+                        "secondary:bac:unspecified",
+                    )
+                ),
+            ),
+            ValueIs(
+                "higher:at_most_bac+2",
+                when=pl.col("detailed_education_level").is_in(
+                    (
+                        "higher:at_most_bac+2:DEUG",
+                        "higher:at_most_bac+2:BTS/DUT",
+                        "higher:at_most_bac+2:paramedical_social",
+                        "higher:at_most_bac+2:unspecified",
+                    )
+                ),
+            ),
+            ValueIs(
+                "higher:at_least_bac+3",
+                when=pl.col("detailed_education_level").is_in(
+                    (
+                        "higher:at_least_bac+3:universite",
+                        "higher:at_least_bac+3:ecole",
+                        "higher:at_least_bac+3:unspecified",
+                        "higher:bac+3_or_+4",
+                        "higher:at_least_bac+5",
+                    )
+                ),
+            ),
         ],
     ),
     # Detailed professional status of the person.
@@ -231,32 +298,17 @@ PERSON_SCHEMA = [
                 "other:unspecified",
             ]
         ),
-        [
-            ValueIs(
-                "student:primary_or_secondary",
-                when=pl.col("student_group").eq("primaire"),
-            ),
-            ValueInSet(
-                {"student:primary_or_secondary", "student:apprenticeship"},
-                when=pl.col("student_group").is_in(("collège", "lycée")),
-                when_alias='"student_group" is "collège" or "lycée"',
-            ),
-            ValueInSet(
-                {"student:higher", "student:apprenticeship"},
-                when=pl.col("student_group").eq("supérieur"),
-            ),
-        ],
     ),
     # Professional status of the person.
     Variable(
         "professional_occupation",
         pl.Enum(["worker", "student", "other"]),
         [
+            Defined(when=pl.col("detailed_professional_occupation").is_not_null()),
             EqualTo(
                 pl.col("detailed_professional_occupation").cast(pl.String).str.extract(r"(\w+):"),
-                "`detailed_professional_occupation`",
+                alias="`detailed_professional_occupation`",
             ),
-            Defined(when=pl.col("detailed_professional_occupation").is_not_null()),
         ],
     ),
     # Secondary professional occupation of the person.
@@ -265,7 +317,11 @@ PERSON_SCHEMA = [
         pl.Enum(["work", "education"]),
         [
             ValueIsNot("work", when=pl.col("professional_occupation") == "worker"),
-            ValueIsNot("education", when=pl.col("professional_occupation") == "student"),
+            ValueIsNot(
+                "education",
+                when=pl.col("professional_occupation").eq("student")
+                & pl.col("detailed_professional_occupation").ne_missing("student:apprenticeship"),
+            ),
         ],
     ),
     # Code of the category of "Professions et Catégories Socioprofessionnelles" the person belongs
@@ -364,6 +420,8 @@ PERSON_SCHEMA = [
                 & pl.col("detailed_professional_occupation").ne("student:apprenticeship")
                 & pl.col("secondary_professional_occupation").ne("work")
             ),
+            Defined(when=pl.col("pcs_category_code2020").is_not_null()),
+            Defined(when=pl.col("pcs_category_code2003").is_not_null()),
             EqualTo(
                 pl.col("pcs_category_code2020") // 10,
                 alias="first digit of `pcs_category_code2020`",
@@ -374,8 +432,6 @@ PERSON_SCHEMA = [
                 alias="first digit of `pcs_category_code2003`",
                 when=pl.col("pcs_category_code2003").is_not_null(),
             ),
-            Defined(when=pl.col("pcs_category_code2020").is_not_null()),
-            Defined(when=pl.col("pcs_category_code2003").is_not_null()),
         ],
     ),
     # Group of "Professions et Catégories Socioprofessionnelles" the person belongs to.
@@ -388,8 +444,8 @@ PERSON_SCHEMA = [
                 & pl.col("detailed_professional_occupation").ne("student:apprenticeship")
                 & pl.col("secondary_professional_occupation").ne("work")
             ),
-            EqualToMapping(pl.col("pcs_group_code"), "`pcs_group_code`", PCS_CODES),
             Defined(when=pl.col("pcs_group_code").is_not_null()),
+            EqualToMapping(pl.col("pcs_group_code"), "`pcs_group_code`", PCS_CODES),
         ],
     ),
     # Whether the person work only at home.
@@ -460,6 +516,7 @@ PERSON_SCHEMA = [
             ValidInsee(),
             Null(when=IS_NOT_WORKER_EXPR),
             Null(when=pl.col("work_only_at_home").eq(True)),
+            InseeConsistentWithDep("work_dep"),
         ],
     ),
     # Name of the municipality where the usual work location is.
@@ -572,6 +629,12 @@ PERSON_SCHEMA = [
             Null(when=pl.col("work_only_at_home").eq(True)),
         ],
     ),
+    # Category indicating the detailed current education level for students.
+    Variable(
+        "student_category",
+        pl.Enum(list(STUDENT_GROUP_MAP.keys())),
+        [Null(when=pl.col("professional_occupation") != "student")],
+    ),
     # Group indicating the current education level for students.
     Variable(
         "student_group",
@@ -579,13 +642,18 @@ PERSON_SCHEMA = [
         [
             Null(when=pl.col("professional_occupation") != "student"),
             EqualToMapping(pl.col("student_category"), "`student_category`", STUDENT_GROUP_MAP),
+            ValueInSet(
+                {"primaire", "collège", "lycée"},
+                when=pl.col("detailed_professional_occupation").eq("student:primary_or_secondary"),
+            ),
+            ValueIs(
+                "supérieur", when=pl.col("detailed_professional_occupation").eq("student:higher")
+            ),
+            ValueInSet(
+                {"lycée", "supérieur"},
+                when=pl.col("detailed_professional_occupation").eq("student:apprenticeship"),
+            ),
         ],
-    ),
-    # Category indicating the detailed current education level for students.
-    Variable(
-        "student_category",
-        pl.Enum(list(STUDENT_GROUP_MAP.keys())),
-        [Null(when=pl.col("professional_occupation") != "student")],
     ),
     # Whether the person study only at home.
     Variable(
@@ -646,6 +714,7 @@ PERSON_SCHEMA = [
             ValidInsee(),
             Null(when=pl.col("professional_occupation") != "student"),
             Null(when=pl.col("study_only_at_home").eq(True)),
+            InseeConsistentWithDep("study_dep"),
         ],
     ),
     # Name of the municipality where the usual study location is.
@@ -788,31 +857,31 @@ PERSON_SCHEMA = [
                 "no",
             ]
         ),
-        [
-            ValueIsNot("no", when=pl.col("has_public_transit_subscription").eq(True)),
-            ValueIs("no", when=pl.col("has_public_transit_subscription").eq(False)),
-        ],
     ),
     # Whether the person had a valid public-transit subscription the day before the interview.
     Variable(
         "has_public_transit_subscription",
         pl.Boolean,
-        [Defined(when=pl.col("public_transit_subscription").is_not_null())],
+        [
+            Defined(when=pl.col("public_transit_subscription").is_not_null()),
+            ValueIs(False, when=pl.col("public_transit_subscription").eq("no")),
+            ValueIsNot(False, when=pl.col("public_transit_subscription").ne("no")),
+        ],
     ),
     # Type of car-sharing service subscription the person has.
     Variable(
         "car_sharing_subscription",
         pl.Enum(["yes:organized", "yes:peer_to_peer", "yes:unspecified", "no"]),
-        [
-            ValueIsNot("no", when=pl.col("has_car_sharing_subscription").eq(True)),
-            ValueIs("no", when=pl.col("has_car_sharing_subscription").eq(False)),
-        ],
     ),
     # Whether the person has a subscription for a car-sharing service.
     Variable(
         "has_car_sharing_subscription",
         pl.Boolean,
-        [Defined(when=pl.col("car_sharing_subscription").is_not_null())],
+        [
+            Defined(when=pl.col("car_sharing_subscription").is_not_null()),
+            ValueIs(False, when=pl.col("car_sharing_subscription").eq("no")),
+            ValueIsNot(False, when=pl.col("car_sharing_subscription").ne("no")),
+        ],
     ),
     # Whether the person has a subscription for a bike-sharing service.
     Variable("has_bike_sharing_subscription", pl.Boolean),
@@ -842,11 +911,6 @@ PERSON_SCHEMA = [
             ]
         ),
         [
-            Null(
-                when=pl.col("professional_occupation").ne("worker")
-                & pl.col("detailed_professional_occupation").ne("student:apprenticeship")
-                & pl.col("secondary_professional_occupation").ne("work")
-            ),
             Null(when=pl.col("is_surveyed").eq(False)),
             ValueIsNot("yes:home:usual", when=pl.col("work_only_at_home").eq(False)),
         ],

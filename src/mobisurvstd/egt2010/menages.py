@@ -132,6 +132,17 @@ HOUSING_STATUS_MAP = {
     9: "other",  # Autres
 }
 
+WEEKDAY_MAP = {
+    1: "monday",
+    2: "tuesday",
+    3: "wednesday",
+    4: "thursday",
+    5: "friday",
+    6: "saturday",
+    7: "sunday",
+}
+
+
 REVENU_LB_MAP = {
     1: 0,  # Moins de 800€
     2: 800,  # De 800 à 1200€
@@ -292,6 +303,7 @@ def standardize_households(filename: str, detailed_zones: pl.DataFrame | None):
         # The interview date is 1 day after that date.
         interview_date=pl.concat_str("year", "week_number", "JDEP").str.to_date("%G%V%w")
         + timedelta(days=1),
+        trips_weekday=pl.col("JDEP").replace_strict(WEEKDAY_MAP),
         # It seems that the survey uses "990xx" codes to represent foreign countries but I did not
         # find the documentation for these codes so we set them all to the special code "99200"
         # (i.e., any foreign country).

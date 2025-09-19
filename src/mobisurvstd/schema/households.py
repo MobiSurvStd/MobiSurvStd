@@ -24,6 +24,11 @@ HOUSEHOLD_SCHEMA = [
     Variable("survey_method", pl.Enum(["face_to_face", "phone"]), [AllDefinedOrAllNull()]),
     # Date at which the interview took place.
     Variable("interview_date", pl.Date),
+    # Day of the week when the reported trips took place.
+    Variable(
+        "trips_weekday",
+        pl.Enum(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]),
+    ),
     # Sample weight of the household.
     Variable("sample_weight", pl.Float64, [AllDefinedOrAllNull(), NonNegative()]),
     # Longitude of home coordinates.

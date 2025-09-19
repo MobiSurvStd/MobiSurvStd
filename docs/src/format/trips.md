@@ -734,6 +734,7 @@ Day of the week when the trip took place.
   - `"sunday"`
 - **Guarantees:**
   - The value is consistent with `trip_date`.
+  - The value is equal to the household `trips_weekday` (when it is non-null).
 
 ## Transportation mode
 

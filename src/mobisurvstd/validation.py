@@ -132,6 +132,29 @@ def validate_households(data):
     # Note that the NUTS correspondence guarantees and the `household_type` guarantees are not
     # validated because these variables are computed automatically by MobiSurvStd so the guarantees
     # are always satisfied by definition.
+    # Guarantee that `trip_weekday` is equal to the household's `trips_weekday` (when defined).
+    invalid_households = set(
+        (
+            data.trips.select("trip_id", "household_id", "trip_weekday")
+            .join(data.households.select("household_id", "trips_weekday"), on="household_id")
+            .filter(
+                pl.col("trips_weekday").is_not_null(),
+                pl.col("trip_weekday").is_not_null(),
+                pl.col("trip_weekday") != pl.col("trips_weekday"),
+            )
+        )["household_id"]
+    )
+    if invalid_households:
+        n = len(invalid_households)
+        logger.warning(
+            f"{n} households have `trips_weekday` != `trip_weekday` for at least one trip. "
+            "The `trips_weekday` value is set to null."
+        )
+        data.households = data.households.with_columns(
+            trips_weekday=pl.when(pl.col("household_id").is_in(invalid_households))
+            .then(None)
+            .otherwise("trips_weekday")
+        )
     # Guarantee that `nb_cars` is not smaller than the number of cars in `cars.parquet`.
     nb_cars = data.cars.group_by("household_id").len()
     invalid_households = set(

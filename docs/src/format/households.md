@@ -41,6 +41,25 @@ See [`trip_date`](trips.md#trip_date).
 
 - **Type:** Date
 
+### `trips_weekday`
+
+Day of the week when the reported trips took place.
+
+The value is set only when all the household trips took place on the same weekday (which is the case
+for most surveys).
+
+This variable is especially useful for the EMP 2019 to filter only households that were surveyed
+for weekdays / weekends.
+
+- **Modalities:**
+  - `"monday"`
+  - `"tuesday"`
+  - `"wednesday"`
+  - `"thursday"`
+  - `"friday"`
+  - `"saturday"`
+  - `"sunday"`
+
 ### `sample_weight`
 
 Sample weight of the household.

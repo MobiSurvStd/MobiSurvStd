@@ -1,6 +1,7 @@
 from datetime import date
 from zipfile import ZipFile
 
+import polars as pl
 from loguru import logger
 
 from mobisurvstd.common.clean import clean
@@ -43,6 +44,18 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
     trips = standardize_trips(filename, persons)
     # Legs.
     legs = standardize_legs(filename, trips)
+    # Survey weekday is specified at the person-level, we create here the household-level
+    # `trips_weekday`.
+    household_weekdays = (
+        persons.filter(pl.col("trips_weekday").is_not_null())
+        .group_by("household_id")
+        .agg(pl.col("trips_weekday").first())
+    )
+    households = (
+        households.join(household_weekdays, on="household_id", how="left", coalesce=True)
+        .collect()
+        .lazy()
+    )
     return clean(
         households=households,
         persons=persons,

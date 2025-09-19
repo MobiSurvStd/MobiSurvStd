@@ -91,6 +91,16 @@ REVENU_UB_MAP = {
     10: None,  # 5500€ et plus
 }
 
+WEEKDAY_MAP = {
+    "lundi": "monday",
+    "mardi": "tuesday",
+    "mercredi": "wednesday",
+    "jeudi": "thursday",
+    "vendredi": "friday",
+    "samedi": "saturday",
+    "dimanche": "sunday",
+}
+
 
 def scan_households(filename: str):
     # We use the inefficient `read_csv().lazy()` because we need to use `encoding="latin1"`, which
@@ -128,6 +138,7 @@ def standardize_households(filename: str):
         original_household_id=pl.struct("IDCEREMA"),
         survey_method=pl.col("TYPE_QUEST").replace_strict(SURVEY_METHOD_MAP),
         interview_date=pl.date(year="ANNEE", month="MOIS", day="JOUR") + timedelta(days=1),
+        trips_weekday=pl.col("JOURSEM").replace_strict(WEEKDAY_MAP),
         income_lower_bound=pl.col("REVENU").replace_strict(REVENU_LB_MAP),
         income_upper_bound=pl.col("REVENU").replace_strict(REVENU_UB_MAP),
         housing_type=pl.col("TYPELOG").replace_strict(HOUSING_TYPE_MAP),

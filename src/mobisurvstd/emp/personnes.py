@@ -458,6 +458,16 @@ RESIDENT_TYPE_MAP = {
     5: None,
 }
 
+WEEKDAY_MAP = {
+    "lundi": "monday",
+    "mardi": "tuesday",
+    "mercredi": "wednesday",
+    "jeudi": "thursday",
+    "vendredi": "friday",
+    "samedi": "saturday",
+    "dimanche": "sunday",
+}
+
 
 def scan_persons(filename1: str, filename2: str, filename3: str):
     lf = (
@@ -527,14 +537,32 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         has_bike_sharing_subscription=pl.col("BABONNVLS") == 1,
         has_travel_inconvenience=pl.col("GAGENE").is_in((1, 2, 3)),
         is_surveyed=pl.col("NOIK").is_not_null(),
+        trips_weekday=pl.col("MDATE_jour").replace_strict(WEEKDAY_MAP),
+    )
+    lf = lf.with_columns(
+        # Many persons have ETUDIE = 1 (they study) but SITUA is null.
+        # We can assign them "student:unspecified" as detailed_professional_occupation.
+        detailed_professional_occupation=pl.when(
+            pl.col("ETUDIE") == 1, pl.col("detailed_professional_occupation").is_null()
+        )
+        .then(pl.lit("student:unspecified"))
+        .otherwise("detailed_professional_occupation")
+    )
+    lf = lf.with_columns(
+        # Secondary professional occupation is work when the person is working (TRAVAILLE = 1) but
+        # it is not a worker (SITUA != 1). These are mostly retirees or students with a job.
+        # Secondary professional occupation is education when the person is studying (ETUDIE = 1)
+        # but it is not a student (professional_occupation != student).
         secondary_professional_occupation=pl.when(
             pl.col("TRAVAILLE").eq(1).and_(pl.col("SITUA").ne(1))
         )
         .then(pl.lit("work"))
-        .when(pl.col("ETUDIE").eq(1).and_(pl.col("SITUA").is_in((2, 3)).not_()))
+        .when(
+            pl.col("ETUDIE")
+            .eq(1)
+            .and_(pl.col("detailed_professional_occupation").str.starts_with("student").not_())
+        )
         .then(pl.lit("education")),
-    )
-    lf = lf.with_columns(
         # Only specify the education-level for non-students.
         education_level=pl.when(
             pl.col("detailed_professional_occupation").str.starts_with("student").not_()
@@ -548,5 +576,5 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         .then(pl.lit("reference_person"))
         .otherwise("reference_person_link"),
     )
-    lf = clean(lf)
+    lf = clean(lf, extra_cols=["trips_weekday"])
     return lf

@@ -7,6 +7,7 @@ import polars as pl
 from loguru import logger
 
 from mobisurvstd.common.clean import clean
+from mobisurvstd.common.trips import WEEKDAY_MAP
 from mobisurvstd.common.zones import get_coords
 
 from .common import EMC2_MODE_MAP, MODE_MAP
@@ -225,7 +226,10 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         )
         self.households = self.households.join(
             household_dates, on="household_id", how="left", coalesce=True
-        ).with_columns(interview_date=pl.col("trip_date") + timedelta(days=1))
+        ).with_columns(
+            interview_date=pl.col("trip_date") + timedelta(days=1),
+            trips_weekday=pl.col("trip_date").dt.weekday().replace_strict(WEEKDAY_MAP),
+        )
 
     def fix_main_mode(self):
         # Special case for Douai 2012: Some trips have main mode set to "car_driver" but the legs

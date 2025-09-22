@@ -101,8 +101,6 @@ def validate(data):
             case Invalid():
                 is_valid = False
 
-    if not is_valid:
-        breakpoint()
     return is_valid
 
 

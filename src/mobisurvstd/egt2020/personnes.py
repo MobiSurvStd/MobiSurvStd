@@ -310,8 +310,14 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         study_only_at_home=pl.col("LIEU_ETUD").eq(2),
         study_car_parking=pl.col("PKVPETUD").replace_strict(CAR_PARKING_MAP),
         study_bicycle_parking=pl.col("PKVLETUD").replace_strict(BICYCLE_PARKING_MAP),
-        has_driving_license=pl.col("PERMVP").replace_strict(DRIVING_LICENSE_MAP),
-        has_motorcycle_driving_license=pl.col("PERM2RM").replace_strict(DRIVING_LICENSE_MAP),
+        # PERMVP value is NULL for all persons below 14.
+        has_driving_license=pl.when(pl.col("age") <= 14)
+        .then(pl.lit("no"))
+        .otherwise(pl.col("PERMVP").replace_strict(DRIVING_LICENSE_MAP)),
+        # PERM2RM value is NULL for all persons below 14.
+        has_motorcycle_driving_license=pl.when(pl.col("age") <= 14)
+        .then(pl.lit("no"))
+        .otherwise(pl.col("PERM2RM").replace_strict(DRIVING_LICENSE_MAP)),
         has_public_transit_subscription=pl.col("ABONTC").eq(1),
         public_transit_subscription=pl.when(
             # Forfait Navigo Gratuité, Améthyste et Gratuité Jeunes en insertion

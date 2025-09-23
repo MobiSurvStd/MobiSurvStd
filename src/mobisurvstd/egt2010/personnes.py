@@ -255,8 +255,13 @@ def standardize_persons(
         study_bicycle_parking=pl.when(is_student).then(
             pl.col("PKVLTRAV").replace_strict(BICYCLE_PARKING_MAP)
         ),
-        has_driving_license=pl.col("PERMVP").replace_strict(DRIVING_LICENSE_MAP),
-        has_motorcycle_driving_license=pl.col("PERM2RM").replace_strict(DRIVING_LICENSE_MAP),
+        # PERMVP value is NULL for all persons below 15.
+        has_driving_license=pl.when(pl.col("age") <= 15)
+        .then(pl.lit("no"))
+        .otherwise(pl.col("PERMVP").replace_strict(DRIVING_LICENSE_MAP)),
+        has_motorcycle_driving_license=pl.when(pl.col("age") <= 15)
+        .then(pl.lit("no"))
+        .otherwise(pl.col("PERM2RM").replace_strict(DRIVING_LICENSE_MAP)),
         public_transit_subscription=pl.when(pl.col("ABONTC").ne(1))
         .then(
             pl.when(pl.col("REMBTC").eq(1))

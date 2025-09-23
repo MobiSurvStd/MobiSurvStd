@@ -523,7 +523,10 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         pcs_category_code2003=pl.when(pl.col("CS24") > 0).then("CS24"),
         workplace_singularity=pl.col("BTRAVFIX").replace_strict(WORKPLACE_SINGULARITY_MAP),
         telework=pl.col("BTRAVTEL").replace_strict(TELEWORK_MAP),
-        has_driving_license=pl.col("BPERMIS").replace_strict(DRIVING_LICENSE_MAP),
+        # BPERMIS is null for all persons below 17.
+        has_driving_license=pl.when(pl.col("age") <= 17)
+        .then(pl.lit("no"))
+        .otherwise(pl.col("BPERMIS").replace_strict(DRIVING_LICENSE_MAP)),
         # We assume that if no PT subscription was declared, then the person has no PT subscription
         # (i.e., there is no NULL value).
         has_public_transit_subscription=pl.any_horizontal(
@@ -541,6 +544,7 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         is_surveyed=pl.col("NOIK").is_not_null(),
         trips_weekday=pl.col("MDATE_jour").replace_strict(WEEKDAY_MAP),
     )
+    breakpoint()
     lf = lf.with_columns(
         # Many persons have ETUDIE = 1 (they study) but SITUA is null.
         # We can assign them "student:unspecified" as detailed_professional_occupation.

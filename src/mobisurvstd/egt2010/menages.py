@@ -311,7 +311,7 @@ def standardize_households(filename: str, detailed_zones: pl.DataFrame | None):
         .then(pl.lit("99200"))
         .otherwise("home_insee"),
     )
-    lf = clean_households(lf, detailed_zones=detailed_zones)
+    lf = clean_households(lf, year=2010, detailed_zones=detailed_zones)
     return lf
 
 

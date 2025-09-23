@@ -3,6 +3,7 @@ import polars as pl
 from .common import Variable
 from .guarantees import (
     AllDefinedOrAllNull,
+    Bounded,
     Defined,
     EqualTo,
     Indexed,
@@ -13,6 +14,7 @@ from .guarantees import (
     Unique,
     ValidDepCode,
     ValidInsee,
+    ValueInSet,
 )
 
 HOUSEHOLD_SCHEMA = [
@@ -45,6 +47,16 @@ HOUSEHOLD_SCHEMA = [
     Variable("home_insee", pl.String, [ValidInsee(), InseeConsistentWithDep("home_dep")]),
     # Name of the municipality where the household is located.
     Variable("home_insee_name", pl.String),
+    # Density category of the home municipality.
+    Variable("home_insee_density", pl.UInt8, [Bounded(1, 7)]),
+    # Category of the home municipality within the AAV.
+    Variable("home_insee_aav_type", pl.UInt8, [ValueInSet({11, 12, 13, 20, 30})]),
+    # Code of the AAV of the household home.
+    Variable("home_aav", pl.String),
+    # Name of the AAV of the household home.
+    Variable("home_aav_name", pl.String),
+    # Category of the AAV of the household home.
+    Variable("home_aav_category", pl.UInt8, [Bounded(1, 5)]),
     # Département code of the household home.
     Variable("home_dep", pl.String, [ValidDepCode()]),
     # Département name of the household home.

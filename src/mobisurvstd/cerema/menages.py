@@ -3,6 +3,7 @@ import polars as pl
 from mobisurvstd.common.cars import clean as clean_cars
 from mobisurvstd.common.households import clean as clean_households
 from mobisurvstd.common.motorcycles import clean as clean_motorcycles
+from mobisurvstd.schema.common import CURRENT_YEAR
 
 SCHEMA = {
     "MP1": pl.UInt8,  # Code fichier = 1
@@ -269,6 +270,7 @@ class HouseholdsReader:
         )
         self.households = clean_households(
             lf,
+            year=self.survey_year() or CURRENT_YEAR,
             special_locations=self.special_locations_coords,
             detailed_zones=self.detailed_zones_coords,
         )

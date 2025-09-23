@@ -11,6 +11,7 @@ from . import DEBUG
 
 def clean(
     lf: pl.LazyFrame,
+    year: int,
     special_locations: pl.DataFrame | None = None,
     detailed_zones: pl.DataFrame | None = None,
 ):
@@ -21,7 +22,7 @@ def clean(
     lf = add_bicycle_counts(lf, existing_cols)
     lf = add_lng_lat(lf, existing_cols, special_locations, detailed_zones)
     lf = add_insee_columns(lf, existing_cols)
-    lf = add_insee_data_columns(lf, existing_cols)
+    lf = add_insee_data_columns(lf, existing_cols, year)
     if "home_dep" in existing_cols:
         lf = add_nuts_data(lf, "home")
     if DEBUG:
@@ -87,10 +88,10 @@ def add_insee_columns(lf: pl.LazyFrame, existing_cols: list[str]):
     return lf
 
 
-def add_insee_data_columns(lf: pl.LazyFrame, existing_cols: list[str]):
-    """Add insee name and département code for the home municipality."""
+def add_insee_data_columns(lf: pl.LazyFrame, existing_cols: list[str], year: int):
+    """Add insee name, département code and all AAV / density columns for the home municipality."""
     if "home_insee" in existing_cols:
         # If the `home_dep` column already exists, then it is not added again.
-        lf = add_insee_data(lf, "home", year=None, skip_dep="home_dep" in existing_cols)
+        lf = add_insee_data(lf, "home", year=year, skip_dep="home_dep" in existing_cols)
         existing_cols.append("home_dep")
     return lf

@@ -175,7 +175,7 @@ def validate_households(data):
                 pl.col("household_id").replace_strict(
                     nb_cars["household_id"], nb_cars["len"], default=0
                 ),
-            )
+            ).cast(data.households["nb_cars"].dtype)
         )
     # Guarantee that `nb_motorcycles` is not smaller than the number of motorcycles in
     # `motorcycles.parquet`.
@@ -201,7 +201,7 @@ def validate_households(data):
                 pl.col("household_id").replace_strict(
                     nb_motorcycles["household_id"], nb_motorcycles["len"], default=0
                 ),
-            )
+            ).cast(data.households["nb_cars"].dtype)
         )
     # Guarantee that `nb_persons` matches the actual number of persons.
     nb_persons = data.persons.group_by("household_id").len()

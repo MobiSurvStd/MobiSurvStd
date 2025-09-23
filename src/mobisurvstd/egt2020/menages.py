@@ -162,5 +162,5 @@ def standardize_households(filename: str):
             .otherwise(pl.col("housing_status"))
         ),
     )
-    lf = clean(lf)
+    lf = clean(lf, year=2020)
     return lf

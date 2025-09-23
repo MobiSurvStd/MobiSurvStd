@@ -159,17 +159,26 @@ def scan_households(filename1: str, filename2: str):
 
 def standardize_households(filename1: str, filename2: str):
     lf = scan_households(filename1, filename2)
-    lf = lf.rename({"pond_menC": "sample_weight", "DEP_RES": "home_dep", "JNBVEH": "nb_cars"})
+    lf = lf.rename(
+        {
+            "pond_menC": "sample_weight",
+            "DEP_RES": "home_dep",
+            "JNBVEH": "nb_cars",
+            "DENSITECOM_RES": "home_insee_density",
+        }
+    )
     lf = lf.with_columns(
         original_household_id=pl.struct("IDENT_MEN"),
         survey_method=pl.lit("face_to_face"),
         housing_status=(10 * pl.col("STOC") + pl.col("PROPRI").fill_null(0)).replace_strict(
             HOUSING_STATUS_MAP
         ),
+        home_aav_category=pl.col("TAA2017_RES").replace({0: None, 8: None, 9: None}),
+        home_insee_aav_type=pl.col("CATCOM_AA_RES").replace({98: None, 99: None}),
         # There should be no null values so we can safely sum the two columns without facing null
         # propagation.
         nb_motorcycles=pl.col("JNBMOTO") + pl.col("JNBCYCLO"),
         nb_bicycles=pl.col("JNBVELOAD") + pl.col("JNBVELOENF"),
     )
-    lf = clean(lf)
+    lf = clean(lf, year=None)
     return lf

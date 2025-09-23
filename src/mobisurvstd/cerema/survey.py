@@ -1,3 +1,4 @@
+import re
 from datetime import timedelta
 from zipfile import ZipFile
 
@@ -65,6 +66,11 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
 
     def survey_name(self):
         raise NotImplementedError
+
+    def survey_year(self):
+        name = self.survey_name()
+        matches = re.findall(r"_(\d{4})$", name)
+        return int(matches[0]) if matches else None
 
     def standardize(self, skip_spatial: bool = False):
         logger.info(f"Standardizing {self.SURVEY_TYPE} survey from `{self.source_name()}`")

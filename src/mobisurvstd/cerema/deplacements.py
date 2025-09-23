@@ -2,6 +2,7 @@ import polars as pl
 from loguru import logger
 
 from mobisurvstd.common.trips import clean
+from mobisurvstd.schema.common import CURRENT_YEAR
 
 SCHEMA = {
     "DP1": pl.UInt8,  # Code fichier = 3 (déplacement)
@@ -183,7 +184,6 @@ class TripsReader:
         lf = lf.sort("original_trip_id")
         lf = fix_origin_destination_detailed_zones(lf)
         df = lf.collect()
-        year = round(df["trip_date"].dt.year().mean())
         # For Besançon 2018, there is one missing person.
         n = df["person_id"].null_count()
         if n > 0:
@@ -191,7 +191,7 @@ class TripsReader:
             df = df.filter(pl.col("person_id").is_not_null())
         self.trips = clean(
             df.lazy(),
-            year=year,
+            year=self.survey_year() or CURRENT_YEAR,
             special_locations=self.special_locations_coords,
             detailed_zones=self.detailed_zones_coords,
         )

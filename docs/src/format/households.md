@@ -125,6 +125,62 @@ Name of the municipality where the household is located.
 
 - **Type:** String
 
+### `home_insee_density`
+
+Density category of the household municipality.
+
+Density categories are defined by [INSEE](https://www.insee.fr/fr/information/6439600).
+
+- **Modalities:**
+  - `1`: "commune densément peuplée"
+  - `2`: "centre urbain intermédiaire"
+  - `3`: "ceinture urbaine"
+  - `4`: "petite ville"
+  - `5`: "bourg rural"
+  - `6`: "rural à habitat dispersé"
+  - `7`: "rural à habitat très dispersé"
+
+### `home_insee_aav_type`
+
+Category of the household municipality within its
+["aire d'attraction des villes" (AAV)](https://www.insee.fr/fr/information/4803954).
+
+The modalities follow the codes proposed by INSEE.
+
+- **Modalities:**
+  - `11`: "Commune-centre"
+  - `12`: "Autre commune du pôle principal"
+  - `13`: "Commune d'un pôle secondaire"
+  - `20`: "Commune de la couronne"
+  - `30`: "Commune hors attraction des villes"
+
+### `home_aav`
+
+Code of the ["aire d'attraction des villes" (AAV)](https://www.insee.fr/fr/information/4803954)
+where the household is located.
+
+- **Type:** String
+
+### `home_aav_name`
+
+Name of the ["aire d'attraction des villes" (AAV)](https://www.insee.fr/fr/information/4803954)
+where the household is located.
+
+- **Type:** String
+
+### `home_aav_category`
+
+Category of the "aire d'attraction des villes" (AAV) of the household's `home_aav`.
+
+- **Modalities:**
+  - `1`: Paris AAV
+  - `2`: area with more than 700,000 inhabitants, excluding Paris ("aire de 700 000 habitants ou
+    plus (hors Paris)")
+  - `3`: area between 200,000 and 700,000 inhabitants ("aire de 200 000 à moins de 700 000
+    habitants")
+  - `4`: area between 50,000 and 200,000 inhabitants ("aire de 50 000 à moins de 200 000 habitants")
+  - `5`: area with less than 50,000 inhabitants ("aire de moins de 50 000 habitants")
+
 ### `home_dep`
 
 _Département_ code of the household home.

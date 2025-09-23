@@ -4,6 +4,8 @@ from mobisurvstd.common.legs import clean as clean_legs
 from mobisurvstd.common.trips import clean as clean_trips
 from mobisurvstd.resources.nuts import NUTS_DF
 
+from .common import insee_density_col
+
 SCHEMA = {
     "IDENT_DEP": pl.String,  # Identifiant déplacement
     "IDENT_MEN": pl.String,  # Identifiant ménage
@@ -391,25 +393,4 @@ def time_col_to_seconds(col: str):
             + pl.field("field_2").cast(pl.UInt32)
         )
         .struct.field("seconds")
-    )
-
-
-def insee_density_col(col: str):
-    # The encoding of the file is incorrect so we need to resort to the following function to
-    # convert INSEE density names to codes.
-    return (
-        pl.when(pl.col(col).eq("Grands centres urbains"))
-        .then(1)
-        .when(pl.col(col).str.starts_with("Centres urbanis interm"))
-        .then(2)
-        .when(pl.col(col).eq("Ceintures urbaines"))
-        .then(3)
-        .when(pl.col(col).eq("Petites villes"))
-        .then(4)
-        .when(pl.col(col).eq("Bourgs ruraux"))
-        .then(5)
-        .when(pl.col(col).str.contains("habitat dispers"))
-        .then(6)
-        .when(pl.col(col).str.contains("habitat tr"))
-        .then(7)
     )

@@ -524,12 +524,14 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         workplace_singularity=pl.col("BTRAVFIX").replace_strict(WORKPLACE_SINGULARITY_MAP),
         telework=pl.col("BTRAVTEL").replace_strict(TELEWORK_MAP),
         has_driving_license=pl.col("BPERMIS").replace_strict(DRIVING_LICENSE_MAP),
+        # We assume that if no PT subscription was declared, then the person has no PT subscription
+        # (i.e., there is no NULL value).
         has_public_transit_subscription=pl.any_horizontal(
             pl.col(f"BTYP{i}RES_{a}").eq(1)
             & pl.col(f"BTYP{i}CART").is_in(("1.1", "2.1", "2.2", "2.5"))
             for i in range(1, 5)
             for a in ("A", "D", "E")
-        ),
+        ).fill_null(False),
         has_car_sharing_subscription=pl.col("BABONNAUTOP") == 1,
         car_sharing_subscription=(
             10 * pl.col("BABONNAUTOP") + pl.col("BAUTOPTYP").fill_null(0)

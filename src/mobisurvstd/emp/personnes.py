@@ -544,7 +544,6 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         is_surveyed=pl.col("NOIK").is_not_null(),
         trips_weekday=pl.col("MDATE_jour").replace_strict(WEEKDAY_MAP),
     )
-    breakpoint()
     lf = lf.with_columns(
         # Many persons have ETUDIE = 1 (they study) but SITUA is null.
         # We can assign them "student:unspecified" as detailed_professional_occupation.

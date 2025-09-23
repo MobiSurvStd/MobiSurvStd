@@ -318,7 +318,6 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         has_motorcycle_driving_license=pl.when(pl.col("age") <= 14)
         .then(pl.lit("no"))
         .otherwise(pl.col("PERM2RM").replace_strict(DRIVING_LICENSE_MAP)),
-        has_public_transit_subscription=pl.col("ABONTC").eq(1),
         public_transit_subscription=pl.when(
             # Forfait Navigo Gratuité, Améthyste et Gratuité Jeunes en insertion
             pl.col("ABONTC_20").eq(1) | pl.col("ABONTC_30").eq(1) | pl.col("ABONTC_60").eq(1)
@@ -339,7 +338,10 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         .then(pl.lit("yes:paid"))
         .when(pl.col("ABONTC").eq(0))
         .then(pl.lit("no"))
-        .otherwise(None),
+        # All persons below 4 have NULL value but can be assumed to have no public transit
+        # subscription.
+        .when(pl.col("age") <= 4)
+        .then(pl.lit("no")),
         has_car_sharing_subscription=pl.col("ABONVP").eq(1),
         car_sharing_subscription=pl.when(pl.col("ABONVP").eq(0))
         .then(pl.lit("no"))

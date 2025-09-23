@@ -259,6 +259,7 @@ def standardize_persons(
         has_driving_license=pl.when(pl.col("age") <= 15)
         .then(pl.lit("no"))
         .otherwise(pl.col("PERMVP").replace_strict(DRIVING_LICENSE_MAP)),
+        # PERM2RM value is NULL for all persons below 15.
         has_motorcycle_driving_license=pl.when(pl.col("age") <= 15)
         .then(pl.lit("no"))
         .otherwise(pl.col("PERM2RM").replace_strict(DRIVING_LICENSE_MAP)),
@@ -273,6 +274,10 @@ def standardize_persons(
             .otherwise(pl.lit("yes:unspecified"))
         )
         .when(pl.col("ABONTC").eq(1))
+        .then(pl.lit("no"))
+        # All persons below 4 have NULL value but can be assumed to have no public transit
+        # subscription.
+        .when(pl.col("age") <= 4)
         .then(pl.lit("no")),
         has_car_sharing_subscription=pl.col("ABONVP").eq(1),
         has_bike_sharing_subscription=pl.col("ABONVLS").is_in((1, 2, 3)),

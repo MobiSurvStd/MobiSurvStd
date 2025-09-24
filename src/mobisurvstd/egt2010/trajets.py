@@ -1,6 +1,7 @@
 import polars as pl
 
 from mobisurvstd.common.legs import clean
+from mobisurvstd.utils import detect_csv_delimiter
 
 SCHEMA = {
     "NQUEST": pl.UInt32,  # Identifiant du ménage
@@ -145,7 +146,11 @@ PARKING_TYPE_MAP = {
 
 
 def scan_legs(filename: str):
-    lf = pl.scan_csv(filename, separator=";", schema_overrides=SCHEMA)
+    separator = detect_csv_delimiter(filename)
+    lf = pl.scan_csv(filename, separator=separator, schema_overrides=SCHEMA)
+    if "entsect" not in lf.collect_schema().names():
+        # In some older versions, columns entsect and sortsect do not exist.
+        lf = lf.with_columns(entsect=None, sortsect=None)
     return lf
 
 
@@ -215,5 +220,6 @@ def standardize_legs(
         .then(pl.lit("other_household"))
         .otherwise("motorcycle_type")
     )
+    lf = lf.sort("original_leg_id")
     lf = clean(lf, detailed_zones)
     return lf

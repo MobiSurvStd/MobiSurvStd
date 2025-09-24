@@ -93,14 +93,14 @@ def standardize(
     else:
         logger.error(f"Unsupported survey type: {survey_type}")
         return None
-    if not no_validation:
-        is_valid = survey_data.validate()
-        if not is_valid:
-            return None
     if survey_data is None:
         source_name = source.filename if isinstance(source, ZipFile) else source
         logger.error(f"Failed to read survey from `{source_name}`")
         return None
+    if not no_validation:
+        is_valid = survey_data.validate()
+        if not is_valid:
+            return None
     if output_directory is not None:
         if add_name_subdir:
             output_directory = os.path.join(output_directory, survey_data.metadata["name"])

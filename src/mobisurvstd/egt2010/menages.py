@@ -5,6 +5,7 @@ import polars as pl
 from mobisurvstd.common.cars import clean as clean_cars
 from mobisurvstd.common.households import clean as clean_households
 from mobisurvstd.common.motorcycles import clean as clean_motorcycles
+from mobisurvstd.utils import detect_csv_delimiter
 
 SCHEMA = {
     "SEM": pl.UInt32,  # Semaine d'enquête
@@ -259,9 +260,10 @@ MOTORCYCLE_CM3_UB_MAP = {
 
 
 def scan_households(filename: str):
+    separator = detect_csv_delimiter(filename)
     lf = pl.scan_csv(
         filename,
-        separator=";",
+        separator=separator,
         schema_overrides=SCHEMA,
     )
     return lf
@@ -311,6 +313,7 @@ def standardize_households(filename: str, detailed_zones: pl.DataFrame | None):
         .then(pl.lit("99200"))
         .otherwise("home_insee"),
     )
+    lf = lf.sort("original_household_id")
     lf = clean_households(lf, year=2010, detailed_zones=detailed_zones)
     return lf
 
@@ -350,6 +353,7 @@ def standardize_cars(filename: str, households: pl.LazyFrame):
     lf = lf.filter(
         pl.any_horizontal(pl.exclude("household_id", "car_index", "original_car_id").is_not_null())
     )
+    lf = lf.sort("original_car_id")
     lf = clean_cars(lf)
     return lf
 
@@ -392,5 +396,6 @@ def standardize_motorcycles(filename: str, households: pl.LazyFrame):
             pl.exclude("household_id", "motorcycle_index", "original_motorcycle_id").is_not_null()
         )
     )
+    lf = lf.sort("original_motorcycle_id")
     lf = clean_motorcycles(lf)
     return lf

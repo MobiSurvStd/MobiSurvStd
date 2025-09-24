@@ -1,6 +1,7 @@
 import polars as pl
 
 from mobisurvstd.common.persons import clean
+from mobisurvstd.utils import detect_csv_delimiter
 
 SCHEMA = {
     "NQUEST": pl.UInt32,  # Identifiant du ménage
@@ -195,7 +196,8 @@ WORKED_MAP = {
 
 
 def scan_persons(filename: str):
-    lf = pl.scan_csv(filename, separator=";", schema_overrides=SCHEMA)
+    separator = detect_csv_delimiter(filename)
+    lf = pl.scan_csv(filename, separator=separator, schema_overrides=SCHEMA)
     return lf
 
 
@@ -343,5 +345,6 @@ def standardize_persons(
         .then(pl.col("pcs_category_code2003") // 10)
         .otherwise("pcs_group_code")
     )
+    lf = lf.sort("original_person_id")
     lf = clean(lf, detailed_zones=detailed_zones)
     return lf

@@ -3,6 +3,7 @@ from datetime import timedelta
 import polars as pl
 
 from mobisurvstd.common.trips import clean
+from mobisurvstd.utils import detect_csv_delimiter
 
 SCHEMA = {
     "NQUEST": pl.UInt32,  # Identifiant du ménage
@@ -123,7 +124,8 @@ SHOP_TYPE_MAP = {
 
 
 def scan_trips(filename: str):
-    lf = pl.scan_csv(filename, separator=";", schema_overrides=SCHEMA)
+    separator = detect_csv_delimiter(filename)
+    lf = pl.scan_csv(filename, separator=separator, schema_overrides=SCHEMA)
     return lf
 
 
@@ -215,4 +217,5 @@ def standardize_trips(
         .then(None)
         .otherwise("destination_insee"),
     )
+    lf = lf.sort("original_trip_id")
     return lf

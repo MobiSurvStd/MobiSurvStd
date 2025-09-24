@@ -1,3 +1,4 @@
+import csv
 import os
 import re
 import shutil
@@ -114,6 +115,18 @@ def tmp_download(url):
                 pass
 
 
+def detect_csv_delimiter(source: str | bytes):
+    if isinstance(source, str):
+        with open(source, "r") as f:
+            first_line = f.readline()
+    else:
+        assert isinstance(source, bytes)
+        first_line = source.splitlines()[0].decode("utf-8")
+    sniffer = csv.Sniffer()
+    delimiter = sniffer.sniff(first_line).delimiter
+    return delimiter
+
+
 def guess_survey_type(source: str | ZipFile) -> str | None:
     """Returns the type of the survey data stored in `source` as a string.
 
@@ -124,6 +137,9 @@ def guess_survey_type(source: str | ZipFile) -> str | None:
     if find_file(source, "a_menage_egt1820.csv", subdir="Csv", as_url=True):
         return "egt2020"
     if find_file(source, "menages_semaine.csv", subdir="Csv", as_url=True):
+        return "egt2010"
+    if find_file(source, "menages_semaine.csv", subdir="Format_csv", as_url=True):
+        # Old EGT format
         return "egt2010"
     if find_file(source, ".*_std_faf_men.csv", subdir="Csv", as_url=True):
         return "edgt"

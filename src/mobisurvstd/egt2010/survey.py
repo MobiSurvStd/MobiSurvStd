@@ -71,22 +71,30 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
 
 
 def households_filename(source: str | ZipFile):
-    return find_file(source, "menages_semaine.csv", subdir="Csv")
+    return find_file(source, "menages_semaine.csv", subdir="Csv") or find_file(
+        source, "menages_semaine.csv", subdir="Format_csv"
+    )
 
 
 def persons_filename(source: str | ZipFile):
-    return find_file(source, "personnes_semaine.csv", subdir="Csv")
+    return find_file(source, "personnes_semaine.csv", subdir="Csv") or find_file(
+        source, "personnes_semaine.csv", subdir="Format_csv"
+    )
 
 
 def trips_filename(source: str | ZipFile):
-    return find_file(source, "deplacements_semaine.csv", subdir="Csv")
+    return find_file(source, "deplacements_semaine.csv", subdir="Csv") or find_file(
+        source, "deplacements_semaine.csv", subdir="Format_csv"
+    )
 
 
 def legs_filename(source: str | ZipFile):
-    return find_file(source, "trajets_semaine.csv", subdir="Csv")
+    return find_file(source, "trajets_semaine.csv", subdir="Csv") or find_file(
+        source, "trajets_semaine.csv", subdir="Format_csv"
+    )
 
 
 def detailed_zones_filename(source: str | ZipFile):
     return find_file(
         source, "carr100m.shp", subdir=os.path.join("Doc", "Carreaux_shape_mifmid"), as_url=True
-    )
+    ) or find_file(source, "carreaux_shape_mifmid.zip", as_url=False)

@@ -221,5 +221,5 @@ def standardize_legs(
         .otherwise("motorcycle_type")
     )
     lf = lf.sort("original_leg_id")
-    lf = clean(lf, detailed_zones)
+    lf = clean(lf, detailed_zones=detailed_zones)
     return lf

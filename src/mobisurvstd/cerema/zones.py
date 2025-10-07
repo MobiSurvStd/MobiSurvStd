@@ -389,7 +389,7 @@ class ZonesReader:
 
     def split_special_locations_and_detailed_zones(self, gdf: gpd.GeoDataFrame):
         # Default is to split based on the geometry type (Point if and only if GT).
-        # Surveys can overtwrite that function to split differently.
+        # Surveys can overwrite that function to split differently.
         zfs = gdf.loc[gdf.geometry.geom_type != "Point"].copy()
         gts = gdf.loc[gdf.geometry.geom_type == "Point"].copy()
         return zfs, gts

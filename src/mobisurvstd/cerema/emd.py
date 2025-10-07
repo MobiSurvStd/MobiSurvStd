@@ -28,9 +28,14 @@ class EMDReader(CeremaReader):
         return [find_file(self.source, ".*_std_traj.csv", subdir="Csv")]
 
     def special_locations_and_detailed_zones_filenames(self):
-        # This should only match the Valenciennes 2011 survey.
+        # This should match the Valenciennes 2011 and Grenoble 2010 surveys.
         return [
-            find_file(self.source, ".*zf_gt[.]mif", subdir=os.path.join("Doc", "SIG"), as_url=True)
+            find_file(
+                self.source,
+                ".*(grenobloise10_zones_fines|zf_gt)[.]mif",
+                subdir=os.path.join("Doc", "SIG"),
+                as_url=True,
+            )
         ]
 
     def detailed_zones_filenames(self):
@@ -74,6 +79,7 @@ class EMDReader(CeremaReader):
             "zf_gt_def",
             "num_gene2013",
             "_2017_zf",
+            "dfin_smart",
             "numzonefine2010",
         ]
 

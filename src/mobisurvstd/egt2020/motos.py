@@ -99,5 +99,6 @@ def standardize_motorcycles(filename: str, households: pl.LazyFrame):
         parking_location=pl.col("STAT").replace_strict(PARKING_LOCATION_MAP),
         parking_type=pl.col("STAT_G").replace_strict(PARKING_TYPE_MAP),
     )
+    lf = lf.sort("original_motorcycle_id")
     lf = clean(lf)
     return lf

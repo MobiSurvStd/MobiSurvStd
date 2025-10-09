@@ -196,17 +196,13 @@ PARKING_TYPE_MAP = {
 def scan_legs(filename: str):
     # We use the inefficient `read_csv().lazy()` because we need to use `encoding="latin1"`, which
     # does not exist with `scan_csv()`.
-    lf = (
-        pl.read_csv(
-            filename,
-            separator=";",
-            encoding="latin1",
-            schema_overrides=SCHEMA,
-            null_values=["-1"],
-        )
-        .lazy()
-        .sort("IDCEREMA", "NP", "ND")
-    )
+    lf = pl.read_csv(
+        filename,
+        separator=";",
+        encoding="latin1",
+        schema_overrides=SCHEMA,
+        null_values=["-1"],
+    ).lazy()
     return lf
 
 
@@ -337,5 +333,6 @@ def standardize_legs(
             .otherwise("in_vehicle_person_ids")
         )
     )
+    lf = lf.sort("original_leg_id")
     lf = clean(lf)
     return lf

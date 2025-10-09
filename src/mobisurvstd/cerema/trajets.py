@@ -98,6 +98,7 @@ class LegsReader:
     def scan_legs(self):
         lfs_iter = map(scan_legs_impl, self.legs_filenames())
         lf = pl.concat(lfs_iter, how="vertical")
+        lf = lf.sort(self.get_leg_index_cols())
         if "T3A" not in lf.collect_schema().names():
             # In the old Cerema surveys (EMD, EDGT, EDVM), the T3A column does not exist.
             lf = lf.with_columns(T3A=None)
@@ -270,7 +271,6 @@ class LegsReader:
         )
         # Concatenate the 5 leg types.
         lf = pl.concat((lf1, lf2, lf3, lf4, lf5), how="diagonal")
-        lf = lf.sort("trip_id", "tmp_leg_index")
         # Add car and motorcycle types.
         lf = lf.with_columns(
             car_type=pl.when(pl.col("mode").str.starts_with("car:")).then(
@@ -360,6 +360,7 @@ class LegsReader:
             .otherwise("nb_minors_in_vehicle")
         )
         lf = fix_start_end_detailed_zones(lf)
+        lf = lf.sort("trip_id", "tmp_leg_index")
         df = lf.collect()
         # For Bourg-en-Bresse 2017 et Besançon 2018, some persons are missing.
         n = df["trip_id"].null_count()

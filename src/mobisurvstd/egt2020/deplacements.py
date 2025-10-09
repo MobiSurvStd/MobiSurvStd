@@ -119,17 +119,13 @@ SHOP_TYPE_MAP = {
 def scan_trips(filename: str):
     # We use the inefficient `read_csv().lazy()` because we need to use `encoding="latin1"`, which
     # does not exist with `scan_csv()`.
-    lf = (
-        pl.read_csv(
-            filename,
-            separator=";",
-            encoding="latin1",
-            schema_overrides=SCHEMA,
-            null_values=["-1"],
-        )
-        .lazy()
-        .sort("IDCEREMA", "NP", "ND")
-    )
+    lf = pl.read_csv(
+        filename,
+        separator=";",
+        encoding="latin1",
+        schema_overrides=SCHEMA,
+        null_values=["-1"],
+    ).lazy()
     return lf
 
 
@@ -189,8 +185,9 @@ def standardize_trips(filename: str, households: pl.LazyFrame, persons: pl.LazyF
             pl.col("destination_shop_type").shift(1).over("person_id")
         ),
     )
+    lf = lf.sort("original_trip_id")
     # For EGT2020, we use the AAV and density data from 2020 (even if some interviews are from 2018
     # and 2019).
-    # The survey perimiters cover excatly the 8 départements of the IDF region.
+    # The survey perimeter cover excatly the 8 départements of the IDF region.
     lf = clean(lf, 2020, perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"])
     return lf

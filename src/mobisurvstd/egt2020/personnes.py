@@ -241,17 +241,13 @@ CAR_SHARING_MAP = {
 def scan_persons(filename: str):
     # We use the inefficient `read_csv().lazy()` because we need to use `encoding="latin1"`, which
     # does not exist with `scan_csv()`.
-    lf = (
-        pl.read_csv(
-            filename,
-            separator=";",
-            encoding="latin1",
-            schema_overrides=SCHEMA,
-            null_values=["-1", "-10"],
-        )
-        .lazy()
-        .sort("IDCEREMA", "NP")
-    )
+    lf = pl.read_csv(
+        filename,
+        separator=";",
+        encoding="latin1",
+        schema_overrides=SCHEMA,
+        null_values=["-1", "-10"],
+    ).lazy()
     return lf
 
 
@@ -404,5 +400,6 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         .then(pl.lit(None))
         .otherwise("pcs_category_code2003"),
     )
+    lf = lf.sort("original_person_id")
     lf = clean(lf)
     return lf

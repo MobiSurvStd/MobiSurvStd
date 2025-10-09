@@ -68,6 +68,7 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         raise NotImplementedError
 
     def survey_year(self):
+        """Extracts the year at which the survey was conducted from the survey name."""
         name = self.survey_name()
         matches = re.findall(r"_(\d{4})$", name)
         return int(matches[0]) if matches else None

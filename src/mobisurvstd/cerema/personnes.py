@@ -226,6 +226,7 @@ class PersonsReader:
     def scan_persons(self):
         lfs_iter = map(scan_persons_impl, self.persons_filenames())
         lf = pl.concat(lfs_iter, how="vertical")
+        lf = lf.sort(self.get_person_index_cols())
         columns = lf.collect_schema().names()
         if "P13B" not in columns:
             # In the old Cerema surveys (EMD, EDGT, EDVM), the P13B column does not exist.

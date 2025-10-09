@@ -114,6 +114,7 @@ class TripsReader:
     def scan_trips(self):
         lfs_iter = map(scan_trips_impl, self.trips_filenames())
         lf = pl.concat(lfs_iter, how="vertical")
+        lf = lf.sort(self.get_trip_index_cols())
         return lf
 
     def standardize_trips(self):

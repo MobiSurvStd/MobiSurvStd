@@ -5,7 +5,7 @@ import re
 import geopandas as gpd
 
 from mobisurvstd.cerema.survey import CeremaReader
-from mobisurvstd.utils import find_file
+from mobisurvstd.utils import MissingFileError, find_file
 
 from .zones import find_matching_column
 
@@ -13,28 +13,28 @@ from .zones import find_matching_column
 class EMC2Reader(CeremaReader):
     SURVEY_TYPE = "EMC2"
 
-    def households_filenames(self) -> list[str | io.BytesIO]:
+    def households_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
         return [
             find_file(
                 self.source, ".*_std_men.csv", subdir=os.path.join("Csv", "Fichiers_Standard")
             )
         ]
 
-    def persons_filenames(self) -> list[str | io.BytesIO]:
+    def persons_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
         return [
             find_file(
                 self.source, ".*_std_pers.csv", subdir=os.path.join("Csv", "Fichiers_Standard")
             )
         ]
 
-    def trips_filenames(self) -> list[str | io.BytesIO]:
+    def trips_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
         return [
             find_file(
                 self.source, ".*_std_depl.csv", subdir=os.path.join("Csv", "Fichiers_Standard")
             )
         ]
 
-    def legs_filenames(self) -> list[str | io.BytesIO]:
+    def legs_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
         return [
             find_file(
                 self.source, ".*_std_traj.csv", subdir=os.path.join("Csv", "Fichiers_Standard")

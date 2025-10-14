@@ -106,19 +106,28 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         )
 
     def validate(self):
-        if not all(self.households_filenames()):
-            logger.error("Missing households file")
-            return False
-        if not all(self.persons_filenames()):
-            logger.error("Missing persons file")
-            return False
-        if not all(self.trips_filenames()):
-            logger.error("Missing trips file")
-            return False
-        if not all(self.legs_filenames()):
-            logger.error("Missing legs file")
-            return False
-        return True
+        is_valid = True
+        households_filenames = self.households_filenames()
+        if not all(households_filenames):
+            err = next(filter(lambda f: not f, households_filenames))
+            logger.error(f"Missing households file: {err}")
+            is_valid = False
+        persons_filenames = self.persons_filenames()
+        if not all(persons_filenames):
+            err = next(filter(lambda f: not f, persons_filenames))
+            logger.error(f"Missing persons file: {err}")
+            is_valid = False
+        trips_filenames = self.trips_filenames()
+        if not all(trips_filenames):
+            err = next(filter(lambda f: not f, trips_filenames))
+            logger.error(f"Missing trips file: {err}")
+            is_valid = False
+        legs_filenames = self.legs_filenames()
+        if not all(legs_filenames):
+            err = next(filter(lambda f: not f, legs_filenames))
+            logger.error(f"Missing legs file: {err}")
+            is_valid = False
+        return is_valid
 
     def read_spatial_data(self):
         self.read_special_locations_and_detailed_zones()

@@ -18,38 +18,38 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
     logger.info(f"Standardizing EGT2020 survey from `{source_name}`")
     # Households.
     filename = households_filename(source)
-    if filename is None:
-        logger.error("Missing households file")
+    if not filename:
+        logger.error(f"Missing households file: {filename}")
         return None
     households = standardize_households(filename)
     # Cars.
     filename = cars_filename(source)
-    if filename is None:
-        logger.error("Missing cars file")
+    if not filename:
+        logger.error(f"Missing cars file: {filename}")
         return None
     cars = standardize_cars(filename, households)
     # motorcycles.
     filename = motorcycles_filename(source)
-    if filename is None:
-        logger.error("Missing motorcycles file")
+    if not filename:
+        logger.error(f"Missing motorcycles fil: {filename}e")
         return None
     motorcycles = standardize_motorcycles(filename, households)
     # Persons.
     filename = persons_filename(source)
-    if filename is None:
-        logger.error("Missing persons file")
+    if not filename:
+        logger.error(f"Missing persons fil: {filename}e")
         return None
     persons = standardize_persons(filename, households)
     # Trips.
     filename = trips_filename(source)
-    if filename is None:
-        logger.error("Missing trips file")
+    if not filename:
+        logger.error(f"Missing trips fil: {filename}e")
         return None
     trips = standardize_trips(filename, households, persons)
     # Legs.
     filename = legs_filename(source)
-    if filename is None:
-        logger.error("Missing legs file")
+    if not filename:
+        logger.error(f"Missing legs fil: {filename}e")
         return None
     legs = standardize_legs(filename, trips, cars, motorcycles, persons)
     return clean(

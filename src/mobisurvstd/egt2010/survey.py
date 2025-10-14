@@ -30,8 +30,8 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
         detailed_zone_coords = get_coords(detailed_zones, "detailed_zone")
     # Households.
     filename = households_filename(source)
-    if filename is None:
-        logger.error("Missing households file")
+    if not filename:
+        logger.error(f"Missing households file: {filename}")
         return None
     households = standardize_households(filename, detailed_zone_coords)
     # Cars.
@@ -40,20 +40,20 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
     motorcycles = standardize_motorcycles(filename, households)
     # Persons.
     filename = persons_filename(source)
-    if filename is None:
-        logger.error("Missing persons file")
+    if not filename:
+        logger.error(f"Missing persons file: {filename}")
         return None
     persons = standardize_persons(filename, households, detailed_zone_coords)
     # Trips.
     filename = trips_filename(source)
-    if filename is None:
-        logger.error("Missing trips file")
+    if not filename:
+        logger.error(f"Missing trips file: {filename}")
         return None
     trips = standardize_trips(filename, persons, households, detailed_zone_coords)
     # Legs.
     filename = legs_filename(source)
-    if filename is None:
-        logger.error("Missing legs file")
+    if not filename:
+        logger.error(f"Missing legs file: {filename}")
         return None
     legs = standardize_legs(filename, trips, cars, motorcycles, detailed_zone_coords)
     return clean(

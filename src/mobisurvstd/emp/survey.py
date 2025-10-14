@@ -74,8 +74,8 @@ def read_files(source: str | ZipFile, names: tuple[str, ...]):
     files = list()
     for name in names:
         f = find_file(source, name)
-        if f is None:
-            logger.error(f"Missing file: `{name}`")
+        if not f:
+            logger.error(f"Missing file: {f}")
             return None
         files.append(f)
     return files

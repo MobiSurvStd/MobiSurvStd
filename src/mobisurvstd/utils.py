@@ -12,6 +12,16 @@ import requests
 from loguru import logger
 
 
+class MissingFileError(str):
+    """A special str class to hold the missing file information.
+    It returns False so that `bool(x)` can be used to assess whether a file was found, where `x` is
+    the value returned by the `find_file` function.
+    """
+
+    def __bool__(self):
+        return False
+
+
 def read_source(source: str) -> str | ZipFile | None:
     """Converts the input string given by the user as either a directory path or a ZipFile.
 
@@ -33,25 +43,29 @@ def read_source(source: str) -> str | ZipFile | None:
 
 def find_file(
     source: str | ZipFile, regex: str, subdir: str = "", as_url=False
-) -> str | io.BytesIO | None:
+) -> str | io.BytesIO | MissingFileError:
     """Reads the files in a source directory or zipfile and returns the first file that matches the
     given regex.
 
     Optionally, the `subdir` parameter can be used to constrain the search to a sub directory.
 
-    Returns `None` if there is no file that matches the regex.
+    Returns `MissingFileException` if there is no file that matches the regex.
     """
     if isinstance(source, str):
         directory = os.path.join(source, subdir)
         if os.path.isdir(directory):
-            return find_file_in_directory(directory, regex)
+            res = find_file_in_directory(directory, regex)
         else:
-            return None
+            res = None
     elif isinstance(source, ZipFile):
-        return find_file_in_zipfile(source, subdir, regex, as_url)
+        res = find_file_in_zipfile(source, subdir, regex, as_url)
     else:
         logger.error(f"Invalid source: `{source}`")
         return None
+    if res is None:
+        return MissingFileError("`{}` in `{}`".format(os.path.join(subdir, regex), source))
+    else:
+        return res
 
 
 def find_file_in_directory(directory: str, regex: str) -> str | None:

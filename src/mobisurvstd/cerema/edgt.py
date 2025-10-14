@@ -35,7 +35,7 @@ class EDGTReader(CeremaReader):
         tel_filename = find_file(
             self.source, ".*_tel_d.?coupagefin[.](tab|shp|mif)", subdir=subdir, as_url=True
         )
-        if faf_filename is not None and tel_filename is not None:
+        if faf_filename and tel_filename:
             # Amiens 2010 has two files.
             return [faf_filename, tel_filename]
         else:
@@ -56,7 +56,7 @@ class EDGTReader(CeremaReader):
         tel_filename = find_file(
             self.source, ".*_tel_.*g.?n.?rateur.*[.](tab|shp|mif)", subdir=subdir, as_url=True
         )
-        if faf_filename is not None and tel_filename is not None:
+        if faf_filename and tel_filename:
             # Saint-Quentin-en-Yvelines has two files, for phone and face-to-face surveys.
             return [faf_filename, tel_filename]
         else:
@@ -77,7 +77,7 @@ class EDGTReader(CeremaReader):
         tel_filename = find_file(
             self.source, ".*_tel_zones_fines[.](tab|shp|mif)", subdir=subdir, as_url=True
         )
-        if faf_filename is not None and tel_filename is not None:
+        if faf_filename and tel_filename:
             # Nice 2009 and Saint-Quentin-en-Yvelines have two files, for phone and face-to-face
             # surveys.
             return [faf_filename, tel_filename]

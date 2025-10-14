@@ -32,7 +32,8 @@ def standardize(
     survey_type
         String indicating the type of the survey to be converted.
         If the value is omitted, MobiSurvStd will do its best to guess the survey type.
-        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd".
+        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edgt-opendata", "edvm",
+        "emd".
     add_name_subdir
         Whether the standardized survey is stored directly in `output_directory` or within a
         subdirectory of `output_directory`.
@@ -80,6 +81,8 @@ def standardize(
         survey_data = cerema.standardize(dir_or_zip, "EMC2", skip_spatial=skip_spatial)
     elif survey_type == "edgt":
         survey_data = cerema.standardize(dir_or_zip, "EDGT", skip_spatial=skip_spatial)
+    elif survey_type == "edgt-opendata":
+        survey_data = cerema.standardize(dir_or_zip, "EDGT-opendata", skip_spatial=skip_spatial)
     elif survey_type == "edvm":
         survey_data = cerema.standardize(dir_or_zip, "EDVM", skip_spatial=skip_spatial)
     elif survey_type == "emd":
@@ -133,7 +136,8 @@ def bulk_standardize(
         String indicating the type of the surveys to be converted.
         If the directory contains surveys of different types, leave this value to None and
         MobiSurvStd will try to guess the type of each survey.
-        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd".
+        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edgt-opendata", "edvm",
+        "emd".
     skip_spatial
         If True, MobiSurvStd will not try to read spatial data from the surveys.
         This means that special locations, detailed zones, and draw zones will not be read and

@@ -1,3 +1,5 @@
+import io
+
 import polars as pl
 from loguru import logger
 
@@ -63,6 +65,8 @@ PURPOSE_MAP = {
     41: "task:healthcare",  # Recevoir des soins (santé).
     42: "task:procedure",  # Faire une démarche autre que rechercher un emploi.
     43: "task:job_search",  # Rechercher un emploi.
+    44: "shopping:pickup",  # OPEN DATA NANTES ONLY: RECUPERER UN ACHAT FAIT A DISTANCE (TEL, VPC, INTERNET…)
+    45: "task:procedure",  # OPEN DATA NANTES ONLY: FAIRE UNE DEMARCHE AUTRE QUE RECHERCHER UN EMPLOI OU RECUPERER UN ACHAT FAIT A DISTANCE
     51: "leisure:sport_or_culture",  # Participer à des loisirs, des activités sportives, culturelles ou associatives.
     52: "leisure:walk_or_driving_lesson",  # Faire une promenade, du « lèche-vitrines », prendre une leçon de conduite.
     53: "leisure:restaurant",  # Se restaurer hors du domicile.
@@ -106,7 +110,7 @@ TRIP_PERIMETER_MAP = {
 }
 
 
-def scan_trips_impl(source: str | bytes):
+def scan_trips_impl(source: str | io.BytesIO):
     return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["aa", "aaaaa"])
 
 

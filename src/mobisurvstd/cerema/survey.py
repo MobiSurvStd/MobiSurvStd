@@ -11,7 +11,7 @@ from mobisurvstd.common.clean import clean
 from mobisurvstd.common.trips import WEEKDAY_MAP
 from mobisurvstd.common.zones import get_coords
 
-from .common import EMC2_MODE_MAP, MODE_MAP
+from .common import EMC2_MODE_MAP, MODE_MAP, NANTES_MODE_MAP
 from .deplacements import TripsReader
 from .menages import HouseholdsReader
 from .personnes import PersonsReader
@@ -151,6 +151,8 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         """
         if self.SURVEY_TYPE == "EMC2":
             return EMC2_MODE_MAP
+        elif self.SURVEY_TYPE == "EDGT-opendata":
+            return NANTES_MODE_MAP
         else:
             return MODE_MAP
 

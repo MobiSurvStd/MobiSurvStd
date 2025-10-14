@@ -1,3 +1,5 @@
+import io
+
 import polars as pl
 from loguru import logger
 
@@ -88,7 +90,7 @@ MOTORCYCLE_MAP = {
 }
 
 
-def scan_legs_impl(source: str | bytes):
+def scan_legs_impl(source: str | io.BytesIO):
     return pl.scan_csv(
         source, separator=";", schema_overrides=SCHEMA, null_values=["a", "aa", "aaaaa"]
     )

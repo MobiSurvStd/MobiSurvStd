@@ -1,4 +1,5 @@
 import csv
+import io
 import os
 import re
 import shutil
@@ -32,7 +33,7 @@ def read_source(source: str) -> str | ZipFile | None:
 
 def find_file(
     source: str | ZipFile, regex: str, subdir: str = "", as_url=False
-) -> str | bytes | None:
+) -> str | io.BytesIO | None:
     """Reads the files in a source directory or zipfile and returns the first file that matches the
     given regex.
 
@@ -70,13 +71,15 @@ def find_file_in_directory(directory: str, regex: str) -> str | None:
     return None
 
 
-def find_file_in_zipfile(z: ZipFile, subdir: str, regex: str, as_url=False) -> str | bytes | None:
+def find_file_in_zipfile(
+    z: ZipFile, subdir: str, regex: str, as_url=False
+) -> str | io.BytesIO | None:
     """Returns the first file that matches the given regex in the input ZipFile.
 
     If `as_url` is `True`, the file is returned as a url "zip://[ZIPFILE_PATH]!/FILE_PATH", suitable
     to be open by geopandas.
 
-    If `as_url` is `False`, the file is returned as a bytes, suitable to be open by polars.
+    If `as_url` is `False`, the file is returned as a `io.BytesIO`, suitable to be open by polars.
 
     Optionally, the search can be constrained to the given `subdir`.
 
@@ -91,7 +94,7 @@ def find_file_in_zipfile(z: ZipFile, subdir: str, regex: str, as_url=False) -> s
             if as_url:
                 return f"zip://{z.filename}!/{fileinfo.filename}"
             else:
-                return z.read(fileinfo)
+                return io.BytesIO(z.read(fileinfo))
 
 
 @contextmanager
@@ -115,13 +118,13 @@ def tmp_download(url):
                 pass
 
 
-def detect_csv_delimiter(source: str | bytes):
+def detect_csv_delimiter(source: str | io.BytesIO):
     if isinstance(source, str):
         with open(source, "r") as f:
             first_line = f.readline()
     else:
-        assert isinstance(source, bytes)
-        first_line = source.splitlines()[0].decode("utf-8")
+        assert isinstance(source, io.BytesIO)
+        first_line = source.readline().decode("utf-8")
     sniffer = csv.Sniffer()
     delimiter = sniffer.sniff(first_line).delimiter
     return delimiter
@@ -155,6 +158,9 @@ def guess_survey_type(source: str | ZipFile) -> str | None:
         # Special case for Poitiers 2018 which is an EMC2 survey but is defined as an EDVM survey in
         # the IDM1 variable.
         return "emc2"
+    if find_file(source, ".*_EDGT_44_MENAGE_FAF_TEL_.*.txt", as_url=True):
+        # Nantes 2015 open data format.
+        return "edgt-opendata"
     if bytes := find_file(source, ".*_std_men.csv", subdir="Csv", as_url=False):
         survey_type = (
             pl.scan_csv(bytes, separator=";", schema_overrides={"IDM1": pl.UInt8})

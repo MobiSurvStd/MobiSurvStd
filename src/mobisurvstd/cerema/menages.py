@@ -1,3 +1,5 @@
+import io
+
 import polars as pl
 
 from mobisurvstd.common.cars import clean as clean_cars
@@ -99,6 +101,7 @@ HOUSING_TYPE_MAP = {
     3: "apartment",  # Petit collectif (R+1 à R+3)
     4: "apartment",  # Grand collectif (R+4 et plus)
     5: "other",  # Autres
+    9: None,
 }
 
 HOUSING_STATUS_MAP = {
@@ -223,7 +226,7 @@ MOTORCYCLE_THERMIC_ENGINE_TYPE_MAP = {
 }
 
 
-def scan_households_impl(source: str | bytes):
+def scan_households_impl(source: str | io.BytesIO):
     return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["a"])
 
 

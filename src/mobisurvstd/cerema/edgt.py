@@ -1,3 +1,4 @@
+import io
 import os
 import re
 from zipfile import ZipFile
@@ -273,7 +274,7 @@ class EDGTReader(CeremaReader):
         return zfs, gts
 
 
-def get_files(source: str | ZipFile, name: str):
+def get_files(source: str | ZipFile, name: str) -> list[str | io.BytesIO]:
     # In the EDGT surveys, there are two directories with "standardized" data in the Csv directory,
     # usually "Fichiers_Standard_Face_a_face" and "Fichiers_Standard_Telephone" but it can be
     # something else.

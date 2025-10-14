@@ -1,3 +1,4 @@
+import io
 import os
 import re
 
@@ -12,19 +13,19 @@ from .zones import find_matching_column
 class EDVMReader(CeremaReader):
     SURVEY_TYPE = "EDVM"
 
-    def households_filenames(self) -> list[str | bytes]:
+    def households_filenames(self) -> list[str | io.BytesIO]:
         # The filenames are usually stored in "Csv/Fichiers_Standard/[SURVEY_NAME]_std_[NAME].csv"
         # but in some cases (e.g., Ajaccio 2017) the directory "Fichiers_Standard" is # named based
         # on the survey name (e.g., Ajaccio_2017_Standard).
         return [find_file(self.source, ".*_std_men.csv", subdir="Csv")]
 
-    def persons_filenames(self) -> list[str | bytes]:
+    def persons_filenames(self) -> list[str | io.BytesIO]:
         return [find_file(self.source, ".*_std_pers.csv", subdir="Csv")]
 
-    def trips_filenames(self) -> list[str | bytes]:
+    def trips_filenames(self) -> list[str | io.BytesIO]:
         return [find_file(self.source, ".*_std_depl.csv", subdir="Csv")]
 
-    def legs_filenames(self) -> list[str | bytes]:
+    def legs_filenames(self) -> list[str | io.BytesIO]:
         return [find_file(self.source, ".*_std_traj.csv", subdir="Csv")]
 
     def special_locations_and_detailed_zones_filenames(self):

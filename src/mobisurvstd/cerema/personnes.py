@@ -1,3 +1,5 @@
+import io
+
 import polars as pl
 
 from mobisurvstd.common.persons import clean
@@ -24,10 +26,10 @@ SCHEMA = {
     "P5": pl.UInt8,  # Possession d'un téléphone portable
     "P6": pl.UInt8,  # Possession d'une adresse de messagerie électronique
     "P7": pl.UInt8,  # Possession du permis de conduire voiture
-    "P8": pl.String,  # Niveau d’études
+    "P8": pl.UInt8,  # Niveau d’études
     "P9": pl.UInt8,  # Occupation principale de la personne
     "P10": pl.UInt8,  # Occupation secondaire
-    "PCSC": pl.String,  # PCS courte
+    "PCSC": pl.UInt8,  # PCS courte
     "PCSD": pl.UInt8,  # PCS détaillée
     "P12": pl.UInt8,  # Possession d'un abonnement TC valide hier
     "P14": pl.UInt8,  # Travail, études à domicile
@@ -70,40 +72,40 @@ DRIVING_LICENSE_MAP = {
 }
 
 EDUCATION_LEVEL_MAP = {
-    "00": None,  # En cours de scolarité
-    "01": "primary",  # Primaire
-    "02": "secondary:no_bac",  # Secondaire (de la 6e à la 3e, CAP)
-    "03": "secondary:no_bac",  # Secondaire (de la seconde à la terminale, BEP), non titulaire du bac
-    "04": "secondary:bac",  # Secondaire, titulaire du bac
-    "05": "higher:at_most_bac+2",  # Supérieur jusqu’à bac + 2
-    "06": "higher:at_least_bac+3",  # Supérieur, bac + 3 et plus
+    0: None,  # En cours de scolarité
+    1: "primary",  # Primaire
+    2: "secondary:no_bac",  # Secondaire (de la 6e à la 3e, CAP)
+    3: "secondary:no_bac",  # Secondaire (de la seconde à la terminale, BEP), non titulaire du bac
+    4: "secondary:bac",  # Secondaire, titulaire du bac
+    5: "higher:at_most_bac+2",  # Supérieur jusqu’à bac + 2
+    6: "higher:at_least_bac+3",  # Supérieur, bac + 3 et plus
     # Apprentissage is usually something like CAP so we put secondary:no_bac
-    "07": "secondary:no_bac",  # Apprentissage (école primaire ou secondaire uniquement)
+    7: "secondary:no_bac",  # Apprentissage (école primaire ou secondaire uniquement)
     # Apprentissage (études supérieurs) should rarely be higher than BAC+2
-    "08": "higher:at_most_bac+2",  # Apprentissage (études supérieures)
-    "09": "no_studies_or_no_diploma",  # Pas d’études
+    8: "higher:at_most_bac+2",  # Apprentissage (études supérieures)
+    9: "no_studies_or_no_diploma",  # Pas d’études
     # For the two modalities below we have to make an assumption.
-    "93": "secondary:no_bac",  # Secondaire (sans distinction titulaire du bac ou non)
-    "97": "secondary:no_bac",  #  Apprentissage (sans distinction)
-    "90": None,  # autre (egt)
+    93: "secondary:no_bac",  # Secondaire (sans distinction titulaire du bac ou non)
+    97: "secondary:no_bac",  #  Apprentissage (sans distinction)
+    90: None,  # autre (egt)
 }
 
 DETAILED_EDUCATION_LEVEL_MAP = {
-    "00": None,  # En cours de scolarité
-    "01": "primary:unspecified",  # Primaire
+    0: None,  # En cours de scolarité
+    1: "primary:unspecified",  # Primaire
     # CAP should actually be in the other category but given that EMC2 are the only one to do that
     # there is no appropriate category.
-    "02": "secondary:no_bac:college",  # Secondaire (de la 6e à la 3e, CAP)
-    "03": "secondary:no_bac:CAP/BEP",  # Secondaire (de la seconde à la terminale, BEP), non titulaire du bac
-    "04": "secondary:bac:unspecified",  # Secondaire, titulaire du bac
-    "05": "higher:at_most_bac+2:unspecified",  # Supérieur jusqu’à bac + 2
-    "06": "higher:at_least_bac+3:unspecified",  # Supérieur, bac + 3 et plus
-    "07": "secondary:no_bac:CAP/BEP",  # Apprentissage (école primaire ou secondaire uniquement)
-    "08": "higher:at_most_bac+2:unspecified",  # Apprentissage (études supérieures)
-    "09": "no_studies",  # Pas d’études
-    "93": None,  # Secondaire (sans distinction titulaire du bac ou non)
-    "97": None,  #  Apprentissage (sans distinction)
-    "90": None,  # autre (egt)
+    2: "secondary:no_bac:college",  # Secondaire (de la 6e à la 3e, CAP)
+    3: "secondary:no_bac:CAP/BEP",  # Secondaire (de la seconde à la terminale, BEP), non titulaire du bac
+    4: "secondary:bac:unspecified",  # Secondaire, titulaire du bac
+    5: "higher:at_most_bac+2:unspecified",  # Supérieur jusqu’à bac + 2
+    6: "higher:at_least_bac+3:unspecified",  # Supérieur, bac + 3 et plus
+    7: "secondary:no_bac:CAP/BEP",  # Apprentissage (école primaire ou secondaire uniquement)
+    8: "higher:at_most_bac+2:unspecified",  # Apprentissage (études supérieures)
+    9: "no_studies",  # Pas d’études
+    93: None,  # Secondaire (sans distinction titulaire du bac ou non)
+    97: None,  #  Apprentissage (sans distinction)
+    90: None,  # autre (egt)
 }
 
 DETAILED_PROFESSIONAL_OCCUPATION_MAP = {
@@ -125,16 +127,16 @@ SECONDARY_PROFESSIONAL_OCCUPATION_MAP = {
 }
 
 PCS_GROUP_CODE_MAP = {
-    "00": None,  # Non réponse
-    "01": 1,  # Agriculteurs exploitants
-    "02": 2,  # Artisans, commerçants et chefs d'entreprise
-    "03": 3,  # Cadres et professions intellectuelles supérieures
-    "04": 4,  # Professions Intermédiaires
-    "05": 5,  # Employés
-    "06": 6,  # Ouvriers
-    "07": None,  # Élèves, étudiants
-    "08": 8,  # Chômeurs n'ayant jamais travaillé
-    "09": 8,  # Autres inactifs n'ayant jamais travaillé
+    0: None,  # Non réponse
+    1: 1,  # Agriculteurs exploitants
+    2: 2,  # Artisans, commerçants et chefs d'entreprise
+    3: 3,  # Cadres et professions intellectuelles supérieures
+    4: 4,  # Professions Intermédiaires
+    5: 5,  # Employés
+    6: 6,  # Ouvriers
+    7: None,  # Élèves, étudiants
+    8: 8,  # Chômeurs n'ayant jamais travaillé
+    9: 8,  # Autres inactifs n'ayant jamais travaillé
 }
 
 # NOTE. Some details are lost here because it is unclear what "Secondaires, titulaires du Bac" means.
@@ -218,7 +220,7 @@ WORKED_DAY_BEFORE_MAP = {
 }
 
 
-def scan_persons_impl(source: str | bytes):
+def scan_persons_impl(source: str | io.BytesIO):
     return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["a", "aa"])
 
 
@@ -291,7 +293,7 @@ class PersonsReader:
             traveled_during_surveyed_day=pl.col("P25").replace_strict(TRAVELED_DAY_BEFORE_MAP),
             worked_during_surveyed_day=pl.col("P26").replace_strict(WORKED_DAY_BEFORE_MAP),
             is_student=pl.col("P9").is_in((3, 4, 5)),
-            is_not_student=pl.col("P8") != "00",
+            is_not_student=pl.col("P8") != 0,
             insee=pl.col("GP5").replace(["aaaaa", "999999", "888888"], None),
             # Column P17 is just an improved version of column P18.
             work_study_parking=pl.col("P17").fill_null(pl.col("P18")),

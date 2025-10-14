@@ -4,6 +4,7 @@ from .edgt import EDGTReader
 from .edvm import EDVMReader
 from .emc2 import EMC2Reader
 from .emd import EMDReader
+from .nantes_opendata import OpenDataReader
 
 
 def standardize(source: str | ZipFile, survey_type: str, skip_spatial: bool = False):
@@ -11,6 +12,8 @@ def standardize(source: str | ZipFile, survey_type: str, skip_spatial: bool = Fa
         reader = EMC2Reader(source)
     elif survey_type == "EDGT":
         reader = EDGTReader(source)
+    elif survey_type == "EDGT-opendata":
+        reader = OpenDataReader(source)
     elif survey_type == "EDVM":
         reader = EDVMReader(source)
     elif survey_type == "EMD":

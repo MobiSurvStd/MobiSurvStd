@@ -108,9 +108,15 @@ def create_metadata(
         nb_draw_zones = 0
     # Find start and end date of survey.
     if start_date is None:
-        start_date: date = data["households"]["interview_date"].min()  # type: ignore
+        start_date: date | None = data["households"]["interview_date"].min()  # type: ignore
     if end_date is None:
-        end_date: date = data["households"]["interview_date"].max()  # type: ignore
+        end_date: date | None = data["households"]["interview_date"].max()  # type: ignore
+    start_date_str = None
+    end_date_str = None
+    if start_date is not None:
+        start_date_str = start_date.isoformat()
+    if end_date is not None:
+        end_date_str = end_date.isoformat()
     metadata = {
         "name": survey_name,
         "type": survey_type,
@@ -124,8 +130,8 @@ def create_metadata(
         "nb_special_locations": nb_special_locations,
         "nb_detailed_zones": nb_detailed_zones,
         "nb_draw_zones": nb_draw_zones,
-        "start_date": start_date.isoformat(),
-        "end_date": end_date.isoformat(),
+        "start_date": start_date_str,
+        "end_date": end_date_str,
         "insee": main_insee,
     }
     return metadata

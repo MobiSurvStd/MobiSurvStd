@@ -56,3 +56,20 @@ EMC2_MODE_MAP.update(
         62: "VTC",  # Passager VTC
     }
 )
+
+# For open-data Nantes, some new modes are defined.
+NANTES_MODE_MAP = MODE_MAP.copy()
+NANTES_MODE_MAP.update(
+    {
+        19: "bicycle:driver:traditional:shared",  # Conducteur de vélo Libre-Service ou location
+        30: "public_transit:urban:bus",  # Passager bus réseau Cap Atlantique
+        34: "public_transit:urban:bus",  # Passager bus réseau Nantes TAN (y compris express)
+        35: "public_transit:urban:bus",  # Passager Chronobus (C1 à C7) réseau Nantes TAN
+        36: "public_transit:urban:bus",  # Passager hélYce BHNS réseau ST Nazaire STRAN
+        37: "public_transit:urban:bus",  # Passager bus réseau ST Nazaire STRAN (lignes U urbaines, Ty Bus, C1, SD, Zénibus)
+        38: "public_transit:urban:demand_responsive",  # Transport à la demande et PMR (Proxitan à Nantes, Liberty Bus et Ty Bus Taxi à St Nazaire, Lila et Abeille)
+        52: "public_transit:urban:TER",  # Passager TER
+        53: "public_transit:interurban:other_train",  # Passager autre train (TGV, Corail, InterCités et Grandes Lignes…)
+        73: "public_transit:school",  # Passagers transports scolaires (réseau STRAN)
+    }
+)

@@ -503,6 +503,15 @@ wheels = [
 ]
 
 [[package]]
+name = "fsspec"
+version = "2025.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/de/e0/bab50af11c2d75c9c4a2a26a5254573c0bd97cea152254401510950486fa/fsspec-2025.9.0.tar.gz", hash = "sha256:19fd429483d25d28b65ec68f9f4adc16c17ea2c7c7bf54ec61360d478fb19c19", size = 304847, upload-time = "2025-09-02T19:10:49.215Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/47/71/70db47e4f6ce3e5c37a607355f80da8860a33226be640226ac52cb05ef2e/fsspec-2025.9.0-py3-none-any.whl", hash = "sha256:530dc2a2af60a414a832059574df4a6e10cce927f6f4a78209390fe38955cfb7", size = 199289, upload-time = "2025-09-02T19:10:47.708Z" },
+]
+
+[[package]]
 name = "geopandas"
 version = "1.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -768,6 +777,7 @@ source = { editable = "." }
 dependencies = [
     { name = "cartopy" },
     { name = "fastexcel" },
+    { name = "fsspec" },
     { name = "geopandas" },
     { name = "humanize" },
     { name = "loguru" },
@@ -787,6 +797,7 @@ dependencies = [
 requires-dist = [
     { name = "cartopy", specifier = ">=0.24.1" },
     { name = "fastexcel", specifier = ">=0.14.0" },
+    { name = "fsspec", specifier = ">=2025.9.0" },
     { name = "geopandas", specifier = ">=1.0.1" },
     { name = "humanize", specifier = ">=4.13.0" },
     { name = "loguru", specifier = ">=0.7.3" },

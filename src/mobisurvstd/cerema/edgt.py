@@ -5,7 +5,7 @@ from zipfile import ZipFile
 
 import geopandas as gpd
 
-from mobisurvstd.utils import find_file
+from mobisurvstd.utils import MissingFileError, find_file
 
 from .survey import CeremaReader
 from .zones import find_matching_column
@@ -274,7 +274,7 @@ class EDGTReader(CeremaReader):
         return zfs, gts
 
 
-def get_files(source: str | ZipFile, name: str) -> list[str | io.BytesIO]:
+def get_files(source: str | ZipFile, name: str) -> list[str | io.BytesIO | MissingFileError]:
     # In the EDGT surveys, there are two directories with "standardized" data in the Csv directory,
     # usually "Fichiers_Standard_Face_a_face" and "Fichiers_Standard_Telephone" but it can be
     # something else.

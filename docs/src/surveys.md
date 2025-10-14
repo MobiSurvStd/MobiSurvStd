@@ -108,7 +108,7 @@ Tested surveys:
 - Montpellier 2014
 - Nancy 2013
 - Nantes 2015 (Also available in an
-  [https://www.data.gouv.fr/datasets/enquete-deplacements-2015-en-loire-atlantique](anonymized open-data format)
+  [anonymized open-data format](https://www.data.gouv.fr/datasets/enquete-deplacements-2015-en-loire-atlantique)
 - Nice 2009
 - Saint-Denis-de-la-Réunion 2016
 - Saint-Quentin-en-Yvelines 2010

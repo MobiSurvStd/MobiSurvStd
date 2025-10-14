@@ -121,7 +121,7 @@ Actuellement :
 * `emc2`
 * `egt2020`
 * `egt2010`
-* `edgt`
+* `edgt` (y compris [la version open-data de Nantes 2015](https://www.data.gouv.fr/datasets/enquete-deplacements-2015-en-loire-atlantique))
 * `edvm`
 * `emd`
 

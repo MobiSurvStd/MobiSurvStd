@@ -159,7 +159,7 @@ Currently, MobiSurvStd supports the following survey types:
 - `emc2`
 - `egt2020`
 - `egt2010`
-- `edgt`
+- `edgt` (including the [open-data version of Nantes 2015](https://www.data.gouv.fr/datasets/enquete-deplacements-2015-en-loire-atlantique))
 - `edvm`
 - `emd`
 

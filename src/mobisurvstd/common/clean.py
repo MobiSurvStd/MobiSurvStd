@@ -111,6 +111,7 @@ def create_metadata(
         start_date: date | None = data["households"]["interview_date"].min()  # type: ignore
     if end_date is None:
         end_date: date | None = data["households"]["interview_date"].max()  # type: ignore
+    # Format start and end date to ISO format.
     start_date_str = None
     end_date_str = None
     if start_date is not None:

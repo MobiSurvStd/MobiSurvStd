@@ -253,7 +253,7 @@ class PersonsReader:
             coalesce=True,
         )
         lf = lf.rename({"P4": "age", "COE1": "sample_weight_all", "COEP": "sample_weight_surveyed"})
-        lf = fix_dates(lf)
+        lf = fix_dates(lf, self.survey_name())
         lf = lf.with_columns(
             original_person_id=pl.struct(self.get_person_index_cols()),
             trip_date=pl.date(year="ANNEE", month="month", day="day"),
@@ -365,26 +365,29 @@ ARRAS_JANUARY_WEEKDAY_MAP = {1: 6, 2: 7, 3: 8, 4: 9, 5: 10}
 ARRAS_FEBRUARY_WEEKDAY_MAP = {1: 3, 2: 4, 3: 5, 4: 6, 5: 7}
 
 
-def fix_dates(lf: pl.LazyFrame):
+def fix_dates(lf: pl.LazyFrame, survey_name: str):
     # Arras 2014 case.
     lf = lf.with_columns(
         month=pl.when(ANNEE=2014, MOIS=14).then("DATE").otherwise("MOIS"),
-        day=pl.when(ANNEE=2014, MOIS=14, JOUR=1)
+        day=pl.when(ANNEE=2014, MOIS=14, DATE=1)
         .then(pl.col("JOUR").replace_strict(ARRAS_JANUARY_WEEKDAY_MAP))
-        .when(ANNEE=2014, MOIS=14, JOUR=2)
+        .when(ANNEE=2014, MOIS=14, DATE=2)
         .then(pl.col("JOUR").replace_strict(ARRAS_FEBRUARY_WEEKDAY_MAP))
         .otherwise("DATE"),
     )
-    # In some cases (e.g., Valenciennes 2011), "MOIS" and "DATE" columns seem to be inverted.
-    lf = lf.with_columns(
-        month=pl.when(pl.col("month") > 12).then("day").otherwise("month"),
-        day=pl.when(pl.col("month") > 12).then("month").otherwise("day"),
-    )
-    # For Valenciennes 2011, there are some dates equal to 31st April (which does not exist).
-    # My guess is that they meant 31st March.
-    lf = lf.with_columns(
-        month=pl.when(ANNEE=2011, MOIS=4, DATE=31).then(3).otherwise("month"),
-    )
+    if survey_name == "valenciennes_2011":
+        # Special case for Valenciennes 2011, some dates are invalid.
+        invalids = (
+            (pl.col("month") > 12)
+            | (pl.col("ANNEE") < 2010)
+            | (pl.col("ANNEE") > 2011)
+            | ((pl.col("month") == 4) & (pl.col("day") == 31))
+        )
+        lf = lf.with_columns(
+            ANNEE=pl.when(invalids.not_()).then("ANNEE"),
+            month=pl.when(invalids.not_()).then("month"),
+            day=pl.when(invalids.not_()).then("day"),
+        )
     return lf
 
 

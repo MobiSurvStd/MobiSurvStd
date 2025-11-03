@@ -1,7 +1,6 @@
 [book]
 authors = ["Lucas Javaudin"]
 language = "en"
-multilingual = true
 src = "src"
 title = "MobiSurvStd"
 
@@ -10,7 +9,6 @@ default-theme = "rust"
 preferred-dark-theme = "navy"
 smart-punctuation = true
 mathjax-support = false
-copy-fonts = true
 git-repository-url = "https://github.com/LucasJavaudin/MobiSurvStd"
 git-repository-icon = "fa-github"
 # site-url = "/example-book/"

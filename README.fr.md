@@ -1,10 +1,18 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+
+[![GPL v3][license-shield]][license-url]
+[![PyPI][pypi-shield]][pypi-url]
+[![DOI][doi-shield]][doi-url]
+
 # MobiSurvStd
 
 *Un outil pour convertir les enquêtes de mobilité françaises (EMC², EGT, EMP, etc.) dans un format
 standardisé, clair et homogène.*
 
 📚 [Documentation](https://mobisurvstd.github.io/MobiSurvStd)
-📦 [Voir sur PyPI](https://pypi.org/project/mobisurvstd/)
 
 ## Sommaire
 - [Introduction](#introduction)
@@ -85,10 +93,13 @@ de détails.
 
 📌 **Citation**
 
-Si vous utiliser MobiSurvStd dans une publication ou un projet, merci de mentionner l'outil comme
+Si vous utiliser MobiSurvStd dans une publication ou un projet, merci de citer l'outil comme
 suit :
-« Ce travail a utilisé la bibliothèque MobiSurvStd développée par Lucas Javaudin, disponible à
-l'adresse [https://github.com/MobiSurvStd/MobiSurvStd](). »
+```
+Javaudin, L. (2025). MobiSurvStd. Zenodo. https://doi.org/10.5281/zenodo.17710203
+```
+Un fichier [CITATION.bib](CITATION.bib) est également disponible.
+
 
 ---
 
@@ -150,3 +161,18 @@ Une idée ? Un bug ? Une nouvelle enquête à intégrer ?
 👉 Ouvrez une *issue* ou une *pull request* sur GitHub.
 
 Merci pour votre contribution 🚀
+
+[contributors-shield]: https://img.shields.io/github/contributors/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
+[contributors-url]: https://github.com/MobiSurvStd/MobiSurvStd/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
+[forks-url]: https://github.com/MobiSurvStd/MobiSurvStd/network/members
+[stars-shield]: https://img.shields.io/github/stars/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
+[stars-url]: https://github.com/MobiSurvStd/MobiSurvStd/stargazers
+[issues-shield]: https://img.shields.io/github/issues/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
+[issues-url]: https://github.com/MobiSurvStd/MobiSurvStd/issues
+[license-shield]: https://img.shields.io/github/license/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
+[license-url]: https://github.com/MobiSurvStd/MobiSurvStd/blob/master/LICENSE.txt
+[doi-shield]: https://img.shields.io/badge/doi-10.5281/zenodo.17422994-blue?style=for-the-badge
+[doi-url]: https://doi.org/10.5281/zenodo.17422994
+[pypi-shield]: https://img.shields.io/pypi/v/mobisurvstd.svg?style=for-the-badge
+[pypi-url]: https://pypi.org/project/mobisurvstd/

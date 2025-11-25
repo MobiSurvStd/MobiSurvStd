@@ -133,7 +133,7 @@ For more, check the [User Guide](https://mobisurvstd.github.io/MobiSurvStd/howto
 
 If you use MobiSurvStd in a publication or project, please include the following citation:
 ```
-Javaudin, L. (2025). MobiSurvStd. Zenodo. https://doi.org/10.5281/zenodo.17710204
+Javaudin, L. (2025). MobiSurvStd. Zenodo. https://doi.org/10.5281/zenodo.17710203
 ```
 A [CITATION.bib](CITATION.bib) is also available.
 

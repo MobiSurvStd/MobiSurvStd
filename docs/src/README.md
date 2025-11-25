@@ -107,7 +107,7 @@ For more, check the [User Guide](howto.html).
 
 If you use MobiSurvStd in a publication or project, please include the following attribution:
 "This work used the MobiSurvStd library developed by Lucas Javaudin, available at
-[https://github.com/MobiSurvStd/MobiSurvStd]()".
+[https://github.com/MobiSurvStd/MobiSurvStd](https://github.com/MobiSurvStd/MobiSurvStd)".
 
 ---
 

@@ -4,7 +4,7 @@
 
 Code: `emp2019`
 
-Link: [https://www.statistiques.developpement-durable.gouv.fr/resultats-detailles-de-lenquete-mobilite-des-personnes-de-2019]()
+Link: [https://www.statistiques.developpement-durable.gouv.fr/resultats-detailles-de-lenquete-mobilite-des-personnes-de-2019](https://www.statistiques.developpement-durable.gouv.fr/resultats-detailles-de-lenquete-mobilite-des-personnes-de-2019)
 
 Tested version: November 2024
 
@@ -24,9 +24,9 @@ Notes:
 
 Code: `emc2`
 
-Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2]()
+Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2](https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2)
 
-Download link (for researchers): [https://data.progedo.fr/series/adisp/enquetes-menages-deplacements-emd-enquetes-mobilite-certifiee-cerema-emc]()
+Download link (for researchers): [https://data.progedo.fr/series/adisp/enquetes-menages-deplacements-emd-enquetes-mobilite-certifiee-cerema-emc](https://data.progedo.fr/series/adisp/enquetes-menages-deplacements-emd-enquetes-mobilite-certifiee-cerema-emc)
 
 Tested surveys:
 
@@ -68,7 +68,7 @@ Notes:
 
 Code: `egt2020`
 
-Link: [https://data.progedo.fr/studies/doi/10.13144/lil-1581]()
+Link: [https://data.progedo.fr/studies/doi/10.13144/lil-1581](https://data.progedo.fr/studies/doi/10.13144/lil-1581)
 
 Notes:
 
@@ -88,9 +88,9 @@ Notes:
 
 Code: `edgt`
 
-Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2]()
+Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2](https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2)
 
-Download link (for researchers): [https://data.progedo.fr/studies?q=edgt]()
+Download link (for researchers): [https://data.progedo.fr/studies?q=edgt](https://data.progedo.fr/studies?q=edgt)
 
 Tested surveys:
 
@@ -129,9 +129,9 @@ Notes:
 
 Code: `edvm`
 
-Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2]()
+Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2](https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2)
 
-Download link (for researchers): [https://data.progedo.fr/studies?q=edvm]()
+Download link (for researchers): [https://data.progedo.fr/studies?q=edvm](https://data.progedo.fr/studies?q=edvm)
 
 Tested surveys:
 
@@ -178,9 +178,9 @@ Notes:
 
 Code: `emd`
 
-Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2]()
+Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2](https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2)
 
-Download link (for researchers): [https://data.progedo.fr/studies?q=emd]()
+Download link (for researchers): [https://data.progedo.fr/studies?q=emd](https://data.progedo.fr/studies?q=emd)
 
 Tested surveys:
 
@@ -211,7 +211,7 @@ Notes:
 
 Code: `egt2010`
 
-Link: [https://data.progedo.fr/studies/doi/10.13144/lil-0883]()
+Link: [https://data.progedo.fr/studies/doi/10.13144/lil-0883](https://data.progedo.fr/studies/doi/10.13144/lil-0883)
 
 Notes:
 

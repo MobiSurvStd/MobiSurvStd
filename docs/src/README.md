@@ -105,9 +105,11 @@ For more, check the [User Guide](howto.html).
 
 **Citing MobiSurvStd**
 
-If you use MobiSurvStd in a publication or project, please include the following attribution:
-"This work used the MobiSurvStd library developed by Lucas Javaudin, available at
-[https://github.com/MobiSurvStd/MobiSurvStd](https://github.com/MobiSurvStd/MobiSurvStd)".
+If you use MobiSurvStd in a publication or project, please include the following citation:
+```
+Javaudin, L., 2025. MobiSurvStd. URL: https://doi.org/10.5281/zenodo.17422994,
+doi:10.5281/zenodo.17422994
+```
 
 ---
 

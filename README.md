@@ -1,3 +1,10 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![GPL v3][license-shield]][license-url]
+[![DOI][doi-shield]][doi-url]
+
 # MobiSurvStd
 
 *A tool to standardize French mobility survey datasets (EMC², EGT, EMP, etc.) into a unified format.*
@@ -124,8 +131,10 @@ For more, check the [User Guide](https://mobisurvstd.github.io/MobiSurvStd/howto
 **Citing MobiSurvStd**
 
 If you use MobiSurvStd in a publication or project, please include the following attribution:
-"This work used the MobiSurvStd library developed by Lucas Javaudin, available at
-[https://github.com/MobiSurvStd/MobiSurvStd]()".
+```
+Javaudin, L., 2025. MobiSurvStd. URL: https://doi.org/10.5281/zenodo.17422994,
+doi:10.5281/zenodo.17422994
+```
 
 ---
 
@@ -190,3 +199,16 @@ agreement prohibits sharing the original data.
 
 If you think you found a bug, if you have a suggestion, or if you want to integrate a new format,
 feel free to open an issue on GitHub or to create a Pull Request.
+
+[contributors-shield]: https://img.shields.io/github/contributors/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
+[contributors-url]: https://github.com/MobiSurvStd/MobiSurvStd/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
+[forks-url]: https://github.com/MobiSurvStd/MobiSurvStd/network/members
+[stars-shield]: https://img.shields.io/github/stars/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
+[stars-url]: https://github.com/MobiSurvStd/MobiSurvStd/stargazers
+[issues-shield]: https://img.shields.io/github/issues/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
+[issues-url]: https://github.com/MobiSurvStd/MobiSurvStd/issues
+[license-shield]: https://img.shields.io/github/license/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
+[license-url]: https://github.com/MobiSurvStd/MobiSurvStd/blob/master/LICENSE.txt
+[doi-shield]: https://zenodo.org/badge/DOI/10.5281/zenodo.17422994.svg
+[doi-url]: https://doi.org/10.5281/zenodo.17422994

@@ -173,6 +173,6 @@ Merci pour votre contribution 🚀
 [license-shield]: https://img.shields.io/github/license/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
 [license-url]: https://github.com/MobiSurvStd/MobiSurvStd/blob/master/LICENSE.txt
 [doi-shield]: https://img.shields.io/badge/doi-10.5281/zenodo.17422994-blue?style=for-the-badge
-[doi-url]: https://doi.org/10.5281/zenodo.17422994
+[doi-url]: https://doi.org/10.5281/zenodo.17422993
 [pypi-shield]: https://img.shields.io/pypi/v/mobisurvstd.svg?style=for-the-badge
 [pypi-url]: https://pypi.org/project/mobisurvstd/

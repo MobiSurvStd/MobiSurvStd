@@ -210,5 +210,5 @@ feel free to open an issue on GitHub or to create a Pull Request.
 [issues-url]: https://github.com/MobiSurvStd/MobiSurvStd/issues
 [license-shield]: https://img.shields.io/github/license/MobiSurvStd/MobiSurvStd.svg?style=for-the-badge
 [license-url]: https://github.com/MobiSurvStd/MobiSurvStd/blob/master/LICENSE.txt
-[doi-shield]: https://zenodo.org/badge/DOI/10.5281/zenodo.17422994.svg
+[doi-shield]: https://img.shields.io/badge/doi-10.5281/zenodo.17422994-blue?style=for-the-badge
 [doi-url]: https://doi.org/10.5281/zenodo.17422994

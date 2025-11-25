@@ -2,7 +2,9 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
+
 [![GPL v3][license-shield]][license-url]
+[![PyPI][pypi-shield]][pypi-url]
 [![DOI][doi-shield]][doi-url]
 
 # MobiSurvStd
@@ -212,3 +214,5 @@ feel free to open an issue on GitHub or to create a Pull Request.
 [license-url]: https://github.com/MobiSurvStd/MobiSurvStd/blob/master/LICENSE.txt
 [doi-shield]: https://img.shields.io/badge/doi-10.5281/zenodo.17422994-blue?style=for-the-badge
 [doi-url]: https://doi.org/10.5281/zenodo.17422994
+[pypi-shield]: https://img.shields.io/pypi/v/mobisurvstd.svg?style=for-the-badge
+[pypi-url]: https://pypi.org/project/mobisurvstd/

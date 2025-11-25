@@ -12,7 +12,6 @@
 *A tool to standardize French mobility survey datasets (EMC², EGT, EMP, etc.) into a unified format.*
 
 📚 [Documentation](https://mobisurvstd.github.io/MobiSurvStd)
-📦 [View on PyPI](https://pypi.org/project/mobisurvstd/)
 
 <span style="color:blue">🇫🇷 [Version française](./README.fr.md)</span>
 
@@ -132,11 +131,11 @@ For more, check the [User Guide](https://mobisurvstd.github.io/MobiSurvStd/howto
 
 **Citing MobiSurvStd**
 
-If you use MobiSurvStd in a publication or project, please include the following attribution:
+If you use MobiSurvStd in a publication or project, please include the following citation:
 ```
-Javaudin, L., 2025. MobiSurvStd. URL: https://doi.org/10.5281/zenodo.17422994,
-doi:10.5281/zenodo.17422994
+Javaudin, L. (2025). MobiSurvStd. Zenodo. https://doi.org/10.5281/zenodo.17710204
 ```
+A [CITATION.bib](CITATION.bib) is also available.
 
 ---
 

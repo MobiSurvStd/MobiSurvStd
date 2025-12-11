@@ -86,6 +86,7 @@ class Guarantee:
         if fix is None:
             return None
         assert isinstance(fix, pl.Expr)
+        fix = fix.cast(df[col].dtype)
         if self.when is not None:
             return df.with_columns(pl.when(self.when).then(fix).otherwise(col).alias(col))
         else:

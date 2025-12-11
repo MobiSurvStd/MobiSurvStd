@@ -39,6 +39,11 @@ Date at which the interview took place.
 Note that this is not the date at which the reported trips (if any) took place.
 See [`trip_date`](trips.md#trip_date).
 
+<div class="warning">
+For some CEREMA surveys, the value should be considered approximate.
+The <code class="hljs">trips_weekday</code> value cannot be deduced from it.
+</div>
+
 - **Type:** Date
 
 ### `trips_weekday`

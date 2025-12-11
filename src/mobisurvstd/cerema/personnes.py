@@ -219,6 +219,16 @@ WORKED_DAY_BEFORE_MAP = {
     9: "no:unspecified",  # Used in some surveys
 }
 
+WEEKDAY_MAP = {
+    1: "monday",
+    2: "tuesday",
+    3: "wednesday",
+    4: "thursday",
+    5: "friday",
+    6: "saturday",
+    7: "sunday",
+}
+
 
 def scan_persons_impl(source: str | io.BytesIO):
     return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["a", "aa"])
@@ -257,6 +267,8 @@ class PersonsReader:
         lf = lf.with_columns(
             original_person_id=pl.struct(self.get_person_index_cols()),
             trip_date=pl.date(year="ANNEE", month="month", day="day"),
+            # Read weekday from JOUR column (trip date is not reliable enough).
+            trip_weekday=pl.col("JOUR").replace_strict(WEEKDAY_MAP),
             # The `fill_null` is required here because in some cases, a null value is used instead
             # of 0.
             is_surveyed=(pl.col("PENQ") == 1).fill_null(False),
@@ -335,7 +347,7 @@ class PersonsReader:
             lf,
             special_locations=self.special_locations_coords,
             detailed_zones=self.detailed_zones_coords,
-            extra_cols=["trip_date"],
+            extra_cols=["trip_date", "trip_weekday"],
         )
         # When the INSEE code ends with "000" or "999" it means "rest of the département".
         # We drop these values because they do not add any additional information compared to `_dep`
@@ -358,22 +370,14 @@ class PersonsReader:
 
 
 # For Arras 2014, the "MOIS" column is always 14 (for 2014) and the "DATE" column
-# corresponds to the month (January or February). The exact date is unknown. We set to a random date
-# in January or February so that at least the weekday matches properly (given that having a date
-# that is a bit off is probably better than having a NULL date).
-ARRAS_JANUARY_WEEKDAY_MAP = {1: 6, 2: 7, 3: 8, 4: 9, 5: 10}
-ARRAS_FEBRUARY_WEEKDAY_MAP = {1: 3, 2: 4, 3: 5, 4: 6, 5: 7}
+# corresponds to the month (January or February). The exact date is unknown. We set to 1.
 
 
 def fix_dates(lf: pl.LazyFrame, survey_name: str):
     # Arras 2014 case.
     lf = lf.with_columns(
         month=pl.when(ANNEE=2014, MOIS=14).then("DATE").otherwise("MOIS"),
-        day=pl.when(ANNEE=2014, MOIS=14, DATE=1)
-        .then(pl.col("JOUR").replace_strict(ARRAS_JANUARY_WEEKDAY_MAP))
-        .when(ANNEE=2014, MOIS=14, DATE=2)
-        .then(pl.col("JOUR").replace_strict(ARRAS_FEBRUARY_WEEKDAY_MAP))
-        .otherwise("DATE"),
+        day=pl.when(ANNEE=2014, MOIS=14).then(pl.lit(1)).otherwise("DATE"),
     )
     if survey_name == "valenciennes_2011":
         # Special case for Valenciennes 2011, some dates are invalid.

@@ -37,6 +37,11 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 
+[dependency-groups]
+dev = [
+    "ipython>=8.37.0",
+]
+
 [project.urls]
 Homepage = "https://github.com/MobiSurvStd/MobiSurvStd"
 Documentation = "https://mobisurvstd.github.io/MobiSurvStd/index.html"

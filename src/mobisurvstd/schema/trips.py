@@ -313,24 +313,6 @@ TRIP_SCHEMA = [
     Variable(
         "trip_weekday",
         pl.Enum(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]),
-        [
-            EqualTo(
-                pl.col("trip_date")
-                .dt.weekday()
-                .replace_strict(
-                    {
-                        1: "monday",
-                        2: "tuesday",
-                        3: "wednesday",
-                        4: "thursday",
-                        5: "friday",
-                        6: "saturday",
-                        7: "sunday",
-                    }
-                ),
-                alias='"trip_date" weekday',
-            )
-        ],
     ),
     # Main mode of transportation used for the trip.
     Variable("main_mode", MODE_ENUM),

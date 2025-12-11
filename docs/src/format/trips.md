@@ -716,6 +716,11 @@ Travel time of the trip, in minutes.
 
 Date at which the trip took place.
 
+<div class="warning">
+For some CEREMA surveys, the value should be considered approximate.
+The <code class="hljs">trip_weekday</code> value cannot be deduced from it.
+</div>
+
 - **Type:** Date
 - **Guarantees:**
   - The value cannot be later than the household's `interview_date`.
@@ -723,6 +728,9 @@ Date at which the trip took place.
 ### `trip_weekday`
 
 Day of the week when the trip took place.
+
+When the value of `trip_date` and `trip_weekday` are not consistent, the `trip_weekday` value should
+be considered as the correct value.
 
 - **Modalities:**
   - `"monday"`
@@ -733,7 +741,6 @@ Day of the week when the trip took place.
   - `"saturday"`
   - `"sunday"`
 - **Guarantees:**
-  - The value is consistent with `trip_date`.
   - The value is equal to the household `trips_weekday` (when it is non-null).
 
 ## Transportation mode

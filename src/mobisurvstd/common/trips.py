@@ -94,7 +94,7 @@ WEEKDAY_MAP = {
 
 def add_weekdays(lf: pl.LazyFrame, existing_cols: list[str]):
     """Add columns `trip_weekday` to the trip LazyFrame if column `trip_date` exists."""
-    if "trip_date" in existing_cols and "trip_weekay" not in existing_cols:
+    if "trip_date" in existing_cols and "trip_weekday" not in existing_cols:
         lf = lf.with_columns(
             trip_weekday=pl.col("trip_date").dt.weekday().replace_strict(WEEKDAY_MAP)
         )

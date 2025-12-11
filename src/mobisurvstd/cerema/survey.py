@@ -8,7 +8,6 @@ import polars as pl
 from loguru import logger
 
 from mobisurvstd.common.clean import clean
-from mobisurvstd.common.trips import WEEKDAY_MAP
 from mobisurvstd.common.zones import get_coords
 
 from .common import EMC2_MODE_MAP, MODE_MAP, NANTES_MODE_MAP
@@ -233,20 +232,20 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
 
     def add_survey_dates(self):
         # Survey date is specified at the person-level, we create here the household-level
-        # `interview_date`.
-        # The value is added only if all persons have the same value (when persons have been
-        # surveyed at different date, we don't really know the interview date and this can cause
-        # issues later on).
-        household_dates = (
-            self.persons.group_by("household_id")
-            .agg(pl.col("trip_date").first(), is_valid=pl.col("trip_date").n_unique() == 1)
-            .filter("is_valid")
+        # `interview_date` and `trips_weekday` columns.
+        # In some cases, persons from the same household do not have the same trip date. In this
+        # case, the interview date is set to the day after the latest observed date.
+        # The `trips_weekday` value is set only if all household members have the same
+        # `trip_weekday` value.
+        household_dates = self.persons.group_by("household_id").agg(
+            interview_date=pl.col("trip_date").max() + timedelta(days=1),
+            trips_weekday=pl.col("trip_weekday").first(),
+            is_valid_weekday=pl.col("trip_weekday").n_unique() == 1,
         )
         self.households = self.households.join(
             household_dates, on="household_id", how="left", coalesce=True
         ).with_columns(
-            interview_date=pl.col("trip_date") + timedelta(days=1),
-            trips_weekday=pl.col("trip_date").dt.weekday().replace_strict(WEEKDAY_MAP),
+            trips_weekday=pl.when("is_valid_weekday").then(pl.col("trips_weekday")),
         )
 
     def fix_main_mode(self):

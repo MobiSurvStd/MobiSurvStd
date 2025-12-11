@@ -123,11 +123,13 @@ class TripsReader:
 
     def standardize_trips(self):
         lf = self.scan_trips()
-        # Add household_id, person_id, and trip date.
+        # Add household_id, person_id, trip date, and trip weekday.
         lf = lf.with_columns(
             original_person_id=pl.struct(**self.get_person_index_cols_from_trips())
         ).join(
-            self.persons.select("original_person_id", "person_id", "household_id", "trip_date"),
+            self.persons.select(
+                "original_person_id", "person_id", "household_id", "trip_date", "trip_weekday"
+            ),
             on="original_person_id",
             how="left",
             coalesce=True,

@@ -15,7 +15,7 @@ class EDVMReader(CeremaReader):
 
     def households_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
         # The filenames are usually stored in "Csv/Fichiers_Standard/[SURVEY_NAME]_std_[NAME].csv"
-        # but in some cases (e.g., Ajaccio 2017) the directory "Fichiers_Standard" is # named based
+        # but in some cases (e.g., Ajaccio 2017) the directory "Fichiers_Standard" is named based
         # on the survey name (e.g., Ajaccio_2017_Standard).
         return [find_file(self.source, ".*_std_men.csv", subdir="Csv")]
 

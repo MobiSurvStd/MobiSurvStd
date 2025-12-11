@@ -1,5 +1,21 @@
 # Surveys
 
+This page lists all the survey types which are currently supported by MobiSurvStd.
+
+<div class="warning">
+For each type, the expected format (tree structure and filenames) is provided.
+If you have a survey with a different format (which can happen if you did not get your survey from
+Progedo), then MobiSurvStd will not be able to guess the survey type and to read it (even if you
+specify the survey type).
+In this case, you can try renaming or moving files to match the expected format.
+MobiSurvStd will then be able to properly guess the survey type and read it (assuming the files'
+content is the same).
+
+If you are not able to read your survey or if you want MobiSurvStd to support a new survey type /
+format, feel free to <a href="https://github.com/MobiSurvStd/MobiSurvStd/issues">open an issue on
+GitHub</a>.
+</div>
+
 ## Enquête mobilité des personnes 2019 (EMP)
 
 Code: `emp2019`
@@ -7,6 +23,20 @@ Code: `emp2019`
 Link: [https://www.statistiques.developpement-durable.gouv.fr/resultats-detailles-de-lenquete-mobilite-des-personnes-de-2019](https://www.statistiques.developpement-durable.gouv.fr/resultats-detailles-de-lenquete-mobilite-des-personnes-de-2019)
 
 Tested version: November 2024
+
+Expected format:
+
+```bash
+emp_2019/
+├── *k_deploc_public_V4.csv  # The `*` character can be anything (there is a typo in the original filename)
+├── k_individu_public_V3.csv
+├── q_2rmot_public_V3.csv
+├── q_menage_public_V3.csv
+├── q_voitvul_public_V3.csv
+├── tcm_ind_kish_public_V3.csv
+├── tcm_ind_public_V3.csv
+└── tcm_men_public_V3.csv
+```
 
 Notes:
 
@@ -27,6 +57,23 @@ Code: `emc2`
 Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2](https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2)
 
 Download link (for researchers): [https://data.progedo.fr/series/adisp/enquetes-menages-deplacements-emd-enquetes-mobilite-certifiee-cerema-emc](https://data.progedo.fr/series/adisp/enquetes-menages-deplacements-emd-enquetes-mobilite-certifiee-cerema-emc)
+
+Expected format:
+
+```bash
+my_emc2_survey/
+├── Csv
+│   └── Fichiers_Standard
+│       ├── *_std_depl.csv
+│       ├── *_std_men.csv
+│       ├── *_std_pers.csv
+│       └── *_std_traj.csv
+└── Doc
+    └── SIG
+        ├── *_ZF(_*)?.(TAB|shp)    # Optional "Zones fines" file
+        ├── *_GT(_*)?.(TAB|shp)    # Optional "Générateurs de trafic" file
+        └── *_DTIR(_*)?.(TAB|shp)  # Optional "Zones de tirage" file
+```
 
 Tested surveys:
 
@@ -70,6 +117,20 @@ Code: `egt2020`
 
 Link: [https://data.progedo.fr/studies/doi/10.13144/lil-1581](https://data.progedo.fr/studies/doi/10.13144/lil-1581)
 
+Expected format:
+
+```bash
+egt_2020/
+└── Csv
+    ├── a_menage_egt1820.csv
+    ├── b_individu_egt1820.csv
+    ├── c_deplacement_egt1820.csv
+    ├── d_trajet_egt1820.csv
+    ├── e_voiture_egt1820.csv
+    ├── f_drm_egt1820.csv
+    └── g_velo_egt1820.csv
+```
+
 Notes:
 
 - There is no draw zones because the survey was interrupted before the end due to Covid-19.
@@ -91,6 +152,28 @@ Code: `edgt`
 Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2](https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2)
 
 Download link (for researchers): [https://data.progedo.fr/studies?q=edgt](https://data.progedo.fr/studies?q=edgt)
+
+Expected format:
+
+```bash
+my_edgt_survey/
+├── Csv
+│   ├── Fichiers_Standard_Face_a_face
+│   │   ├── *_std_faf_depl.csv
+│   │   ├── *_std_faf_men.csv
+│   │   ├── *_std_faf_pers.csv
+│   │   └── *_std_faf_traj.csv
+│   └── Fichiers_Standard_Telephone
+│       ├── *_std_tel_depl.csv
+│       ├── *_std_tel_men.csv
+│       ├── *_std_tel_pers.csv
+│       └── *_std_tel_traj.csv
+└── Doc
+    └── SIG
+        ├── *(_ZF|zones_fines).(TAB|shp|MIF)        # Optional "Zones fines" file (the actual regex is more complex)
+        ├── *(_GT|générateur*).(TAB|shp|MIF)        # Optional "Générateurs de trafic" file (the actual regex is more complex)
+        └── *(_DTIR|_secteurstirage).(TAB|shp|MIF)  # Optional "Zones de tirage" file
+```
 
 Tested surveys:
 
@@ -132,6 +215,23 @@ Code: `edvm`
 Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2](https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-evaluation-mobilite/enquetes-mobilite-emc2)
 
 Download link (for researchers): [https://data.progedo.fr/studies?q=edvm](https://data.progedo.fr/studies?q=edvm)
+
+Expected format:
+
+```bash
+my_edvm_survey/
+├── Csv
+│   └── Fichiers_Standard
+│       ├── *_std_depl.csv
+│       ├── *_std_men.csv
+│       ├── *_std_pers.csv
+│       └── *_std_traj.csv
+└── Doc
+    └── SIG
+        ├── *(_ZF|zones_fines).(TAB|shp|MIF)  # Optional "Zones fines" file (the actual regex is more complex)
+        ├── *(_GT|générateur*).(TAB|shp|MIF)  # Optional "Générateurs de trafic" file (the actual regex is more complex)
+        └── *_DTIR.(TAB|shp|MIF)              # Optional "Zones de tirage" file
+```
 
 Tested surveys:
 
@@ -182,6 +282,23 @@ Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-ev
 
 Download link (for researchers): [https://data.progedo.fr/studies?q=emd](https://data.progedo.fr/studies?q=emd)
 
+Expected format:
+
+```bash
+my_emd_survey/
+├── Csv
+│   └── Fichiers_Standard
+│       ├── *_std_depl.csv
+│       ├── *_std_men.csv
+│       ├── *_std_pers.csv
+│       └── *_std_traj.csv
+└── Doc
+    └── SIG
+        ├── *(_ZF|zones_fines).(TAB|shp|MIF)  # Optional "Zones fines" file (the actual regex is more complex)
+        ├── *(_GT|générateur*).(TAB|shp|MIF)  # Optional "Générateurs de trafic" file (the actual regex is more complex)
+        └── *(_DTIR|secteur_*).(TAB|shp|MIF)  # Optional "Zones de tirage" file
+```
+
 Tested surveys:
 
 - Douai 2012
@@ -212,6 +329,21 @@ Notes:
 Code: `egt2010`
 
 Link: [https://data.progedo.fr/studies/doi/10.13144/lil-0883](https://data.progedo.fr/studies/doi/10.13144/lil-0883)
+
+Expected format:
+
+```bash
+egt_2010/
+├── Csv  # Or Format_csv
+│   ├── deplacements_semaine.csv  # Filenames are case-insensitive (the first letter can be capitalized).
+│   ├── menages_semaine.csv
+│   ├── personnes_semaine.csv
+│   └── trajets_semaine.csv
+├── Doc
+│   └── Carreaux_shape_mifmid
+│       └── carr100m.shp       # Option 1: Carreaux are in a shapefile within a directory.
+└── Carreaux_shape_mifmid.zip  # Option 2: Carreaux are in a zipfile within the parent directory.
+```
 
 Notes:
 

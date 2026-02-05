@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mobisurvstd"
-version = "1.0.1"
+version = "1.0.2"
 description = "A tool to standardize French mobility survey datasets (EMC2, EGT, EMP, etc.) into a unified format."
 readme = "README.md"
 authors = [{ name = "Lucas Javaudin", email = "lucas@lucasjavaudin.com" }]

@@ -12,45 +12,48 @@ from mobisurvstd.utils import tmp_download
 
 from . import CACHE_DIR
 
-URL = "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG-CARTO/ADMIN-EXPRESS-COG-CARTO_3-2__SHP_WGS84G_FRA_2025-04-02/ADMIN-EXPRESS-COG-CARTO_3-2__SHP_WGS84G_FRA_2025-04-02.7z"
-PATH = "ADMIN-EXPRESS-COG-CARTO_3-2__SHP_WGS84G_FRA_2025-04-02/ADMIN-EXPRESS-COG-CARTO/1_DONNEES_LIVRAISON_2025-04-00194/ADECOGC_3-2_SHP_WGS84G_FRA-ED2025-04-02/"
+URL = "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_4-0__GPKG_WGS84G_FRA_2025-01-01/ADMIN-EXPRESS-COG_4-0__GPKG_WGS84G_FRA_2025-01-01.7z"
 OUTPUT_FILE = os.path.join(CACHE_DIR, "insee_geometries.geo.parquet")
 
 
 def read_admin_express():
-    logger.warning("ADMIN EXPRESS data not found")
     logger.warning("Data will be downloaded from the IGN website")
     logger.warning("This operation only needs to be performed once")
     # Download ADMIN-EXPRESS data.
     with tmp_download(URL) as fn:
         # Read the downloaded file as a 7zip archive.
         with py7zr.SevenZipFile(fn, "r") as archive:
-            # Find the COMMUNE.* and ARRONDISSEMENT.* files within the archive.
+            # Find the Geopackage file within the archive.
             allfiles = archive.getnames()
-            filter_pattern = re.compile(r"(COMMUNE|ARRONDISSEMENT_MUNICIPAL)\.\w*")
+            filter_pattern = re.compile(r".*[.]gpkg")
             selected_files = [f for f in allfiles if filter_pattern.match(os.path.basename(f))]
-            # Create a temporary directory and extract the selected files within it.
+            assert len(selected_files) == 1
+            gpkg_file = selected_files[0]
+            # Create a temporary directory and extract the selected file within it.
             with tempfile.TemporaryDirectory() as tmpdir:
                 logger.debug(f"Extracting ADMIN EXPRESS data to `{tmpdir}`")
-                archive.extract(path=tmpdir, targets=selected_files)
-                # Find the directory of the 7zip file within which the extracted files are located
-                # (COMMUNE and ARRONDISSEMENT are supposed to be located in the same directory).
-                path = os.path.dirname(selected_files[0])
+                archive.extract(path=tmpdir, targets=[gpkg_file])
                 communes = gpd.read_file(
-                    os.path.join(tmpdir, path, "COMMUNE.shp"),
-                    columns=["geometry", "INSEE_COM"],
+                    os.path.join(tmpdir, gpkg_file),
+                    layer="commune",
+                    columns=["geometry", "code_insee"],
                 )
                 arrondissements = gpd.read_file(
-                    os.path.join(tmpdir, path, "ARRONDISSEMENT_MUNICIPAL.shp"),
-                    columns=["geometry", "INSEE_ARM", "INSEE_COM"],
+                    os.path.join(tmpdir, gpkg_file),
+                    layer="arrondissement_municipal",
+                    columns=["geometry", "code_insee", "code_insee_de_la_commune_de_rattach"],
                 )
     # Remove communes with arrondissements (Paris, Lyon, and Marseille).
-    communes = communes.loc[~communes["INSEE_COM"].isin(arrondissements["INSEE_COM"])]
+    communes = communes.loc[
+        ~communes["code_insee"].isin(arrondissements["code_insee_de_la_commune_de_rattach"])
+    ]
     # Concatenate the communes and arrondissements.
     gdf = pd.concat(
         (
-            communes.rename(columns={"INSEE_COM": "insee"}),
-            arrondissements.rename(columns={"INSEE_ARM": "insee"}).drop(columns=["INSEE_COM"]),
+            communes.rename(columns={"code_insee": "insee"}),
+            arrondissements.rename(columns={"code_insee": "insee"}).drop(
+                columns=["code_insee_de_la_commune_de_rattach"]
+            ),
         ),
         ignore_index=True,
     )
@@ -64,6 +67,7 @@ def read_admin_express():
 
 def load_insee_geometries():
     if not os.path.isfile(OUTPUT_FILE):
+        logger.warning("ADMIN EXPRESS data not found")
         return read_admin_express()
     else:
         return gpd.read_parquet(OUTPUT_FILE)

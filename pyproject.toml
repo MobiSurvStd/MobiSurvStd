@@ -33,6 +33,7 @@ dependencies = [
     "py7zr >= 0.20.8",
     "pyarrow >= 19.0.1",
     "requests >= 2.32.3",
+    "seaborn>=0.13.2",
     "typer >= 0.16.0",
 ]
 requires-python = ">=3.10"
@@ -40,6 +41,7 @@ requires-python = ">=3.10"
 [dependency-groups]
 dev = [
     "ipython>=8.37.0",
+    "ty>=0.0.15",
 ]
 
 [project.urls]

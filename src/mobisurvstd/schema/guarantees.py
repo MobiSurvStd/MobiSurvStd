@@ -81,6 +81,9 @@ class Guarantee:
             msg += f" when {self.when_alias}"
         return msg
 
+    def _fail_msg(self, df: pl.DataFrame, col: str) -> str:
+        raise NotImplementedError
+
     def auto_fix(self, df: pl.DataFrame, col: str) -> pl.DataFrame | None:
         fix = self._auto_fix(col)
         if fix is None:
@@ -162,9 +165,9 @@ class Sorted(Guarantee):
         if self.over is None:
             diff = df[col].diff()
             if self.descending:
-                idx = (diff > 0).arg_max()
+                idx: int = (diff > 0).arg_max()  # ty: ignore[invalid-assignment]
             else:
-                idx = (diff < 0).arg_max()
+                idx: int = (diff < 0).arg_max()  # ty: ignore[invalid-assignment]
             v0 = df[col][idx - 1]
             v1 = df[col][idx]
             if self.descending:
@@ -332,14 +335,14 @@ class Indexed(Guarantee):
     def _fail_msg(self, df: pl.DataFrame, col: str) -> str:
         msg = "Values do not range from 1 to the number of values"
         if self.over is None:
-            m = df[col].min()
+            m: int = df[col].min()  # ty: ignore[invalid-assignment]
             if m < 1:
                 return f"{msg} (found {m})"
-            m = df[col].max()
+            m = df[col].max()  # ty: ignore[invalid-assignment]
             if m > len(df):
                 return f"{msg} (found {m} > nb values)"
             diff = df[col].diff()
-            idx = (diff != 1).arg_max()
+            idx: int = (diff != 1).arg_max()  # ty: ignore[invalid-assignment]
             values = df[col][idx - 1 : idx + 1].to_list()
             return f"{msg} (values are not sorted: {values})"
         else:

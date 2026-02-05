@@ -4,6 +4,8 @@ import polars as pl
 
 from mobisurvstd.common.persons import clean
 
+from .reader import CeremaReader
+
 SCHEMA = {
     "PP1": pl.UInt8,  # Code fichier = 2 (personne)
     "PMET": pl.UInt8,  # Méthode d'enquête du ménage (EMC2 only)
@@ -64,7 +66,6 @@ REFERENCE_PERSON_LINK_MAP = {
     7: "other:non_relative",  # Autre Non précisé
 }
 
-200 / 2600 / 2490 / 2809
 DRIVING_LICENSE_MAP = {
     1: "yes",
     2: "no",
@@ -234,7 +235,7 @@ def scan_persons_impl(source: str | io.BytesIO):
     return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["a", "aa"])
 
 
-class PersonsReader:
+class PersonsReader(CeremaReader):
     def scan_persons(self):
         lfs_iter = map(scan_persons_impl, self.persons_filenames())
         lf = pl.concat(lfs_iter, how="vertical")
@@ -371,8 +372,6 @@ class PersonsReader:
 
 # For Arras 2014, the "MOIS" column is always 14 (for 2014) and the "DATE" column
 # corresponds to the month (January or February). The exact date is unknown. We set to 1.
-
-
 def fix_dates(lf: pl.LazyFrame, survey_name: str):
     # Arras 2014 case.
     lf = lf.with_columns(

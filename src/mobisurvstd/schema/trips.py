@@ -99,7 +99,7 @@ TRIP_SCHEMA = [
         [
             Defined(),
             ValueIs(True, when=pl.col("trip_index") == 1),
-            AtMostOneOf(True, over="person_id"),
+            AtMostOneOf(True, over=pl.col("person_id")),
         ],
     ),
     # Whether the trip is the last one of the person.
@@ -111,7 +111,7 @@ TRIP_SCHEMA = [
             ValueIs(
                 True, when=pl.col("trip_index") == pl.col("trip_index").max().over("person_id")
             ),
-            AtMostOneOf(True, over="person_id"),
+            AtMostOneOf(True, over=pl.col("person_id")),
         ],
     ),
     # Cumulative number of times that the person started a trip from their main home.

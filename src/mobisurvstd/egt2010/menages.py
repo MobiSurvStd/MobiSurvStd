@@ -347,7 +347,7 @@ def standardize_cars(filename: str, households: pl.LazyFrame):
             for i in range(1, 5)
         ),
         how="vertical",
-    )
+    ).lazy()
     # Drop the lines with empty car characteristics (there are always 4 cars per
     # households even when the household has less than 4 cars).
     lf = lf.filter(
@@ -388,7 +388,7 @@ def standardize_motorcycles(filename: str, households: pl.LazyFrame):
             for i in range(1, 5)
         ),
         how="vertical",
-    )
+    ).lazy()
     # Drop the lines with empty motorcycle characteristics (there are always 4 motorcycles per
     # households even when the household has less than 4 motorcycles).
     lf = lf.filter(

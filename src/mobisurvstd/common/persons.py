@@ -19,7 +19,7 @@ def clean(
     columns = [variable.name for variable in PERSON_SCHEMA if variable.name in existing_cols]
     if extra_cols is not None:
         columns.extend(extra_cols)
-    lf = lf.select(columns).collect().lazy()
+    lf = lf.select(columns).collect().lazy()  # ty: ignore[possibly-missing-attribute]
     lf = indexing(lf, existing_cols)
     lf = add_age_class(lf, existing_cols)
     lf = add_pcs_group(lf, existing_cols)

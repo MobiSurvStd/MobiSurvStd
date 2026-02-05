@@ -4,6 +4,8 @@ import geopandas as gpd
 import pandas as pd
 from loguru import logger
 
+from .reader import CeremaReader
+
 
 def cast_id(s: gpd.GeoSeries):
     # Converts:
@@ -94,7 +96,7 @@ def select_columns(gdf: gpd.GeoDataFrame, cols: tuple[str, ...]):
     return ["geometry"] + list(filter(lambda c: c in gdf.columns, cols))
 
 
-class ZonesReader:
+class ZonesReader(CeremaReader):
     def gt_id_columns(self):
         raise NotImplementedError
 
@@ -351,7 +353,7 @@ class ZonesReader:
         if "detailed_zone_id" not in columns:
             logger.warning("Missing detailed zone id in detailed zone file")
             zfs = None
-        if zfs["detailed_zone_id"].nunique() != len(zfs):
+        elif zfs["detailed_zone_id"].nunique() != len(zfs):
             logger.warning("Duplicated detailed zone ids in detailed zone file")
             zfs = None
         else:
@@ -377,7 +379,7 @@ class ZonesReader:
         if "special_location_id" not in columns:
             logger.warning("Missing special location id in special location file")
             gts = None
-        if gts["special_location_id"].nunique() != len(gts):
+        elif gts["special_location_id"].nunique() != len(gts):
             logger.warning("Duplicated special location ids in special location file")
             gts = None
         else:
@@ -387,7 +389,9 @@ class ZonesReader:
         zfs, gts = self.postprocess_special_locations_and_detailed_zones(zfs, gts)
         return zfs, gts
 
-    def split_special_locations_and_detailed_zones(self, gdf: gpd.GeoDataFrame):
+    def split_special_locations_and_detailed_zones(
+        self, gdf: gpd.GeoDataFrame
+    ) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
         # Default is to split based on the geometry type (Point if and only if GT).
         # Surveys can overwrite that function to split differently.
         zfs = gdf.loc[gdf.geometry.geom_type != "Point"].copy()

@@ -5,7 +5,7 @@ from loguru import logger
 
 from mobisurvstd.common.clean import clean
 from mobisurvstd.common.zones import get_coords
-from mobisurvstd.utils import find_file
+from mobisurvstd.utils import find_file, find_file_path
 
 from .deplacements import standardize_trips
 from .menages import standardize_cars, standardize_households, standardize_motorcycles
@@ -95,6 +95,6 @@ def legs_filename(source: str | ZipFile):
 
 
 def detailed_zones_filename(source: str | ZipFile):
-    return find_file(
-        source, "carr100m.shp", subdir=os.path.join("Doc", "Carreaux_shape_mifmid"), as_url=True
-    ) or find_file(source, "carreaux_shape_mifmid.zip", as_url=False)
+    return find_file_path(
+        source, "carr100m.shp", subdir=os.path.join("Doc", "Carreaux_shape_mifmid")
+    ) or find_file_path(source, "carreaux_shape_mifmid.zip")

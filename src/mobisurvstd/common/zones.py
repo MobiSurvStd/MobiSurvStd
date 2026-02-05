@@ -2,7 +2,7 @@ import geopandas as gpd
 import polars as pl
 
 
-def get_coords(gdf: gpd.GeoDataFrame, name: str):
+def get_coords(gdf: gpd.GeoDataFrame, name: str) -> pl.DataFrame:
     centroids = gdf.geometry.centroid.to_crs("EPSG:4326")
     df = pl.DataFrame(
         {

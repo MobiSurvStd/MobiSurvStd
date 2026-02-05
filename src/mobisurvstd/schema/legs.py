@@ -53,7 +53,7 @@ LEG_SCHEMA = [
         [
             Defined(),
             ValueIs(True, when=pl.col("leg_index") == 1),
-            AtMostOneOf(True, over="trip_id"),
+            AtMostOneOf(True, over=pl.col("trip_id")),
         ],
     ),
     # Whether the leg is the last one of the trip.
@@ -63,7 +63,7 @@ LEG_SCHEMA = [
         [
             Defined(),
             ValueIs(True, when=pl.col("leg_index") == pl.col("leg_index").max().over("trip_id")),
-            AtMostOneOf(True, over="trip_id"),
+            AtMostOneOf(True, over=pl.col("trip_id")),
         ],
     ),
     # Identifier of the leg in the original survey data.

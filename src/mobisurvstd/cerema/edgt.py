@@ -5,13 +5,13 @@ from zipfile import ZipFile
 
 import geopandas as gpd
 
-from mobisurvstd.utils import MissingFileError, find_file
+from mobisurvstd.utils import MissingFileError, find_file, find_file_path
 
-from .survey import CeremaReader
+from .survey import CeremaStandardizer
 from .zones import find_matching_column
 
 
-class EDGTReader(CeremaReader):
+class EDGTReader(CeremaStandardizer):
     SURVEY_TYPE = "EDGT"
 
     def households_filenames(self):
@@ -29,53 +29,49 @@ class EDGTReader(CeremaReader):
     def special_locations_and_detailed_zones_filenames(self):
         # This should match the Amiens 2010, Clermont-Ferrand 2012, and Lyon 2015 surveys.
         subdir = os.path.join("Doc", "SIG")
-        faf_filename = find_file(
-            self.source, ".*_faf_d.?coupagefin[.](tab|shp|mif)", subdir=subdir, as_url=True
+        faf_filename = find_file_path(
+            self.source, ".*_faf_d.?coupagefin[.](tab|shp|mif)", subdir=subdir
         )
-        tel_filename = find_file(
-            self.source, ".*_tel_d.?coupagefin[.](tab|shp|mif)", subdir=subdir, as_url=True
+        tel_filename = find_file_path(
+            self.source, ".*_tel_d.?coupagefin[.](tab|shp|mif)", subdir=subdir
         )
         if faf_filename and tel_filename:
             # Amiens 2010 has two files.
             return [faf_filename, tel_filename]
         else:
             return [
-                find_file(
+                find_file_path(
                     self.source,
                     ".*(_zf_gt|zinterne_gen_.*)[.](tab|shp|mif)",
                     subdir=subdir,
-                    as_url=True,
                 )
             ]
 
     def special_locations_filenames(self):
         subdir = os.path.join("Doc", "SIG")
-        faf_filename = find_file(
-            self.source, ".*_faf_.*g.?n.?rateur.*[.](tab|shp|mif)", subdir=subdir, as_url=True
+        faf_filename = find_file_path(
+            self.source, ".*_faf_.*g.?n.?rateur.*[.](tab|shp|mif)", subdir=subdir
         )
-        tel_filename = find_file(
-            self.source, ".*_tel_.*g.?n.?rateur.*[.](tab|shp|mif)", subdir=subdir, as_url=True
+        tel_filename = find_file_path(
+            self.source, ".*_tel_.*g.?n.?rateur.*[.](tab|shp|mif)", subdir=subdir
         )
         if faf_filename and tel_filename:
             # Saint-Quentin-en-Yvelines has two files, for phone and face-to-face surveys.
             return [faf_filename, tel_filename]
         else:
             return [
-                find_file(
-                    self.source,
-                    ".*(_gt_.*|_gt|g.?n.?rateur.*)[.](tab|shp|mif)",
-                    subdir=subdir,
-                    as_url=True,
+                find_file_path(
+                    self.source, ".*(_gt_.*|_gt|g.?n.?rateur.*)[.](tab|shp|mif)", subdir=subdir
                 )
             ]
 
     def detailed_zones_filenames(self):
         subdir = os.path.join("Doc", "SIG")
-        faf_filename = find_file(
-            self.source, ".*_faf_zones_fines[.](tab|shp|mif)", subdir=subdir, as_url=True
+        faf_filename = find_file_path(
+            self.source, ".*_faf_zones_fines[.](tab|shp|mif)", subdir=subdir
         )
-        tel_filename = find_file(
-            self.source, ".*_tel_zones_fines[.](tab|shp|mif)", subdir=subdir, as_url=True
+        tel_filename = find_file_path(
+            self.source, ".*_tel_zones_fines[.](tab|shp|mif)", subdir=subdir
         )
         if faf_filename and tel_filename:
             # Nice 2009 and Saint-Quentin-en-Yvelines have two files, for phone and face-to-face
@@ -83,27 +79,29 @@ class EDGTReader(CeremaReader):
             return [faf_filename, tel_filename]
         else:
             return [
-                find_file(
+                find_file_path(
                     self.source,
                     ".*(_zf|_zf_.*|zf08_.*|(?<!tel_)zones[_ ]fines)[.](tab|shp|mif)",
                     subdir=subdir,
-                    as_url=True,
                 )
             ]
 
     def draw_zones_filenames(self):
         return [
-            find_file(
+            find_file_path(
                 self.source,
                 ".*(_dtir|_secteurstirage)[.](tab|shp|mif)",
                 subdir=os.path.join("Doc", "SIG"),
-                as_url=True,
             )
         ]
 
     def survey_name(self):
-        filename = find_file(self.source, ".*_std_faf_men.csv", subdir="Csv", as_url=True)
-        return re.match("(.*)_std_faf_men.csv", os.path.basename(filename)).group(1)
+        filename = find_file_path(self.source, ".*_std_faf_men.csv", subdir="Csv")
+        fn_match = re.match("(.*)_std_faf_men.csv", os.path.basename(filename))
+        if fn_match is not None:
+            return fn_match.group(1)
+        else:
+            return "unkown"
 
     def gt_id_columns(self):
         return [

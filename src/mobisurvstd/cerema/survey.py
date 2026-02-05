@@ -1,6 +1,5 @@
-import re
 from datetime import timedelta
-from zipfile import ZipFile
+from typing import Callable
 
 import geopandas as gpd
 import pandas as pd
@@ -10,7 +9,6 @@ from loguru import logger
 from mobisurvstd.common.clean import clean
 from mobisurvstd.common.zones import get_coords
 
-from .common import EMC2_MODE_MAP, MODE_MAP, NANTES_MODE_MAP
 from .deplacements import TripsReader
 from .menages import HouseholdsReader
 from .personnes import PersonsReader
@@ -25,52 +23,8 @@ LOCATION_COLUMNS = (
 )
 
 
-class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, ZonesReader):
+class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReader, ZonesReader):
     SURVEY_TYPE = ""
-
-    def __init__(self, source: str | ZipFile):
-        self.source = source
-        self.special_locations = None
-        self.detailed_zones = None
-        self.draw_zones = None
-        self.special_locations_coords = None
-        self.detailed_zones_coords = None
-
-    def source_name(self) -> str:
-        return self.source.filename if isinstance(self.source, ZipFile) else self.source
-
-    def households_filenames(self):
-        raise NotImplementedError
-
-    def persons_filenames(self):
-        raise NotImplementedError
-
-    def trips_filenames(self):
-        raise NotImplementedError
-
-    def legs_filenames(self):
-        raise NotImplementedError
-
-    def special_locations_and_detailed_zones_filenames(self):
-        return [None]
-
-    def special_locations_filenames(self):
-        return [None]
-
-    def detailed_zones_filenames(self):
-        return [None]
-
-    def draw_zones_filenames(self):
-        return [None]
-
-    def survey_name(self):
-        raise NotImplementedError
-
-    def survey_year(self):
-        """Extracts the year at which the survey was conducted from the survey name."""
-        name = self.survey_name()
-        matches = re.findall(r"_(\d{4})$", name)
-        return int(matches[0]) if matches else None
 
     def standardize(self, skip_spatial: bool = False):
         logger.info(f"Standardizing {self.SURVEY_TYPE} survey from `{self.source_name()}`")
@@ -104,30 +58,6 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
             main_insee=self.main_insee(),
         )
 
-    def validate(self):
-        is_valid = True
-        households_filenames = self.households_filenames()
-        if not all(households_filenames):
-            err = next(filter(lambda f: not f, households_filenames))
-            logger.error(f"Missing households file: {err}")
-            is_valid = False
-        persons_filenames = self.persons_filenames()
-        if not all(persons_filenames):
-            err = next(filter(lambda f: not f, persons_filenames))
-            logger.error(f"Missing persons file: {err}")
-            is_valid = False
-        trips_filenames = self.trips_filenames()
-        if not all(trips_filenames):
-            err = next(filter(lambda f: not f, trips_filenames))
-            logger.error(f"Missing trips file: {err}")
-            is_valid = False
-        legs_filenames = self.legs_filenames()
-        if not all(legs_filenames):
-            err = next(filter(lambda f: not f, legs_filenames))
-            logger.error(f"Missing legs file: {err}")
-            is_valid = False
-        return is_valid
-
     def read_spatial_data(self):
         self.read_special_locations_and_detailed_zones()
         self.read_special_locations()
@@ -153,77 +83,14 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         if self.detailed_zones is not None:
             self.detailed_zones_coords = get_coords(self.detailed_zones, "detailed_zone")
 
-    def get_mode_map(self):
-        """The mode classes have changed with the EMC2 surveys so there are two different mode maps
-        that can be used to map categories to MobiSurvStd modes.
-        """
-        if self.SURVEY_TYPE == "EMC2":
-            return EMC2_MODE_MAP
-        elif self.SURVEY_TYPE == "EDGT-opendata":
-            return NANTES_MODE_MAP
-        else:
-            return MODE_MAP
-
-    def get_household_index_cols(self):
-        """Returns the list of columns that must be used to uniquely define each household.
-        Note that columns "ZFM" is usually not required (i.e., households are uniquely defined just
-        with "ECH" and "STM") but in some cases it is required.
-        """
-        cols = ["ECH", "STM", "ZFM"]
-        if self.SURVEY_TYPE == "EMC2":
-            return ["METH"] + cols
-        else:
-            return cols
-
-    def get_person_index_cols(self):
-        cols = ["ECH", "STP", "ZFP", "PER"]
-        if self.SURVEY_TYPE == "EMC2":
-            return ["PMET"] + cols
-        else:
-            return cols
-
-    def get_household_index_cols_from_persons(self):
-        cols = {"ECH": "ECH", "STM": "STP", "ZFM": "ZFP"}
-        if self.SURVEY_TYPE == "EMC2":
-            return {"METH": "PMET"} | cols
-        else:
-            return cols
-
-    def get_trip_index_cols(self):
-        cols = ["ECH", "STD", "ZFD", "PER", "NDEP"]
-        if self.SURVEY_TYPE == "EMC2":
-            return ["DMET"] + cols
-        else:
-            return cols
-
-    def get_person_index_cols_from_trips(self):
-        cols = {"ECH": "ECH", "STP": "STD", "ZFP": "ZFD", "PER": "PER"}
-        if self.SURVEY_TYPE == "EMC2":
-            return {"PMET": "DMET"} | cols
-        else:
-            return cols
-
-    def get_leg_index_cols(self):
-        cols = ["ECH", "STT", "ZFT", "PER", "NDEP"]
-        if self.SURVEY_TYPE == "EMC2":
-            return ["TMET"] + cols
-        else:
-            return cols
-
-    def get_trip_index_cols_from_legs(self):
-        cols = {"ECH": "ECH", "STD": "STT", "ZFD": "ZFT", "PER": "PER", "NDEP": "NDEP"}
-        if self.SURVEY_TYPE == "EMC2":
-            return {"DMET": "TMET"} | cols
-        else:
-            return cols
-
     def finish(self):
-        self.households = self.households.collect()
-        self.persons = self.persons.collect()
-        self.trips = self.trips.collect()
-        self.legs = self.legs.collect()
-        self.cars = self.cars.collect()
-        self.motorcycles = self.motorcycles.collect()
+        # Collecting all LazyFrames at this point can speed up next computations.
+        self.households = self.households.collect().lazy()  # ty: ignore[possibly-missing-attribute]
+        self.persons = self.persons.collect().lazy()  # ty: ignore[possibly-missing-attribute]
+        self.trips = self.trips.collect().lazy()  # ty: ignore[possibly-missing-attribute]
+        self.legs = self.legs.collect().lazy()  # ty: ignore[possibly-missing-attribute]
+        self.cars = self.cars.collect().lazy()  # ty: ignore[possibly-missing-attribute]
+        self.motorcycles = self.motorcycles.collect().lazy()  # ty: ignore[possibly-missing-attribute]
         self.add_survey_dates()
         self.fix_main_mode()
         self.fix_detailed_zones()
@@ -237,13 +104,17 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         # case, the interview date is set to the day after the latest observed date.
         # The `trips_weekday` value is set only if all household members have the same
         # `trip_weekday` value.
-        household_dates = self.persons.group_by("household_id").agg(
-            interview_date=pl.col("trip_date").max() + timedelta(days=1),
-            trips_weekday=pl.col("trip_weekday").first(),
-            is_valid_weekday=pl.col("trip_weekday").n_unique() == 1,
-        )
+        household_dates: pl.DataFrame = (
+            self.persons.group_by("household_id")
+            .agg(
+                interview_date=pl.col("trip_date").max() + timedelta(days=1),
+                trips_weekday=pl.col("trip_weekday").first(),
+                is_valid_weekday=pl.col("trip_weekday").n_unique() == 1,
+            )
+            .collect()
+        )  # ty: ignore[invalid-assignment]
         self.households = self.households.join(
-            household_dates, on="household_id", how="left", coalesce=True
+            household_dates.lazy(), on="household_id", how="left", coalesce=True
         ).with_columns(
             trips_weekday=pl.when("is_valid_weekday").then(pl.col("trips_weekday")),
         )
@@ -252,20 +123,20 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         # Special case for Douai 2012: Some trips have main mode set to "car_driver" but the legs
         # have mode set to "motorcycle".
         invalid_trips = (
-            self.legs.lazy()
-            .select("trip_id", "mode_group")
-            .join(self.trips.lazy().select("trip_id", "main_mode_group"), on="trip_id")
+            self.legs.select("trip_id", "mode_group")
+            .join(self.trips.select("trip_id", "main_mode_group"), on="trip_id")
             .filter(pl.col("mode_group").eq(pl.col("main_mode_group")).any().over("trip_id").not_())
             .select("trip_id")
             .collect()
-            .to_series()
+            .to_series()  # ty: ignore[possibly-missing-attribute]
             .unique()
         )
         n = len(invalid_trips)
         if n > 0:
-            fixed_main_modes = (
-                self.legs.lazy()
-                .filter(pl.col("trip_id").is_in(invalid_trips), pl.col("mode_group") != "walking")
+            fixed_main_modes: pl.DataFrame = (
+                self.legs.filter(
+                    pl.col("trip_id").is_in(invalid_trips), pl.col("mode_group") != "walking"
+                )
                 .group_by("trip_id", "mode")
                 .agg(
                     dist=pl.col("leg_euclidean_distance_km").sum(),
@@ -275,7 +146,7 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
                 .group_by("trip_id")
                 .agg(main_mode=pl.col("mode").last(), main_mode_group=pl.col("mode_group").last())
                 .collect()
-            )
+            )  # ty: ignore[invalid-assignment]
             logger.warning(
                 f"For {n} trips, `main_mode_group` value does not appear in any legs'`mode_group`. "
                 f"The `main_mode_group` value is automatically fixed."
@@ -307,13 +178,23 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         # easier.
         max_len = max(
             self.detailed_zones["detailed_zone_id"].str.len().max(),
-            self.households.select(pl.col("home_detailed_zone").str.len_chars().max()).item(),
-            self.persons.select(pl.col("work_detailed_zone").str.len_chars().max()).item(),
-            self.persons.select(pl.col("study_detailed_zone").str.len_chars().max()).item(),
-            self.trips.select(pl.col("origin_detailed_zone").str.len_chars().max()).item(),
-            self.trips.select(pl.col("destination_detailed_zone").str.len_chars().max()).item(),
-            self.legs.select(pl.col("start_detailed_zone").str.len_chars().max()).item(),
-            self.legs.select(pl.col("end_detailed_zone").str.len_chars().max()).item(),
+            self.households.select(pl.col("home_detailed_zone").str.len_chars().max())
+            .collect()
+            .item(),  # ty: ignore[possibly-missing-attribute]
+            self.persons.select(pl.col("work_detailed_zone").str.len_chars().max())
+            .collect()
+            .item(),  # ty: ignore[possibly-missing-attribute]
+            self.persons.select(pl.col("study_detailed_zone").str.len_chars().max())
+            .collect()
+            .item(),  # ty: ignore[possibly-missing-attribute]
+            self.trips.select(pl.col("origin_detailed_zone").str.len_chars().max())
+            .collect()
+            .item(),  # ty: ignore[possibly-missing-attribute]
+            self.trips.select(pl.col("destination_detailed_zone").str.len_chars().max())
+            .collect()
+            .item(),  # ty: ignore[possibly-missing-attribute]
+            self.legs.select(pl.col("start_detailed_zone").str.len_chars().max()).collect().item(),  # ty: ignore[possibly-missing-attribute]
+            self.legs.select(pl.col("end_detailed_zone").str.len_chars().max()).collect().item(),  # ty: ignore[possibly-missing-attribute]
         )
         self.detailed_zones["detailed_zone_id"] = self.detailed_zones["detailed_zone_id"].str.pad(
             width=max_len, fillchar="0"
@@ -351,9 +232,14 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
             )
             if "detailed_zone_id" not in self.special_locations.columns:
                 self.identify_detailed_zone_ids()
-            mask_fn = self.identify_zf_gt_system()
+            mask_fn = identify_zf_gt_system(self.special_locations, self.detailed_zones)
             self.apply_function_to_location_columns(
-                lambda df, prefix: fix_locations(df, prefix, self.special_locations, mask_fn)
+                lambda df, prefix: fix_locations(
+                    df,
+                    prefix,
+                    self.special_locations,  # ty: ignore[invalid-argument-type]
+                    mask_fn,
+                )
             )
         elif self.detailed_zones is not None and self.SURVEY_TYPE == "EDGT":
             # Only Angers 2012 and Bayonne 2010 should match this case.
@@ -361,7 +247,11 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
             # For Angers 2012, the GT ids all have 5, 6, 7, 8, or 9 as the second digit.
             assert (self.detailed_zones["detailed_zone_id"].str.slice(-2, -1).astype(int) < 5).all()
             self.apply_function_to_location_columns(
-                lambda df, prefix: fix_locations_for_angers_2012(df, prefix, self.draw_zones)
+                lambda df, prefix: fix_locations_for_angers_2012(
+                    df,
+                    prefix,
+                    self.draw_zones,  # ty: ignore[invalid-argument-type]
+                )
             )
 
     def clean_external_zones(self):
@@ -380,62 +270,7 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
             lambda df, prefix: remove_external_zones(df, prefix, zf_ids, gt_ids)
         )
 
-    def identify_zf_gt_system(self):
-        # Analyzes the ZF / GT ids and returns a mask that identifies the ZF ids.
-        for n in (1, 2, 3):
-            m = None if n == 1 else -n + 1
-            gt_values = set(
-                self.special_locations["special_location_id"].str.slice(-n, m).value_counts().index
-            )
-            zf_values = set(
-                self.detailed_zones["detailed_zone_id"].str.slice(-n, m).value_counts().index
-            )
-            if not gt_values.intersection(zf_values):
-                # ZF / GT can be identified through the n-th character before end.
-                return (
-                    lambda prefix: pl.col(f"{prefix}_detailed_zone")
-                    .str.slice(-n, 1)
-                    .is_in(gt_values)
-                    .not_()
-                )
-        # For some surveys, all detailed zone ids end with "000", while all special location ids do
-        # not end with "000".
-        if (self.detailed_zones["detailed_zone_id"].str.slice(-3) == "000").all():
-            if (self.special_locations["special_location_id"].str.slice(-3) != "000").all():
-                return lambda prefix: pl.col(f"{prefix}_detailed_zone").str.slice(-3).eq("000")
-            elif (
-                "00000000" in self.special_locations["special_location_id"].values
-                and (self.special_locations["special_location_id"].str.slice(-3) == "000").sum()
-                == 1
-            ):
-                # Special case for Niort 2016: there is a special location with id "00000000".
-                return (
-                    lambda prefix: pl.col(f"{prefix}_detailed_zone").str.slice(-3).eq("000")
-                    & pl.col(f"{prefix}_detailed_zone").str.contains("^0+$").not_()
-                )
-        # For Quimper 2013 (and maybe others), the detailed zone ids ends with "00x" or "01x" but
-        # not the special location ids.
-        if (
-            self.detailed_zones["detailed_zone_id"].str.slice(-3, -1).isin(("00", "01")).all()
-            and not self.special_locations["special_location_id"]
-            .str.slice(-3, -1)
-            .isin(("00", "01"))
-            .any()
-        ):
-            return (
-                lambda prefix: pl.col(f"{prefix}_detailed_zone")
-                .str.slice(-3, 2)
-                .is_in(("00", "01"))
-            )
-
-        # Default case: the ZF ids are the ids that are not valid special location ids.
-        return lambda prefix: (
-            pl.col(f"{prefix}_detailed_zone")
-            .is_in(self.special_locations["special_location_id"].to_list())
-            .not_()
-        )
-
-    def apply_function_to_location_columns(self, func):
+    def apply_function_to_location_columns(self, func: Callable[[pl.DataFrame, str], pl.Expr]):
         """Applies the function `func` to all the location columns (households' `home_*`, persons'
         `work_*`, etc.
 
@@ -452,6 +287,8 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         """Adds `detailed_zone_id` column to special_locations by finding the detailed zone in which
         the special location falls.
         """
+        assert self.special_locations is not None
+        assert self.detailed_zones is not None
         orig_crs = self.special_locations.crs
         self.special_locations.to_crs(self.detailed_zones.crs, inplace=True)
         cols = ["geometry", "detailed_zone_id"]
@@ -468,7 +305,12 @@ class CeremaReader(HouseholdsReader, PersonsReader, TripsReader, LegsReader, Zon
         self.special_locations.to_crs(orig_crs, inplace=True)
 
 
-def fix_locations(df: pl.DataFrame, prefix: str, special_locations: gpd.GeoDataFrame, mask_fn):
+def fix_locations(
+    df: pl.DataFrame,
+    prefix: str,
+    special_locations: gpd.GeoDataFrame,
+    mask_fn: Callable[[str], pl.Expr],
+):
     """Fix the special locations and detailed zones columns."""
     mask = mask_fn(prefix)
     df = df.with_columns(
@@ -540,6 +382,54 @@ def remove_external_zones(df: pl.DataFrame, prefix: str, zf_ids: set[str], gt_id
             .alias(gt_col)
         )
     return df
+
+
+def identify_zf_gt_system(
+    special_locations: gpd.GeoDataFrame, detailed_zones: gpd.GeoDataFrame
+) -> Callable[[str], pl.Expr]:
+    # Analyzes the ZF / GT ids and returns a mask that identifies the ZF ids.
+    for n in (1, 2, 3):
+        m = None if n == 1 else -n + 1
+        gt_values = set(
+            special_locations["special_location_id"].str.slice(-n, m).value_counts().index
+        )
+        zf_values = set(detailed_zones["detailed_zone_id"].str.slice(-n, m).value_counts().index)
+        if not gt_values.intersection(zf_values):
+            # ZF / GT can be identified through the n-th character before end.
+            return (
+                lambda prefix: pl.col(f"{prefix}_detailed_zone")
+                .str.slice(-n, 1)
+                .is_in(gt_values)
+                .not_()
+            )
+    # For some surveys, all detailed zone ids end with "000", while all special location ids do
+    # not end with "000".
+    if (detailed_zones["detailed_zone_id"].str.slice(-3) == "000").all():
+        if (special_locations["special_location_id"].str.slice(-3) != "000").all():
+            return lambda prefix: pl.col(f"{prefix}_detailed_zone").str.slice(-3).eq("000")
+        elif (
+            "00000000" in special_locations["special_location_id"].values
+            and (special_locations["special_location_id"].str.slice(-3) == "000").sum() == 1
+        ):
+            # Special case for Niort 2016: there is a special location with id "00000000".
+            return (
+                lambda prefix: pl.col(f"{prefix}_detailed_zone").str.slice(-3).eq("000")
+                & pl.col(f"{prefix}_detailed_zone").str.contains("^0+$").not_()
+            )
+    # For Quimper 2013 (and maybe others), the detailed zone ids ends with "00x" or "01x" but
+    # not the special location ids.
+    if (
+        detailed_zones["detailed_zone_id"].str.slice(-3, -1).isin(("00", "01")).all()
+        and not special_locations["special_location_id"].str.slice(-3, -1).isin(("00", "01")).any()
+    ):
+        return lambda prefix: pl.col(f"{prefix}_detailed_zone").str.slice(-3, 2).is_in(("00", "01"))
+
+    # Default case: the ZF ids are the ids that are not valid special location ids.
+    return lambda prefix: (
+        pl.col(f"{prefix}_detailed_zone")
+        .is_in(special_locations["special_location_id"].to_list())
+        .not_()
+    )
 
 
 def generate_draw_zones_from_detailed_zones(detailed_zones: gpd.GeoDataFrame):

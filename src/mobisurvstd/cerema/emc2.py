@@ -4,13 +4,13 @@ import re
 
 import geopandas as gpd
 
-from mobisurvstd.cerema.survey import CeremaReader
-from mobisurvstd.utils import MissingFileError, find_file
+from mobisurvstd.cerema.survey import CeremaStandardizer
+from mobisurvstd.utils import MissingFileError, find_file, find_file_path
 
 from .zones import find_matching_column
 
 
-class EMC2Reader(CeremaReader):
+class EMC2Reader(CeremaStandardizer):
     SURVEY_TYPE = "EMC2"
 
     def households_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
@@ -43,42 +43,34 @@ class EMC2Reader(CeremaReader):
 
     def detailed_zones_filenames(self):
         return [
-            find_file(
-                self.source,
-                r".*_ZF(_.*)?\.(TAB|shp)",
-                subdir=os.path.join("Doc", "SIG"),
-                as_url=True,
+            find_file_path(
+                self.source, r".*_ZF(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG")
             )
         ]
 
     def special_locations_filenames(self):
         return [
-            find_file(
-                self.source,
-                r".*_GT(_.*)?\.(TAB|shp)",
-                subdir=os.path.join("Doc", "SIG"),
-                as_url=True,
+            find_file_path(
+                self.source, r".*_GT(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG")
             )
         ]
 
     def draw_zones_filenames(self):
         return [
-            find_file(
-                self.source,
-                r".*_DTIR(_.*)?\.(TAB|shp)",
-                subdir=os.path.join("Doc", "SIG"),
-                as_url=True,
+            find_file_path(
+                self.source, r".*_DTIR(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG")
             )
         ]
 
     def survey_name(self):
-        filename = find_file(
-            self.source,
-            ".*_std_men.csv",
-            subdir=os.path.join("Csv", "Fichiers_Standard"),
-            as_url=True,
+        filename = find_file_path(
+            self.source, ".*_std_men.csv", subdir=os.path.join("Csv", "Fichiers_Standard")
         )
-        return re.match("(.*)_std_men.csv", os.path.basename(filename)).group(1)
+        fn_match = re.match("(.*)_std_men.csv", os.path.basename(filename))
+        if fn_match is not None:
+            return fn_match.group(1)
+        else:
+            return "Unknown"
 
     def gt_id_columns(self):
         return ["zf_160", "zf_fusion", "codegt", "zf", "num_gt"]

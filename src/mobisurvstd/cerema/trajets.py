@@ -5,6 +5,8 @@ from loguru import logger
 
 from mobisurvstd.common.legs import clean
 
+from .reader import CeremaReader
+
 SCHEMA = {
     "TP1": pl.UInt8,  # Code fichier = 4 (trajet)
     "TMET": pl.UInt8,  # Méthode d'enquête du ménage (EMC2 only)
@@ -96,7 +98,7 @@ def scan_legs_impl(source: str | io.BytesIO):
     )
 
 
-class LegsReader:
+class LegsReader(CeremaReader):
     def scan_legs(self):
         lfs_iter = map(scan_legs_impl, self.legs_filenames())
         lf = pl.concat(lfs_iter, how="vertical")

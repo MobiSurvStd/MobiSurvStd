@@ -59,12 +59,12 @@ def get_insee_code_geo():
 def get_insee_changes():
     with tmp_download(INSEE_CHANGE_URL) as fn:
         with zipfile.ZipFile(fn) as z:
-            df = pl.read_excel(
+            df: pl.DataFrame = pl.read_excel(
                 z.read(z.filelist[0]),
                 read_options={"header_row": 5},
                 columns=["CODGEO_INI", "CODGEO_2025"],
                 schema_overrides={"CODGEO_INI": pl.String, "CODGEO_2025": pl.String},
-            )
+            )  # ty: ignore[invalid-assignment]
     df = df.rename({"CODGEO_INI": "insee", "CODGEO_2025": "parent_insee"})
     # Construct the département from the INSEE code.
     # This is done so that former communes which switched to a new département during a merge are
@@ -77,13 +77,14 @@ def get_insee_changes():
     return df
 
 
-def read_density_excel(source: bytes | str, year: str):
-    return pl.read_excel(
+def read_density_excel(source: bytes | str, year: str) -> pl.DataFrame:
+    df: pl.DataFrame = pl.read_excel(
         source,
         read_options={"header_row": 4},
         columns=["CODGEO", "DENS"],
         schema_overrides={"CODGEO": pl.String, "DENS": pl.UInt8},
-    ).rename({"CODGEO": "insee", "DENS": f"insee_density_{year}"})
+    )  # ty: ignore[invalid-assignment]
+    return df.rename({"CODGEO": "insee", "DENS": f"insee_density_{year}"})
 
 
 def get_insee_density():

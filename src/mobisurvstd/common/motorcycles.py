@@ -10,7 +10,7 @@ def clean(lf: pl.LazyFrame, extra_cols: list[str] | None = None):
     columns = [variable.name for variable in MOTORCYCLE_SCHEMA if variable.name in existing_cols]
     if extra_cols is not None:
         columns.extend(extra_cols)
-    lf = lf.select(columns).sort("original_motorcycle_id").collect().lazy()
+    lf = lf.select(columns).sort("original_motorcycle_id").collect().lazy()  # ty: ignore[possibly-missing-attribute]
     lf = indexing(lf, existing_cols)
     lf = add_mileage_bounds(lf, existing_cols)
     if DEBUG:

@@ -3,6 +3,7 @@ from datetime import date
 import geopandas as gpd
 import polars as pl
 from loguru import logger
+from polars.datatypes import DataTypeClass
 
 from mobisurvstd.classes import SurveyData
 from mobisurvstd.common.trips import add_intermodality_column
@@ -108,9 +109,9 @@ def create_metadata(
         nb_draw_zones = 0
     # Find start and end date of survey.
     if start_date is None:
-        start_date: date | None = data["households"]["interview_date"].min()  # type: ignore
+        start_date: date | None = data["households"]["interview_date"].min()
     if end_date is None:
-        end_date: date | None = data["households"]["interview_date"].max()  # type: ignore
+        end_date: date | None = data["households"]["interview_date"].max()
     # Format start and end date to ISO format.
     start_date_str = None
     end_date_str = None
@@ -138,7 +139,7 @@ def create_metadata(
     return metadata
 
 
-def cast_column(col: str, dtype: pl.DataType):
+def cast_column(col: str, dtype: DataTypeClass | pl.DataType):
     if dtype == pl.Struct:
         # The struct fields are unspecified so the column is not cast.
         return pl.col(col).alias(col)
@@ -429,7 +430,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )
+    )  # type: ignore[invalid-assignment]
     gdf["nb_homes"] = gdf["nb_homes"].fillna(0).astype("UInt32")
     # Add nb_work_locations.
     gdf = gdf.merge(
@@ -439,7 +440,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )
+    )  # type: ignore[invalid-assignment]
     gdf["nb_work_locations"] = gdf["nb_work_locations"].fillna(0).astype("UInt32")
     # Add nb_study_locations.
     gdf = gdf.merge(
@@ -449,7 +450,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )
+    )  # type: ignore[invalid-assignment]
     gdf["nb_study_locations"] = gdf["nb_study_locations"].fillna(0).astype("UInt32")
     # Add nb_trip_origins.
     gdf = gdf.merge(
@@ -459,7 +460,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )
+    )  # type: ignore[invalid-assignment]
     gdf["nb_trip_origins"] = gdf["nb_trip_origins"].fillna(0).astype("UInt32")
     # Add nb_trip_destinations.
     gdf = gdf.merge(
@@ -469,7 +470,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )
+    )  # type: ignore[invalid-assignment]
     gdf["nb_trip_destinations"] = gdf["nb_trip_destinations"].fillna(0).astype("UInt32")
     # Add nb_leg_starts.
     gdf = gdf.merge(
@@ -479,7 +480,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )
+    )  # type: ignore[invalid-assignment]
     gdf["nb_leg_starts"] = gdf["nb_leg_starts"].fillna(0).astype("UInt32")
     # Add nb_leg_stops.
     gdf = gdf.merge(
@@ -489,6 +490,6 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )
+    )  # type: ignore[invalid-assignment]
     gdf["nb_leg_ends"] = gdf["nb_leg_ends"].fillna(0).astype("UInt32")
     return gdf

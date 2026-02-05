@@ -3,6 +3,7 @@ import json
 import os
 from collections.abc import Callable
 from datetime import date
+from pathlib import Path
 
 import geopandas as gpd
 import polars as pl
@@ -65,31 +66,29 @@ class SurveyData:
             # Directory is not empty.
             logger.warning("Output directory is not empty, some data might be erased")
         logger.debug("Saving households")
-        self.households.write_parquet(os.path.join(output_directory, "households.parquet"))
+        self.households.write_parquet(output_directory / Path("households.parquet"))
         logger.debug("Saving cars")
-        self.cars.write_parquet(os.path.join(output_directory, "cars.parquet"))
+        self.cars.write_parquet(output_directory / Path("cars.parquet"))
         logger.debug("Saving motorcycles")
-        self.motorcycles.write_parquet(os.path.join(output_directory, "motorcycles.parquet"))
+        self.motorcycles.write_parquet(output_directory / Path("motorcycles.parquet"))
         logger.debug("Saving persons")
-        self.persons.write_parquet(os.path.join(output_directory, "persons.parquet"))
+        self.persons.write_parquet(output_directory / Path("persons.parquet"))
         logger.debug("Saving trips")
-        self.trips.write_parquet(os.path.join(output_directory, "trips.parquet"))
+        self.trips.write_parquet(output_directory / Path("trips.parquet"))
         logger.debug("Saving legs")
-        self.legs.write_parquet(os.path.join(output_directory, "legs.parquet"))
+        self.legs.write_parquet(output_directory / Path("legs.parquet"))
         if self.special_locations is not None:
             logger.debug("Saving special locations")
             self.special_locations.to_parquet(
-                os.path.join(output_directory, "special_locations.geo.parquet")
+                output_directory / Path("special_locations.geo.parquet")
             )
         if self.detailed_zones is not None:
             logger.debug("Saving detailed zones")
-            self.detailed_zones.to_parquet(
-                os.path.join(output_directory, "detailed_zones.geo.parquet")
-            )
+            self.detailed_zones.to_parquet(output_directory / Path("detailed_zones.geo.parquet"))
         if self.draw_zones is not None:
             logger.debug("Saving draw zones")
-            self.draw_zones.to_parquet(os.path.join(output_directory, "draw_zones.geo.parquet"))
-        with open(os.path.join(output_directory, "metadata.json"), "w") as f:
+            self.draw_zones.to_parquet(output_directory / Path("draw_zones.geo.parquet"))
+        with open(output_directory / Path("metadata.json"), "w") as f:
             logger.debug("Saving metadata")
             json.dump(self.metadata, f, indent=2)
         logger.success(f"Standardized survey successfully saved to `{output_directory}`")
@@ -230,7 +229,7 @@ class SurveyDataReader:
         return self._legs
 
     @property
-    def special_locations(self) -> gpd.GeoDataFrame:
+    def special_locations(self) -> gpd.GeoDataFrame | None:
         if self._special_locations is None:
             filename = os.path.join(self.directory, "special_locations.geo.parquet")
             if os.path.isfile(filename):
@@ -239,7 +238,7 @@ class SurveyDataReader:
         return self._special_locations
 
     @property
-    def detailed_zones(self) -> gpd.GeoDataFrame:
+    def detailed_zones(self) -> gpd.GeoDataFrame | None:
         if self._detailed_zones is None:
             filename = os.path.join(self.directory, "detailed_zones.geo.parquet")
             if os.path.isfile(filename):
@@ -248,7 +247,7 @@ class SurveyDataReader:
         return self._detailed_zones
 
     @property
-    def draw_zones(self) -> gpd.GeoDataFrame:
+    def draw_zones(self) -> gpd.GeoDataFrame | None:
         if self._draw_zones is None:
             filename = os.path.join(self.directory, "draw_zones.geo.parquet")
             if os.path.isfile(filename):

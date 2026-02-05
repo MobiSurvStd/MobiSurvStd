@@ -11,13 +11,13 @@ from . import DEBUG
 
 def clean(
     lf: pl.LazyFrame,
-    year: int,
+    year: int | None,
     special_locations: pl.DataFrame | None = None,
     detailed_zones: pl.DataFrame | None = None,
 ):
     existing_cols = lf.collect_schema().names()
     columns = [variable.name for variable in HOUSEHOLD_SCHEMA if variable.name in existing_cols]
-    lf = lf.select(columns).collect().lazy()
+    lf = lf.select(columns).collect().lazy()  # ty: ignore[possibly-missing-attribute]
     lf = indexing(lf)
     lf = add_bicycle_counts(lf, existing_cols)
     lf = add_lng_lat(lf, existing_cols, special_locations, detailed_zones)
@@ -88,7 +88,7 @@ def add_insee_columns(lf: pl.LazyFrame, existing_cols: list[str]):
     return lf
 
 
-def add_insee_data_columns(lf: pl.LazyFrame, existing_cols: list[str], year: int):
+def add_insee_data_columns(lf: pl.LazyFrame, existing_cols: list[str], year: int | None):
     """Add insee name, département code and all AAV / density columns for the home municipality."""
     if "home_insee" in existing_cols:
         # If the `home_dep` column already exists, then it is not added again.

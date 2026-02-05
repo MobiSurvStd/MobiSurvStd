@@ -2,7 +2,7 @@ from datetime import date
 
 import polars as pl
 from loguru import logger
-from polars.datatypes.classes import DataTypeClass
+from polars.datatypes import DataTypeClass
 
 from .guarantees import (
     AutoFixed,
@@ -13,7 +13,9 @@ from .guarantees import (
 
 
 class Variable:
-    def __init__(self, name: str, dtype: DataTypeClass, guarantees: list[Guarantee] = []):
+    def __init__(
+        self, name: str, dtype: DataTypeClass | pl.DataType, guarantees: list[Guarantee] = []
+    ):
         self.name = name
         self.dtype = dtype
         self.guarantees = guarantees

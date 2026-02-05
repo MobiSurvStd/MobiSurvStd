@@ -2,13 +2,14 @@ import io
 
 import pandas as pd
 import polars as pl
+from polars.datatypes import DataTypeClass
 
 from mobisurvstd.utils import find_file
 
 from .deplacements import SCHEMA as TRIP_SCHEMA
 from .menages import SCHEMA as HOUSEHOLD_SCHEMA
 from .personnes import SCHEMA as PERSON_SCHEMA
-from .survey import CeremaReader
+from .survey import CeremaStandardizer
 from .trajets import SCHEMA as LEG_SCHEMA
 
 # The anonimized open-data format for Nantes uses a fixed-width text format.
@@ -140,7 +141,7 @@ LEG_FORMAT = [
 ]
 
 
-class OpenDataReader(CeremaReader):
+class OpenDataReader(CeremaStandardizer):
     SURVEY_TYPE = "EDGT-opendata"
 
     def households_filenames(self):
@@ -193,7 +194,7 @@ class OpenDataReader(CeremaReader):
 def scan_fwf(
     f: str | io.BytesIO,
     format: list[tuple[int, int, str]],
-    schema: dict[str, pl.DataType],
+    schema: dict[str, DataTypeClass],
 ):
     # Decrease `start` by 1 because pandas starts counting at 0 but the survey document starts
     # counting at 1.

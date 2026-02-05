@@ -7,6 +7,8 @@ from mobisurvstd.common.households import clean as clean_households
 from mobisurvstd.common.motorcycles import clean as clean_motorcycles
 from mobisurvstd.schema.common import CURRENT_YEAR
 
+from .reader import CeremaReader
+
 SCHEMA = {
     "MP1": pl.UInt8,  # Code fichier = 1
     "METH": pl.UInt8,  # Méthode d'enquête du ménage (for EMC2 only)
@@ -230,8 +232,8 @@ def scan_households_impl(source: str | io.BytesIO):
     return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["a"])
 
 
-class HouseholdsReader:
-    def scan_households(self):
+class HouseholdsReader(CeremaReader):
+    def scan_households(self) -> pl.LazyFrame:
         lfs_iter = map(scan_households_impl, self.households_filenames())
         lf = pl.concat(lfs_iter, how="vertical")
         if "METH" not in lf.collect_schema().names():
@@ -244,7 +246,7 @@ class HouseholdsReader:
         return lf
 
     def main_insee(self):
-        return self.scan_households().select("IDM4").first().collect().item()
+        return self.scan_households().select("IDM4").first().collect().item()  # ty: ignore[possibly-missing-attribute]
 
     def standardize_households(self):
         lf = self.scan_households()
@@ -299,6 +301,8 @@ class HouseholdsReader:
             how="left",
             coalesce=True,
         )
+        # Note: the `.lazy()` after the concat is useless (this is already a LazyFrame) but it helps
+        # the syntax checker.
         lf = pl.concat(
             (
                 lf.select(
@@ -326,7 +330,7 @@ class HouseholdsReader:
                 for i, a in enumerate(("A", "B", "C", "D"))
             ),
             how="vertical",
-        )
+        ).lazy()
         # Drop the lines with empty car characteristics (there are always 4 cars per
         # households even when the household has less than 4 cars).
         lf = lf.filter(
@@ -347,6 +351,8 @@ class HouseholdsReader:
             how="left",
             coalesce=True,
         )
+        # Note: the `.lazy()` after the concat is useless (this is already a LazyFrame) but it helps
+        # the syntax checker.
         lf = pl.concat(
             (
                 lf.select(
@@ -388,7 +394,7 @@ class HouseholdsReader:
                 for i, a in enumerate(("A", "B", "C", "D"))
             ),
             how="vertical",
-        )
+        ).lazy()
         lf = lf.filter(
             pl.any_horizontal(
                 pl.all()

@@ -16,7 +16,7 @@ def clean(
 ):
     existing_cols = lf.collect_schema().names()
     columns = [variable.name for variable in LEG_SCHEMA if variable.name in existing_cols]
-    lf = lf.select(columns).collect().lazy()
+    lf = lf.select(columns).collect().lazy()  # ty: ignore[possibly-missing-attribute]
     lf = add_indexing(lf, existing_cols)
     lf = add_nb_persons_in_vehicle(lf, existing_cols)
     lf = add_mode_groups(lf, existing_cols)

@@ -6,6 +6,8 @@ from loguru import logger
 from mobisurvstd.common.trips import clean
 from mobisurvstd.schema.common import CURRENT_YEAR
 
+from .reader import CeremaReader
+
 SCHEMA = {
     "DP1": pl.UInt8,  # Code fichier = 3 (déplacement)
     "DMET": pl.UInt8,  # Méthode d'enquête du ménage (EMC2 only)
@@ -114,7 +116,7 @@ def scan_trips_impl(source: str | io.BytesIO):
     return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["aa", "aaaaa"])
 
 
-class TripsReader:
+class TripsReader(CeremaReader):
     def scan_trips(self):
         lfs_iter = map(scan_trips_impl, self.trips_filenames())
         lf = pl.concat(lfs_iter, how="vertical")

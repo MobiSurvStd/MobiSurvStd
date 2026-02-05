@@ -1,11 +1,12 @@
-import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.style
+import matplotlib.ticker
 import numpy as np
 import polars as pl
 
 from mobisurvstd import SurveyDataReader, read_many
 
-mpl.style.use("seaborn-v0_8-colorblind")
+matplotlib.style.use("seaborn-v0_8-colorblind")
 
 
 def get_mode_share(data: SurveyDataReader):
@@ -56,7 +57,7 @@ ax.set(xlim=(0, 1), xlabel="Share", ylim=(-0.5, len(df) - 0.5))
 ax.legend(title="Modes", bbox_to_anchor=(1.01, 0.5))
 ax.grid(which="major", axis="x")
 ax.xaxis.set_label_position("top")
-ax.xaxis.set_major_formatter(mpl.ticker.PercentFormatter(xmax=1))
+ax.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(xmax=1))
 ax.tick_params(top=True, labeltop=True, bottom=True, labelbottom=True)
 fig.tight_layout()
 fig.savefig("./docs/src/images/mode_shares.png", dpi=300)

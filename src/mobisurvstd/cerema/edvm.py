@@ -4,13 +4,13 @@ import re
 
 import geopandas as gpd
 
-from mobisurvstd.cerema.survey import CeremaReader
-from mobisurvstd.utils import MissingFileError, find_file
+from mobisurvstd.cerema.survey import CeremaStandardizer
+from mobisurvstd.utils import MissingFileError, find_file, find_file_path
 
 from .zones import find_matching_column
 
 
-class EDVMReader(CeremaReader):
+class EDVMReader(CeremaStandardizer):
     SURVEY_TYPE = "EDVM"
 
     def households_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
@@ -31,47 +31,43 @@ class EDVMReader(CeremaReader):
     def special_locations_and_detailed_zones_filenames(self):
         # This should only match the Beauvais 2011 survey.
         return [
-            find_file(
-                self.source,
-                ".*beauvais.*_dfin[.](tab|shp|mif)",
-                subdir=os.path.join("Doc", "SIG"),
-                as_url=True,
+            find_file_path(
+                self.source, ".*beauvais.*_dfin[.](tab|shp|mif)", subdir=os.path.join("Doc", "SIG")
             )
         ]
 
     def detailed_zones_filenames(self):
         return [
-            find_file(
+            find_file_path(
                 self.source,
                 ".*(_zf_.*|_zf|zones?[_ ]?fines?.*|_dfin)[.](tab|shp|mif)",
                 subdir=os.path.join("Doc", "SIG"),
-                as_url=True,
             )
         ]
 
     def special_locations_filenames(self):
         return [
-            find_file(
+            find_file_path(
                 self.source,
                 ".*(_gt_.*|_gt|_pgt|_pg|g.?n.?rateur.*)[.](tab|shp|mif)",
                 subdir=os.path.join("Doc", "SIG"),
-                as_url=True,
             )
         ]
 
     def draw_zones_filenames(self):
         return [
-            find_file(
-                self.source,
-                ".*_DTIR[.](tab|shp|mif)",
-                subdir=os.path.join("Doc", "SIG"),
-                as_url=True,
+            find_file_path(
+                self.source, ".*_DTIR[.](tab|shp|mif)", subdir=os.path.join("Doc", "SIG")
             )
         ]
 
     def survey_name(self):
-        filename = find_file(self.source, ".*_std_men.csv", subdir="Csv", as_url=True)
-        return re.match("(.*)_std_men.csv", os.path.basename(filename)).group(1)
+        filename = find_file_path(self.source, ".*_std_men.csv", subdir="Csv")
+        fn_match = re.match("(.*)_std_men.csv", os.path.basename(filename))
+        if fn_match is not None:
+            return fn_match.group(1)
+        else:
+            return "unkown"
 
     def gt_id_columns(self):
         return [
@@ -277,9 +273,10 @@ class EDVMReader(CeremaReader):
         super().select_zf_from_gt_column(gdf)
 
     def postprocess_special_locations_and_detailed_zones(
-        self, zfs: gpd.GeoDataFrame, gts: gpd.GeoDataFrame
+        self, zfs: gpd.GeoDataFrame | None, gts: gpd.GeoDataFrame | None
     ):
         # This function should only be call for Beauvais 2011.
+        assert gts is not None
         assert "detailed_zone_id" not in gts.columns
         # The corresponding ZF is the GT id with the last digit replaced by 0.
         gts["detailed_zone_id"] = gts["special_location_id"].str.replace(r"\d$", "0", regex=True)

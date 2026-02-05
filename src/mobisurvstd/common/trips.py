@@ -19,7 +19,7 @@ def clean(
 ):
     existing_cols = lf.collect_schema().names()
     columns = [variable.name for variable in TRIP_SCHEMA if variable.name in existing_cols]
-    lf = lf.select(columns).collect().lazy()
+    lf = lf.select(columns).collect().lazy()  # ty: ignore[possibly-missing-attribute]
     lf = add_indexing(lf, existing_cols)
     lf = add_purpose_groups(lf, existing_cols)
     lf = add_home_sequence_index(lf)
@@ -239,6 +239,7 @@ def add_trip_perimeter(
         if "origin_dep" not in existing_cols and "destination_dep" not in existing_cols:
             # Cannot identify trip perimeters.
             return lf
+        assert perimeter_deps is not None
         lf = lf.with_columns(
             origin_in_perimeter=pl.col("origin_dep").is_in(perimeter_deps),
             destination_in_perimeter=pl.col("destination_dep").is_in(perimeter_deps),

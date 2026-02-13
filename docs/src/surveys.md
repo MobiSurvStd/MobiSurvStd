@@ -349,3 +349,4 @@ Notes:
 
 - The detailed zones correspond to the 100m by 100m cells.
 - For now, only the weekday trips are standardized.
+- Spatial data is optional when running with `--skip-spatial`

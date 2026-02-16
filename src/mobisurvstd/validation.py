@@ -70,36 +70,37 @@ def validate(data):
     # === Legs ===
     is_valid &= validate_spatial_ids(data.legs, spatial_ids, "start")
     is_valid &= validate_spatial_ids(data.legs, spatial_ids, "end")
-    is_valid &= validate_legs(data)
-    for variable in LEG_SCHEMA:
-        result = variable.check_guarantees(data.legs)
-        match result:
-            case Valid():
-                pass
-            case AutoFixed(df=df):
-                data.legs = df
-            case Invalid():
-                is_valid = False
-
-    for variable in CAR_SCHEMA:
-        result = variable.check_guarantees(data.cars)
-        match result:
-            case Valid():
-                pass
-            case AutoFixed(df=df):
-                data.cars = df
-            case Invalid():
-                is_valid = False
-
-    for variable in MOTORCYCLE_SCHEMA:
-        result = variable.check_guarantees(data.motorcycles)
-        match result:
-            case Valid():
-                pass
-            case AutoFixed(df=df):
-                data.motorcycles = df
-            case Invalid():
-                is_valid = False
+    if data.legs:
+        is_valid &= validate_legs(data)
+        for variable in LEG_SCHEMA:
+            result = variable.check_guarantees(data.legs)
+            match result:
+                case Valid():
+                    pass
+                case AutoFixed(df=df):
+                    data.legs = df
+                case Invalid():
+                    is_valid = False
+    if data.cars:
+        for variable in CAR_SCHEMA:
+            result = variable.check_guarantees(data.cars)
+            match result:
+                case Valid():
+                    pass
+                case AutoFixed(df=df):
+                    data.cars = df
+                case Invalid():
+                    is_valid = False
+    if data.motorcycles:
+        for variable in MOTORCYCLE_SCHEMA:
+            result = variable.check_guarantees(data.motorcycles)
+            match result:
+                case Valid():
+                    pass
+                case AutoFixed(df=df):
+                    data.motorcycles = df
+                case Invalid():
+                    is_valid = False
 
     return is_valid
 
@@ -154,55 +155,57 @@ def validate_households(data):
             .otherwise("trips_weekday")
         )
     # Guarantee that `nb_cars` is not smaller than the number of cars in `cars.parquet`.
-    nb_cars = data.cars.group_by("household_id").len()
-    invalid_households = set(
-        data.households.filter(
-            pl.col("nb_cars")
-            < pl.col("household_id").replace_strict(
-                nb_cars["household_id"], nb_cars["len"], default=0
-            )
-        )["household_id"]
-    )
-    if invalid_households:
-        n = len(invalid_households)
-        logger.warning(
-            f"{n} households have more cars listed in `cars.parquet` than the value of `nb_cars`. "
-            "The `nb_cars` values are automatically set to the number of known cars."
-        )
-        data.households = data.households.with_columns(
-            nb_cars=pl.max_horizontal(
-                "nb_cars",
-                pl.col("household_id").replace_strict(
+    if data.cars:
+        nb_cars = data.cars.group_by("household_id").len()
+        invalid_households = set(
+            data.households.filter(
+                pl.col("nb_cars")
+                < pl.col("household_id").replace_strict(
                     nb_cars["household_id"], nb_cars["len"], default=0
-                ),
-            ).cast(data.households["nb_cars"].dtype)
+                )
+            )["household_id"]
         )
+        if invalid_households:
+            n = len(invalid_households)
+            logger.warning(
+                f"{n} households have more cars listed in `cars.parquet` than the value of `nb_cars`. "
+                "The `nb_cars` values are automatically set to the number of known cars."
+            )
+            data.households = data.households.with_columns(
+                nb_cars=pl.max_horizontal(
+                    "nb_cars",
+                    pl.col("household_id").replace_strict(
+                        nb_cars["household_id"], nb_cars["len"], default=0
+                    ),
+                ).cast(data.households["nb_cars"].dtype)
+            )
     # Guarantee that `nb_motorcycles` is not smaller than the number of motorcycles in
     # `motorcycles.parquet`.
-    nb_motorcycles = data.motorcycles.group_by("household_id").len()
-    invalid_households = set(
-        data.households.filter(
-            pl.col("nb_motorcycles")
-            < pl.col("household_id").replace_strict(
-                nb_motorcycles["household_id"], nb_motorcycles["len"], default=0
-            )
-        )["household_id"]
-    )
-    if invalid_households:
-        n = len(invalid_households)
-        logger.warning(
-            f"{n} households have more motorcycles listed in `motorcycles.parquet` than the value "
-            "of `nb_motorcycles`. "
-            "The `nb_motorcycles` values are automatically set to the number of known motorcycles."
-        )
-        data.households = data.households.with_columns(
-            nb_motorcycles=pl.max_horizontal(
-                "nb_motorcycles",
-                pl.col("household_id").replace_strict(
+    if data.motorcycles:
+        nb_motorcycles = data.motorcycles.group_by("household_id").len()
+        invalid_households = set(
+            data.households.filter(
+                pl.col("nb_motorcycles")
+                < pl.col("household_id").replace_strict(
                     nb_motorcycles["household_id"], nb_motorcycles["len"], default=0
-                ),
-            ).cast(data.households["nb_cars"].dtype)
+                )
+            )["household_id"]
         )
+        if invalid_households:
+            n = len(invalid_households)
+            logger.warning(
+                f"{n} households have more motorcycles listed in `motorcycles.parquet` than the value "
+                "of `nb_motorcycles`. "
+                "The `nb_motorcycles` values are automatically set to the number of known motorcycles."
+            )
+            data.households = data.households.with_columns(
+                nb_motorcycles=pl.max_horizontal(
+                    "nb_motorcycles",
+                    pl.col("household_id").replace_strict(
+                        nb_motorcycles["household_id"], nb_motorcycles["len"], default=0
+                    ),
+                ).cast(data.households["nb_cars"].dtype)
+            )
     # Guarantee that `nb_persons` matches the actual number of persons.
     nb_persons = data.persons.group_by("household_id").len()
     invalid_households = set(

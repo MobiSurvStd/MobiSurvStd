@@ -3,7 +3,7 @@ from zipfile import ZipFile
 
 from loguru import logger
 
-from . import cerema, egt2010, egt2020, emp
+from . import cerema, egt2010, egt2020, emp, emg2023
 from .classes import SurveyData
 from .utils import guess_survey_type, read_source
 
@@ -93,6 +93,8 @@ def standardize(
         survey_data = egt2020.standardize(dir_or_zip, skip_spatial=skip_spatial)
     elif survey_type in ("egt2010", "egt10"):
         survey_data = egt2010.standardize(dir_or_zip, skip_spatial=skip_spatial)
+    elif survey_type in ("emg2023", "emg23"):
+        survey_data = emg2023.standardize(dir_or_zip, skip_spatial=skip_spatial)
     else:
         logger.error(f"Unsupported survey type: {survey_type}")
         return None

@@ -22,9 +22,9 @@ def clean(
     households: pl.LazyFrame,
     persons: pl.LazyFrame,
     trips: pl.LazyFrame,
-    legs: pl.LazyFrame,
-    cars: pl.LazyFrame,
-    motorcycles: pl.LazyFrame,
+    legs: pl.LazyFrame | None,
+    cars: pl.LazyFrame | None ,
+    motorcycles: pl.LazyFrame | None,
     survey_type: str,
     survey_name: str,
     main_insee: str | None = None,
@@ -38,9 +38,10 @@ def clean(
     households = add_household_type(households, persons)
     persons = count_nb_trips(persons, trips)
     persons = add_worked_during_surveyed_day(persons, trips)
-    trips = count_nb_legs(trips, legs)
-    trips = add_main_mode(trips, legs)
-    trips = add_access_egress_modes(trips, legs)
+    if legs:
+        trips = count_nb_legs(trips, legs)
+        trips = add_main_mode(trips, legs)
+        trips = add_access_egress_modes(trips, legs)
     # Select only the column in the schema and add the missing columns with null values.
     data = dict()
     for name, lf, schema in (
@@ -51,6 +52,7 @@ def clean(
         ("cars", cars, CAR_SCHEMA),
         ("motorcycles", motorcycles, MOTORCYCLE_SCHEMA),
     ):
+        if lf is None: continue
         logger.debug(f"Collecting {name}")
         # `short_name` is the name without the "s"
         short_name = name[:-1]
@@ -124,11 +126,11 @@ def create_metadata(
         "type": survey_type,
         "survey_method": survey_method,
         "nb_households": len(data["households"]),
-        "nb_cars": len(data["cars"]),
-        "nb_motorcycles": len(data["motorcycles"]),
+        "nb_cars": len(data["cars"]) if "cars" in data else 0,
+        "nb_motorcycles": len(data["motorcycles"]) if "nb_motorcycles" in data else 0,
         "nb_persons": len(data["persons"]),
         "nb_trips": len(data["trips"]),
-        "nb_legs": len(data["legs"]),
+        "nb_legs": len(data["legs"]) if "legs" in data else 0,
         "nb_special_locations": nb_special_locations,
         "nb_detailed_zones": nb_detailed_zones,
         "nb_draw_zones": nb_draw_zones,

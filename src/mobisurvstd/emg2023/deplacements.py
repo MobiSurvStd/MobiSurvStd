@@ -99,6 +99,7 @@ def standardize_trips(
     )
 
     lf = lf.with_columns(
+        sequence=pl.int_range(1, pl.len() + 1),
         original_trip_id=pl.col("KEY"),
         origin_purpose=None, # added because requested downstream
         origin_purpose_group=pl.col("Motif_O").str.to_uppercase().replace_strict(PURPOSE_GROUP_MAP),
@@ -129,13 +130,15 @@ def standardize_trips(
         .otherwise("destination_insee"),
     )
 
+    lf = lf.sort(["person_id", "sequence"]).drop("sequence")
+
     lf = clean(
         lf,
         2023,
         perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"]
     )
     
-    lf = lf.sort("trip_id")
+    lf = lf.sort(["trip_id"])
     return lf
 
 DISTANCES_SCHEMA = {

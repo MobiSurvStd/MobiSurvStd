@@ -67,16 +67,19 @@ class SurveyData:
             logger.warning("Output directory is not empty, some data might be erased")
         logger.debug("Saving households")
         self.households.write_parquet(output_directory / Path("households.parquet"))
-        logger.debug("Saving cars")
-        self.cars.write_parquet(output_directory / Path("cars.parquet"))
-        logger.debug("Saving motorcycles")
-        self.motorcycles.write_parquet(output_directory / Path("motorcycles.parquet"))
+        if not self.cars.is_empty():
+            logger.debug("Saving cars")
+            self.cars.write_parquet(output_directory / Path("cars.parquet"))
+        if not self.motorcycles.is_empty():
+            logger.debug("Saving motorcycles")
+            self.motorcycles.write_parquet(output_directory / Path("motorcycles.parquet"))
         logger.debug("Saving persons")
         self.persons.write_parquet(output_directory / Path("persons.parquet"))
         logger.debug("Saving trips")
         self.trips.write_parquet(output_directory / Path("trips.parquet"))
-        logger.debug("Saving legs")
-        self.legs.write_parquet(output_directory / Path("legs.parquet"))
+        if not self.legs.is_empty():
+            logger.debug("Saving legs")
+            self.legs.write_parquet(output_directory / Path("legs.parquet"))
         if self.special_locations is not None:
             logger.debug("Saving special locations")
             self.special_locations.to_parquet(
@@ -192,16 +195,22 @@ class SurveyDataReader:
     def cars(self) -> pl.DataFrame:
         if self._cars is None:
             filename = os.path.join(self.directory, "cars.parquet")
-            logger.debug(f"Reading cars from `{filename}`")
-            self._cars = pl.read_parquet(filename)
+            if os.path.isfile(filename):
+                logger.debug(f"Reading cars from `{filename}`")
+                self._cars = pl.read_parquet(filename)
+            else:
+                self._cars = pl.DataFrame()
         return self._cars
 
     @property
     def motorcycles(self) -> pl.DataFrame:
         if self._motorcycles is None:
             filename = os.path.join(self.directory, "motorcycles.parquet")
-            logger.debug(f"Reading motorcycles from `{filename}`")
-            self._motorcycles = pl.read_parquet(filename)
+            if os.path.isfile(filename):
+                logger.debug(f"Reading motorcycles from `{filename}`")
+                self._motorcycles = pl.read_parquet(filename)
+            else:
+                self._motorcycles = pl.DataFrame()
         return self._motorcycles
 
     @property
@@ -323,8 +332,6 @@ def is_valid_mobisurvstd_dir(directory: str) -> bool:
         "persons.parquet",
         "trips.parquet",
         "legs.parquet",
-        "cars.parquet",
-        "motorcycles.parquet",
     ):
         if not os.path.isfile(os.path.join(directory, name)):
             return False

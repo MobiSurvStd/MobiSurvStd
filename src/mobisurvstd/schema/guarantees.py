@@ -148,18 +148,38 @@ class Unique(Guarantee):
 class Sorted(Guarantee):
     """Guarantee for variables whose values are sorted."""
 
-    def __init__(self, descending: bool = False, over: str | None = None, **kwargs):
+    def __init__(
+        self,
+        descending: bool = False,
+        over: str | list[str] | None = None,
+        ignore_nulls: bool = False,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.descending = descending
         self.over = over
+        self.ignore_nulls = ignore_nulls
 
     def _check(self, df: pl.DataFrame, col: str) -> bool:
         if self.over is None:
-            return df[col].is_sorted(descending=self.descending)
+            if self.ignore_nulls:
+                return df[col].drop_nulls().is_sorted(descending=self.descending)
+            else:
+                return df[col].is_sorted(descending=self.descending)
         else:
-            return df.select(
-                (pl.col(col).sort(descending=self.descending).over(self.over) == pl.col(col)).all()
-            ).item()
+            if self.ignore_nulls:
+                return df.select(
+                    (
+                        pl.col(col).sort(descending=self.descending).over(self.over).drop_nulls()
+                        == pl.col(col).drop_nulls()
+                    ).all()
+                ).item()
+            else:
+                return df.select(
+                    (
+                        pl.col(col).sort(descending=self.descending).over(self.over) == pl.col(col)
+                    ).all()
+                ).item()
 
     def _fail_msg(self, df: pl.DataFrame, col: str) -> str:
         if self.over is None:
@@ -175,11 +195,15 @@ class Sorted(Guarantee):
             else:
                 return f"Values are not non-decreasing ({v0} > {v1})"
         else:
-            invalid_groups = df.filter(
-                pl.col(col).sort(descending=self.descending).over(self.over) != pl.col(col)
-            )[self.over].unique()
+            invalid_groups = (
+                df.filter(
+                    pl.col(col).sort(descending=self.descending).over(self.over) != pl.col(col)
+                )
+                .select(self.over)
+                .unique()
+            )
             n = len(invalid_groups)
-            first_invalids = invalid_groups[:5].to_list()
+            first_invalids = invalid_groups[:5].to_dict(as_series=False)
             return f'Values are not sorted for {n:,} "{self.over}" groups ({first_invalids})'
 
 

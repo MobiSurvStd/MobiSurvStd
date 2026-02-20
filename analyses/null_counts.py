@@ -14,7 +14,16 @@ from mobisurvstd.schema import (
 from mobisurvstd.schema.common import Variable
 from mobisurvstd.schema.guarantees import Null
 
-SURVEY_TYPES = ["EMC2", "EMP2019", "EGT2020", "EDGT", "EDVM", "EGT2010", "EMD"]
+SURVEY_TYPES = [
+    "EMC2",
+    "EMP2019",
+    "EGT2020",
+    "EMG2023",
+    "EDGT",
+    "EDVM",
+    "EGT2010",
+    "EMD",
+]
 
 GROUPS = {
     "households": HOUSEHOLD_SCHEMA,
@@ -33,7 +42,13 @@ def count_nulls(data: SurveyDataReader):
     output["name"] = name
     output["type"] = data.metadata["type"]
     for name, schema in GROUPS.items():
-        output[name] = count_nulls_df(getattr(data, name), schema)
+        df = getattr(data, name)
+        if df.is_empty():
+            # Some surveys have empty cars or motorcyles.
+            output[name] = {var.name: {"null_count": 0, "max_defined": 0} for var in schema}
+            output[name]["count"] = 0
+        else:
+            output[name] = count_nulls_df(df, schema)
     return [output]
 
 
@@ -72,8 +87,9 @@ for name, schema in GROUPS.items():
             true_null_counts = null_counts - (n - max_defined)
             if max_defined == 0:
                 # Prevent Div/0.
-                max_defined = 1
-            ratio = true_null_counts / max_defined
+                ratio = 1.0
+            else:
+                ratio = true_null_counts / max_defined
             assert ratio >= 0.0
             assert ratio <= 1.0
             data[type_code].append(1.0 - ratio)

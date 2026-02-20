@@ -3,7 +3,7 @@ from zipfile import ZipFile
 
 from loguru import logger
 
-from . import cerema, egt2010, egt2020, emp
+from . import cerema, egt2010, egt2020, emg2023, emp
 from .classes import SurveyData
 from .utils import guess_survey_type, read_source
 
@@ -33,7 +33,7 @@ def standardize(
         String indicating the type of the survey to be converted.
         If the value is omitted, MobiSurvStd will do its best to guess the survey type.
         Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edgt-opendata", "edvm",
-        "emd".
+        "emd", "emg2023".
     add_name_subdir
         Whether the standardized survey is stored directly in `output_directory` or within a
         subdirectory of `output_directory`.
@@ -93,6 +93,8 @@ def standardize(
         survey_data = egt2020.standardize(dir_or_zip, skip_spatial=skip_spatial)
     elif survey_type in ("egt2010", "egt10"):
         survey_data = egt2010.standardize(dir_or_zip, skip_spatial=skip_spatial)
+    elif survey_type in ("emg", "emg2023", "emg23"):
+        survey_data = emg2023.standardize(dir_or_zip, skip_spatial=skip_spatial)
     else:
         logger.error(f"Unsupported survey type: {survey_type}")
         return None

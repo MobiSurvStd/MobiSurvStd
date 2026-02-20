@@ -244,4 +244,6 @@ def guess_survey_type(source: str | ZipFile) -> str | None:
         elif survey_type == 6:
             # MC3 (EMC2 surveys disturbed by Covid-19).
             return "emc2"
+    if find_file_path(source, r"EMG_BD_.+\.xlsx"):
+        return "emg2023"
     return None

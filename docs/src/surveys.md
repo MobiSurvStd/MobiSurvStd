@@ -148,6 +148,34 @@ Notes:
 - The `work_insee` and `study_insee` values are derived from the given coordinates, using INSEE data
   from 2025. There can be some errors because of the 100m rounding.
 
+## Enquête Mobilité par GPS 2023 (EMG)
+
+Code: `emg2023`
+
+Link: [https://www.institutparisregion.fr/mobilite-et-transports/deplacements/enquete-regionale-sur-la-mobilite-des-franciliens/](https://www.institutparisregion.fr/mobilite-et-transports/deplacements/enquete-regionale-sur-la-mobilite-des-franciliens/)
+
+Expected format:
+
+```bash
+emg/
+├── EMG_BD_Deplacements_*.xlsx
+├── EMG_BD_Individus_*.xlsx
+└── EMG_Distance.xlsx     # Optional, gives trip euclidean distances.
+```
+
+Notes:
+
+- Only one person per household is surveyed. Characteristics of all other members are unknown.
+- The number of cars and motorcycles per household is known but their characteristics are unknown.
+- The survey is conducted **over a week** (seven days) for each person. The trip-level variable
+  `trip_date` can be used to identify the day of the trips. The person might not have traveled each
+  day of the surveyed week.
+- Trips done before 4 a.m. are usually registered to the previous day, with a departure / arrival
+  time value over 24h.
+- Origins and destinations are defined at the INSEE level.
+
+_Implementation in MobiSurvStd by Sebastian Hörl_
+
 ## Enquêtes Déplacements Grands Territoires (EDGT)
 
 Code: `edgt`

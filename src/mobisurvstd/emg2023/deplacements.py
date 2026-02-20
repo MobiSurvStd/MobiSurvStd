@@ -93,39 +93,6 @@ def standardize_trips(
 ):
     lf = scan_trips(filename)
 
-    # Drop non-trips.
-    lf = lf.filter(pl.col("Num_depl").is_in(("PDD", "PDT")).not_())
-
-    # How can I say that?
-    # There are two guys whose id changes just for one trip.
-    # It looks like that:
-    # KEY                     ID
-    # 2_2001-mardi-44936-2    2_2001
-    # 2_2002-mercredi-44937-1 2_2002
-    # 2_2001-mercredi-44937-1 2_2001
-    #
-    # These 3 trips are for the same guy (2_2001) but the second trip takes the id of someone else
-    # (2_2002).
-    # Thanksfully, the trips are ordered so we can detect that when we have an `ID` value different
-    # from the previous and next value, while these previous and next values are equal.
-    lf = lf.with_columns(
-        old_ID=pl.col("ID"),
-        ID=pl.when(
-            pl.col("ID").shift(1) == pl.col("ID").shift(-1),
-            pl.col("ID") != pl.col("ID").shift(1)
-        ).then(pl.col("ID").shift(1))
-        .otherwise("ID")
-    )
-    # Now `ID` is correct but we need to fix `KEY`.
-    lf = lf.with_columns(
-        KEY=pl.when(pl.col("old_ID") != pl.col("ID"))
-        # `.str.replace` is not yet implemented with Expression but we can use `.str.strip_prefix`
-        # since ID is at the start of KEY.
-        #  .then(pl.col("KEY").str.replace(pl.col("old_ID"), pl.col("ID")))
-        .then(pl.col("ID") + pl.col("KEY").str.strip_prefix(pl.col("old_ID")))
-        .otherwise("KEY")
-    )
-
     lf = lf.with_columns(original_person_id=pl.col("ID")).join(
         persons.select("original_person_id", "person_id", "household_id"),
         on="original_person_id",
@@ -135,6 +102,7 @@ def standardize_trips(
 
     lf = lf.with_columns(
         original_trip_id=pl.col("KEY"),
+        index=pl.col("KEY").str.extract("-([0-9]+)$").cast(pl.UInt8),
         origin_purpose_group=pl.col("Motif_O").str.to_uppercase().replace_strict(PURPOSE_GROUP_MAP),
         destination_purpose_group=pl.col("Motif_D").str.to_uppercase().replace_strict(PURPOSE_GROUP_MAP),
         origin_insee=pl.when(pl.col("Code_INSEE_O").is_in(("ETRANGER", "HORS IDF"))).then(None).otherwise("Code_INSEE_O"),
@@ -181,36 +149,17 @@ def standardize_trips(
         .otherwise("destination_insee"),
     )
 
-    # we order by departure time since some trips seem to have been added to the end of the day
-    # (from data correction?)
-    lf = lf.sort(["person_id", "trip_date", "departure_time"])
-
-    # generate an offset for the times
-    lf = lf.with_columns(
-        offset=pl.col("trip_date").ne(pl.col("trip_date").shift(1)).cum_sum().over("person_id").fill_null(0).cast(pl.UInt8)
-    )
-
-    lf = lf.with_columns(
-        departure_time=pl.col("departure_time").add(pl.col("offset").mul(24 * 60)),
-        arrival_time=pl.col("arrival_time").add(pl.col("offset").mul(24 * 60)),
-        sequence=pl.int_range(1, pl.len() + 1),
-    )
+    lf = lf.sort(["person_id", "trip_date", "index"])
 
     # fix the case where we are departing at 23:40 on day 1 and arrive at 00:20 on day 2
     lf = lf.with_columns(
         arrival_time=pl.when(
-            (pl.col("arrival_time") < pl.col("departure_time")) &
-            (
-                (pl.col("trip_date").shift(-1) == pl.col("trip_date") + timedelta(days = 1)) |
-                pl.col("sequence").eq(pl.col("sequence").last().over("person_id"))
-            )
-        ).then(pl.col("arrival_time") + 24 * 60).otherwise("arrival_time").over("person_id")
+            pl.col("arrival_time") + 24 * 60 == pl.col("departure_time") + pl.col("Duree")
+        ).then(pl.col("arrival_time") + 24 * 60).otherwise("arrival_time")
     )
 
     # filter out days without trace (PDT), without trip (PDD), or outside IDF (HORS IDF)
     lf = lf.filter(pl.col("Num_depl").is_in(["PDT", "PDD", "HORS IDF"]).not_())
-
-    lf = lf.drop("sequence")
 
     lf = clean_trips(
         lf,
@@ -218,7 +167,6 @@ def standardize_trips(
         perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"]
     )
     
-    lf = lf.sort(["trip_id"])
     return lf
 
 DISTANCES_SCHEMA = {
@@ -243,6 +191,8 @@ def standardize_distances(filename: str):
 
 def standardize_legs(filename: str, trips: pl.LazyFrame):
     lf = scan_trips(filename)
+    # filter out days without trace (PDT), without trip (PDD), or outside IDF (HORS IDF)
+    lf = lf.filter(pl.col("Num_depl").is_in(["PDT", "PDD", "HORS IDF"]).not_())
     # The `fill_null` is required for 8 trips with a main mode but no leg mode defined.
     lf = lf.select(
         "KEY",

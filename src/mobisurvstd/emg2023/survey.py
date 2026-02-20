@@ -2,12 +2,13 @@ import os
 from zipfile import ZipFile
 
 from loguru import logger
+import polars as pl
 
 from mobisurvstd.common.clean import clean
 from mobisurvstd.utils import find_file
 from mobisurvstd.schema import CAR_SCHEMA, MOTORCYCLE_SCHEMA, LEG_SCHEMA
 
-from .deplacements import standardize_trips, standardize_distances
+from .deplacements import standardize_trips, standardize_distances, standardize_legs
 from .menages import standardize_households
 from .personnes import standardize_persons
 
@@ -39,11 +40,15 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
     
     trips = standardize_trips(filename, persons, distances = distances)
 
+    legs = standardize_legs(filename, trips)
+
     return clean(
         households=households,
         persons=persons,
         trips=trips,
-        legs=None, cars=None, motorcycles=None,
+        legs=legs,
+        cars=pl.LazyFrame({"car_id": []}),
+        motorcycles=pl.LazyFrame({"motorcycle_id": []}),
         survey_type="EMG2023",
         survey_name="EMG2023",
         main_insee="75056",

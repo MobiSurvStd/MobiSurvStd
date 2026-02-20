@@ -22,9 +22,9 @@ def clean(
     households: pl.LazyFrame,
     persons: pl.LazyFrame,
     trips: pl.LazyFrame,
-    legs: pl.LazyFrame | None,
-    cars: pl.LazyFrame | None ,
-    motorcycles: pl.LazyFrame | None,
+    legs: pl.LazyFrame,
+    cars: pl.LazyFrame,
+    motorcycles: pl.LazyFrame,
     survey_type: str,
     survey_name: str,
     main_insee: str | None = None,
@@ -38,10 +38,9 @@ def clean(
     households = add_household_type(households, persons)
     persons = count_nb_trips(persons, trips)
     persons = add_worked_during_surveyed_day(persons, trips)
-    if legs:
-        trips = count_nb_legs(trips, legs)
-        trips = add_main_mode(trips, legs)
-        trips = add_access_egress_modes(trips, legs)
+    trips = count_nb_legs(trips, legs)
+    trips = add_main_mode(trips, legs)
+    trips = add_access_egress_modes(trips, legs)
     # Select only the column in the schema and add the missing columns with null values.
     data = dict()
     for name, lf, schema in (
@@ -52,7 +51,6 @@ def clean(
         ("cars", cars, CAR_SCHEMA),
         ("motorcycles", motorcycles, MOTORCYCLE_SCHEMA),
     ):
-        if lf is None: continue
         logger.debug(f"Collecting {name}")
         # `short_name` is the name without the "s"
         short_name = name[:-1]
@@ -126,8 +124,8 @@ def create_metadata(
         "type": survey_type,
         "survey_method": survey_method,
         "nb_households": len(data["households"]),
-        "nb_cars": len(data["cars"]) if "cars" in data else 0,
-        "nb_motorcycles": len(data["motorcycles"]) if "nb_motorcycles" in data else 0,
+        "nb_cars": len(data["cars"]),
+        "nb_motorcycles": len(data["motorcycles"]),
         "nb_persons": len(data["persons"]),
         "nb_trips": len(data["trips"]),
         "nb_legs": len(data["legs"]) if "legs" in data else 0,
@@ -153,22 +151,33 @@ def count_nb_persons(households: pl.LazyFrame, persons: pl.LazyFrame):
     has_age = "age" in persons.collect_schema().names()
     has_age_class = "age_class_code" in persons.collect_schema().names()
     person_counts = persons.group_by("household_id").agg(
+        complete_household=True,
         nb_persons=pl.len(),
-        nb_persons_5plus=pl.when(pl.col("age").is_not_null().all()).then(pl.col("age").ge(5).sum())
-        if has_age
-        else None,
-        nb_majors=pl.when(pl.col("age_class_code").is_not_null().all()).then(
-            pl.col("age_class_code").gt(1).sum()
-        )
-        if has_age_class
-        else None,
-        nb_minors=pl.when(pl.col("age_class_code").is_not_null().all()).then(
-            pl.col("age_class_code").eq(1).sum()
-        )
-        if has_age_class
-        else None,
+        nb_persons_5plus=(
+            pl.when(pl.col("age").is_not_null().all()).then(pl.col("age").ge(5).sum())
+            if has_age
+            else None
+        ),
+        nb_majors=(
+            pl.when(pl.col("age_class_code").is_not_null().all()).then(
+                pl.col("age_class_code").gt(1).sum()
+            )
+            if has_age_class
+            else None
+        ),
+        nb_minors=(
+            pl.when(pl.col("age_class_code").is_not_null().all()).then(
+                pl.col("age_class_code").eq(1).sum()
+            )
+            if has_age_class
+            else None
+        ),
     )
-    households = households.join(person_counts, on="household_id", how="left", coalesce=True)
+    # Join on both "household_id" and "complete_household" so that counts are not added for
+    # incomplete households.
+    households = households.join(
+        person_counts, on=["household_id", "complete_household"], how="left", coalesce=True
+    )
     return households
 
 
@@ -252,7 +261,7 @@ def add_worked_during_surveyed_day(persons: pl.LazyFrame, trips: pl.LazyFrame):
             .then(pl.lit("no"))
         )
     )
-    if "worked_during_surveyed_day" not in persons_cols:
+    if "worked_during_surveyed_day" not in persons_cols and "destination_purpose" in persons_cols:
         persons = persons.join(
             trips.group_by("person_id").agg(
                 has_work_activity=pl.col("destination_purpose")

@@ -262,6 +262,7 @@ class HouseholdsReader(CeremaReader):
         )
         lf = lf.with_columns(
             original_household_id=pl.struct(self.get_household_index_cols()),
+            complete_household=True,
             home_detailed_zone="ZFM",
             home_draw_zone="STM",
             # For EMD, EDVM, EDGT, the IDM2 column will be read here.

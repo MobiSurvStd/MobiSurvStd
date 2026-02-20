@@ -18,11 +18,11 @@ class SurveyData:
     def __init__(
         self,
         households: pl.DataFrame,
-        cars: pl.DataFrame | None,
-        motorcycles: pl.DataFrame | None,
+        cars: pl.DataFrame,
+        motorcycles: pl.DataFrame,
         persons: pl.DataFrame,
         trips: pl.DataFrame,
-        legs: pl.DataFrame | None,
+        legs: pl.DataFrame,
         special_locations: gpd.GeoDataFrame | None,
         detailed_zones: gpd.GeoDataFrame | None,
         draw_zones: gpd.GeoDataFrame | None,
@@ -43,11 +43,11 @@ class SurveyData:
     def from_dict(cls, data: dict):
         return cls(
             data["households"],
-            data.get("cars"),
-            data.get("motorcycles"),
+            data["cars"],
+            data["motorcycles"],
             data["persons"],
             data["trips"],
-            data.get("legs"),
+            data["legs"],
             data.get("special_locations"),
             data.get("detailed_zones"),
             data.get("draw_zones"),
@@ -67,17 +67,17 @@ class SurveyData:
             logger.warning("Output directory is not empty, some data might be erased")
         logger.debug("Saving households")
         self.households.write_parquet(output_directory / Path("households.parquet"))
-        if self.cars:
+        if not self.cars.is_empty():
             logger.debug("Saving cars")
             self.cars.write_parquet(output_directory / Path("cars.parquet"))
-        if self.motorcycles:
+        if not self.motorcycles.is_empty():
             logger.debug("Saving motorcycles")
             self.motorcycles.write_parquet(output_directory / Path("motorcycles.parquet"))
         logger.debug("Saving persons")
         self.persons.write_parquet(output_directory / Path("persons.parquet"))
         logger.debug("Saving trips")
         self.trips.write_parquet(output_directory / Path("trips.parquet"))
-        if self.legs:
+        if not self.legs.is_empty():
             logger.debug("Saving legs")
             self.legs.write_parquet(output_directory / Path("legs.parquet"))
         if self.special_locations is not None:

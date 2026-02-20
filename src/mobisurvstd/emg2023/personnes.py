@@ -58,18 +58,6 @@ DETAILED_EDUCATION_LEVEL_MAP = {
     "Bac + 5 et plus : Master 2, DEA, DESS, Diplôme de grande école, Doctorat…": "higher:at_least_bac+5"
 }
 
-# emg23 follows definition including students
-PCS_CODES = {
-    1: "agriculteurs_exploitants",
-    2: "artisans_commerçants_chefs_d'entreprise",
-    3: "cadres_et_professions_intellectuelles_supérieures",
-    4: "professions_intermédiaires",
-    5: "employés",
-    6: "ouvriers",
-    7: "retraités",
-    8: "autres_personnes_sans_activité_professionnelle",
-}
-
 PCS_GROUP_CODE_MAP = {
     1: 2,  # EMG: Artisan, commerçant et chef d’entreprise
     2: 3,  # EMG: Cadre et profession intellectuelle supérieure
@@ -79,6 +67,17 @@ PCS_GROUP_CODE_MAP = {
     6: 7,  # EMG: Retraité ou pré-retraité
     7: None,  # EMG: Étudiant ou lycée
     8: 8,  # Au chômage ou en inactivité)
+}
+
+DETAILED_PROFESSIONAL_OCCUPATION_MAP = {
+    1: "worker:unspecified",  # EMG: Artisan, commerçant et chef d’entreprise
+    2: "worker:unspecified",  # EMG: Cadre et profession intellectuelle supérieure
+    3: "worker:unspecified",  # EMG: Professions Intermédiaires
+    4: "worker:unspecified",  # EMG: Employés
+    5: "worker:unspecified",  # EMG: Ouvriers
+    6: "other:retired",  # EMG: Retraité ou pré-retraité
+    7: "student:unspecified",  # EMG: Étudiant ou lycée
+    8: "other:unspecified",  # Au chômage ou en inactivité)
 }
 
 DRIVING_LICENSE_MAP = {
@@ -107,6 +106,9 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         education_level=pl.col("DIPLOME").replace_strict(EDUCATION_LEVEL_MAP),
         detailed_education_level=pl.col("DIPLOME").replace_strict(DETAILED_EDUCATION_LEVEL_MAP),
         pcs_group_code=pl.col("PCS_8").replace_strict(PCS_GROUP_CODE_MAP),
+        detailed_professional_occupation=pl.col("PCS_8").replace_strict(
+            DETAILED_PROFESSIONAL_OCCUPATION_MAP
+        ),
         has_driving_license=pl.col("PERMIS_B").replace_strict(DRIVING_LICENSE_MAP),
         has_public_transit_subscription=
             pl.col("NAVIGO").eq("Oui") |
@@ -117,7 +119,6 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         sample_weight_all=pl.col("POIDS_INDIV"),
         sample_weight_surveyed=pl.col("POIDS_INDIV"),
         is_surveyed=pl.lit(True),
-        professional_occupation=None # added because expected downstream
     )
 
     lf = lf.sort("original_person_id")

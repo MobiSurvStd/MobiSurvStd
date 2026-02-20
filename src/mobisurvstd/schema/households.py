@@ -33,6 +33,8 @@ HOUSEHOLD_SCHEMA = [
     ),
     # Sample weight of the household.
     Variable("sample_weight", pl.Float64, [AllDefinedOrAllNull(), NonNegative()]),
+    # Whether all the persons from the household are in the `persons` table.
+    Variable("complete_household", pl.Boolean),
     # Longitude of home coordinates.
     Variable("home_lng", pl.Float64),
     # Latitude of home coordinates.

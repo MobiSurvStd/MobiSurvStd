@@ -543,8 +543,10 @@ def validate_trips(data):
         data.trips = data.trips.with_columns(
             travel_time=pl.col("arrival_time") - pl.col("departure_time"),
             origin_activity_duration=pl.col("departure_time")
-            - pl.col("arrival_time").shift(1).over("person_id"),
-            destination_activity_duration=pl.col("departure_time").shift(-1).over("person_id")
+            - pl.col("arrival_time").shift(1).over("person_id", "trip_date"),
+            destination_activity_duration=pl.col("departure_time")
+            .shift(-1)
+            .over("person_id", "trip_date")
             - pl.col("arrival_time"),
         )
     # Guarantee that the `trip_date` is not later than the `interview_date`.

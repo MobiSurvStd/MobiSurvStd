@@ -67,16 +67,19 @@ class SurveyData:
             logger.warning("Output directory is not empty, some data might be erased")
         logger.debug("Saving households")
         self.households.write_parquet(output_directory / Path("households.parquet"))
-        logger.debug("Saving cars")
-        self.cars.write_parquet(output_directory / Path("cars.parquet"))
-        logger.debug("Saving motorcycles")
-        self.motorcycles.write_parquet(output_directory / Path("motorcycles.parquet"))
+        if self.cars:
+            logger.debug("Saving cars")
+            self.cars.write_parquet(output_directory / Path("cars.parquet"))
+        if self.motorcycles:
+            logger.debug("Saving motorcycles")
+            self.motorcycles.write_parquet(output_directory / Path("motorcycles.parquet"))
         logger.debug("Saving persons")
         self.persons.write_parquet(output_directory / Path("persons.parquet"))
         logger.debug("Saving trips")
         self.trips.write_parquet(output_directory / Path("trips.parquet"))
-        logger.debug("Saving legs")
-        self.legs.write_parquet(output_directory / Path("legs.parquet"))
+        if self.legs:
+            logger.debug("Saving legs")
+            self.legs.write_parquet(output_directory / Path("legs.parquet"))
         if self.special_locations is not None:
             logger.debug("Saving special locations")
             self.special_locations.to_parquet(

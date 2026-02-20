@@ -249,6 +249,7 @@ def count_nb_trips(persons: pl.LazyFrame, trips: pl.LazyFrame):
 
 def add_worked_during_surveyed_day(persons: pl.LazyFrame, trips: pl.LazyFrame):
     persons_cols = persons.collect_schema().names()
+    trips_cols = trips.collect_schema().names()
     # Fill null values of `traveled_during_surveyed_day` (when `is_surveyed` is True) according
     # to the existence of trips.
     if "traveled_during_surveyed_day" not in persons_cols:
@@ -261,7 +262,7 @@ def add_worked_during_surveyed_day(persons: pl.LazyFrame, trips: pl.LazyFrame):
             .then(pl.lit("no"))
         )
     )
-    if "worked_during_surveyed_day" not in persons_cols and "destination_purpose" in persons_cols:
+    if "worked_during_surveyed_day" not in persons_cols and "destination_purpose" in trips_cols:
         persons = persons.join(
             trips.group_by("person_id").agg(
                 has_work_activity=pl.col("destination_purpose")

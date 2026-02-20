@@ -2,7 +2,8 @@ from datetime import timedelta
 
 import polars as pl
 
-from mobisurvstd.common.trips import clean
+from mobisurvstd.common.trips import clean as clean_trips
+from mobisurvstd.common.legs import clean as clean_legs
 
 
 SCHEMA = {
@@ -50,24 +51,25 @@ PURPOSE_GROUP_MAP = {
     "TRAVAIL": "work", # Se rendre à son lieu de travail habituel
 }
 
-MODE_GROUP_MAP = {
-    "2RM": "motorcycle", # Deux-roues motorisé
+MODE_MAP = {
+    "2RM": "motorcycle:driver", # Deux-roues motorisé
     "AUTRE": "other", #	Autre mode (skateboard, roller, ...)
-    "AVION": "public_transit", # Avion
-    "BUS": "public_transit", # Bus
+    "AVION": "airplane", # Avion
+    "BUS": "public_transit:urban:bus", # Bus
     "MAP": "walking", #	Marche à pied
-    "METRO": "public_transit", # Métro
-    "RER/TRAIN": "public_transit", #	RER ou Train du réseau régional francilien
-    "TAD": "public_transit", # Transport à la demande
-    "TAXI/VTC": "public_transit", # Taxi ou Vtc
-    "TGV/INTERCITES/TER": "public_transit", # TGV ou Intercités ou Train express régional
-    "TRAM": "public_transit", # Tramway
-    "TROTTINETTE": "other", # Trottinette électrique
-    "VAE": "bicycle", # Vélo à assistance électrique
-    "VELO": "bicycle", # Vélo
-    "VPC": "car_driver", # Voiture particulière en tant que conducteur
-    "VPP": "car_passenger", # Voiture particulière en tant que passager
-    "VUL": "other", # Véhicule utilitaire léger
+    "METRO": "public_transit:urban:metro", # Métro
+    "RER/TRAIN": "public_transit:urban:rail", #	RER ou Train du réseau régional francilien
+    "RER/METRO": "public_transit:urban:rail", #	There is one entry "RER/METRO" that should be RER.
+    "TAD": "public_transit:urban:demand_responsive", # Transport à la demande
+    "TAXI/VTC": "taxi_or_VTC", # Taxi ou Vtc
+    "TGV/INTERCITES/TER": "public_transit:interurban:other_train", # TGV ou Intercités ou Train express régional
+    "TRAM": "public_transit:urban:tram", # Tramway
+    "TROTTINETTE": "personal_transporter:motorized", # Trottinette électrique
+    "VAE": "bicycle:driver:electric", # Vélo à assistance électrique
+    "VELO": "bicycle:driver:traditional", # Vélo
+    "VPC": "car:driver", # Voiture particulière en tant que conducteur
+    "VPP": "car:passenger", # Voiture particulière en tant que passager
+    "VUL": "truck:driver", # Véhicule utilitaire léger
 }
 
 WEEKDAY_MAP = {
@@ -87,9 +89,42 @@ def scan_trips(filename: str):
 def standardize_trips(
     filename: str,
     persons: pl.LazyFrame,
-    distances: pl.LazyFrame = None
+    distances: pl.LazyFrame | None = None
 ):
     lf = scan_trips(filename)
+
+    # Drop non-trips.
+    lf = lf.filter(pl.col("Num_depl").is_in(("PDD", "PDT")).not_())
+
+    # How can I say that?
+    # There are two guys whose id changes just for one trip.
+    # It looks like that:
+    # KEY                     ID
+    # 2_2001-mardi-44936-2    2_2001
+    # 2_2002-mercredi-44937-1 2_2002
+    # 2_2001-mercredi-44937-1 2_2001
+    #
+    # These 3 trips are for the same guy (2_2001) but the second trip takes the id of someone else
+    # (2_2002).
+    # Thanksfully, the trips are ordered so we can detect that when we have an `ID` value different
+    # from the previous and next value, while these previous and next values are equal.
+    lf = lf.with_columns(
+        old_ID=pl.col("ID"),
+        ID=pl.when(
+            pl.col("ID").shift(1) == pl.col("ID").shift(-1),
+            pl.col("ID") != pl.col("ID").shift(1)
+        ).then(pl.col("ID").shift(1))
+        .otherwise("ID")
+    )
+    # Now `ID` is correct but we need to fix `KEY`.
+    lf = lf.with_columns(
+        KEY=pl.when(pl.col("old_ID") != pl.col("ID"))
+        # `.str.replace` is not yet implemented with Expression but we can use `.str.strip_prefix`
+        # since ID is at the start of KEY.
+        #  .then(pl.col("KEY").str.replace(pl.col("old_ID"), pl.col("ID")))
+        .then(pl.col("ID") + pl.col("KEY").str.strip_prefix(pl.col("old_ID")))
+        .otherwise("KEY")
+    )
 
     lf = lf.with_columns(original_person_id=pl.col("ID")).join(
         persons.select("original_person_id", "person_id", "household_id"),
@@ -101,9 +136,7 @@ def standardize_trips(
     lf = lf.with_columns(
         sequence=pl.int_range(1, pl.len() + 1),
         original_trip_id=pl.col("KEY"),
-        origin_purpose=None, # added because requested downstream
         origin_purpose_group=pl.col("Motif_O").str.to_uppercase().replace_strict(PURPOSE_GROUP_MAP),
-        destination_purpose=None, # added because requested downstream
         destination_purpose_group=pl.col("Motif_D").str.to_uppercase().replace_strict(PURPOSE_GROUP_MAP),
         origin_insee=pl.when(pl.col("Code_INSEE_O").is_in(("ETRANGER", "HORS IDF"))).then(None).otherwise("Code_INSEE_O"),
         destination_insee=pl.when(pl.col("Code_INSEE_D").is_in(("ETRANGER", "HORS IDF"))).then(None).otherwise("Code_INSEE_D"),
@@ -111,15 +144,34 @@ def standardize_trips(
         arrival_time=pl.col("Heure_D").dt.hour().cast(pl.UInt16) * 60 + pl.col("Heure_D").dt.minute(),
         trip_date=pl.col("Date_EMG"),
         trip_weekday=pl.col("Jour_EMG").replace_strict(WEEKDAY_MAP),
-        main_mode_group=pl.col("Mode_Principal").str.to_uppercase().replace_strict(MODE_GROUP_MAP),
+        main_mode=pl.col("Mode_Principal").str.to_uppercase().replace_strict(MODE_MAP),
+        # Mode_1 is needed for the fix below.
+        Mode_1=pl.col("Mode_1").str.to_uppercase().str.strip_chars().replace_strict(MODE_MAP),
     )
 
-    lf = lf.join(
-        distances.select("original_trip_id", "trip_travel_distance_km"),
-        on="original_trip_id",
-        how="left",
-        coalesce=True,
+    # In 3 cases, `main_mode` is "walking" but `Mode_1` is something else and the other `Mode_*`
+    # variables are not defined.
+    # In this case, set `Mode_1` as the main mode.
+    lf = lf.with_columns(
+        main_mode=pl.when(
+            pl.col("main_mode").eq("walking"),
+            pl.col("Mode_1").ne("walking"),
+            pl.col("Mode_2").is_null(),
+            pl.col("Mode_3").is_null(),
+            pl.col("Mode_4").is_null(),
+            pl.col("Mode_5").is_null(),
+        )
+        .then("Mode_1")
+        .otherwise("main_mode")
     )
+
+    if distances is not None:
+        lf = lf.join(
+            distances.select("original_trip_id", "trip_travel_distance_km"),
+            on="original_trip_id",
+            how="left",
+            coalesce=True,
+        )
 
     lf = lf.with_columns(
         origin_insee=pl.when(pl.col("origin_insee").str.ends_with("000"))
@@ -132,7 +184,7 @@ def standardize_trips(
 
     lf = lf.sort(["person_id", "sequence"]).drop("sequence")
 
-    lf = clean(
+    lf = clean_trips(
         lf,
         2023,
         perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"]
@@ -160,3 +212,49 @@ def standardize_distances(filename: str):
     
     lf = lf.sort("original_trip_id")
     return lf
+
+def standardize_legs(filename: str, trips: pl.LazyFrame):
+    lf = scan_trips(filename)
+    # The `fill_null` is required for 8 trips with a main mode but no leg mode defined.
+    lf = lf.select(
+        "KEY",
+        pl.col("Mode_1").fill_null(pl.col("Mode_Principal")).alias("1"),
+        pl.col("Mode_2").alias("2"),
+        pl.col("Mode_3").alias("3"),
+        pl.col("Mode_4").alias("4"),
+        pl.col("Mode_5").alias("5"),
+    )
+    lf = lf.unpivot(index="KEY", variable_name="leg_index", value_name="mode")
+    lf = lf.with_columns(pl.col("leg_index").cast(pl.UInt8))
+    # Add household_id, person_id, and trip_id + main_mode (needed below).
+    lf = lf.with_columns(original_trip_id=pl.col("KEY")).join(
+        trips.select("original_trip_id", "household_id", "person_id", "trip_id", "main_mode"),
+        on="original_trip_id",
+        how="left",
+        coalesce=True,
+    )
+    # Drop legs with NULL mode (there is by default 5 legs by trip).
+    lf = lf.filter(pl.col("mode").is_not_null(), pl.col("mode").ne(""))
+    lf = lf.with_columns(
+        original_leg_id=pl.struct("KEY", "leg_index"),
+        # `strip_chars` is needed to remove an extra whitespace
+        mode=pl.col("mode").str.to_uppercase().str.strip_chars().replace_strict(MODE_MAP),
+    )
+    # For 3 trips, only one leg-mode is defined and it does not match the main trip-mode.
+    # In this case, my best guess is to replace the leg-mode by the trip-mode.
+    lf = lf.with_columns(
+        mode=pl.when(
+            pl.len().over("trip_id").eq(1),
+            pl.col("main_mode") != pl.col("mode"),
+            pl.col("main_mode") != "walking",
+        )
+        .then("main_mode")
+        .otherwise("mode")
+    )
+    lf = lf.sort("trip_id", "leg_index")
+    # Rebuild `leg_index` since some modes can be skip (e.g., "Modes_1" and "Modes_3" are defined
+    # but not "Modes_2").
+    lf = lf.with_columns(leg_index=pl.int_range(1, pl.len() + 1).over("trip_id"))
+    lf = clean_legs(lf)
+    return lf
+

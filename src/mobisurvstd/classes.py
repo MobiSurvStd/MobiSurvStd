@@ -195,16 +195,22 @@ class SurveyDataReader:
     def cars(self) -> pl.DataFrame:
         if self._cars is None:
             filename = os.path.join(self.directory, "cars.parquet")
-            logger.debug(f"Reading cars from `{filename}`")
-            self._cars = pl.read_parquet(filename)
+            if os.path.isfile(filename):
+                logger.debug(f"Reading cars from `{filename}`")
+                self._cars = pl.read_parquet(filename)
+            else:
+                self._cars = pl.DataFrame()
         return self._cars
 
     @property
     def motorcycles(self) -> pl.DataFrame:
         if self._motorcycles is None:
             filename = os.path.join(self.directory, "motorcycles.parquet")
-            logger.debug(f"Reading motorcycles from `{filename}`")
-            self._motorcycles = pl.read_parquet(filename)
+            if os.path.isfile(filename):
+                logger.debug(f"Reading motorcycles from `{filename}`")
+                self._motorcycles = pl.read_parquet(filename)
+            else:
+                self._motorcycles = pl.DataFrame()
         return self._motorcycles
 
     @property
@@ -326,8 +332,6 @@ def is_valid_mobisurvstd_dir(directory: str) -> bool:
         "persons.parquet",
         "trips.parquet",
         "legs.parquet",
-        "cars.parquet",
-        "motorcycles.parquet",
     ):
         if not os.path.isfile(os.path.join(directory, name)):
             return False

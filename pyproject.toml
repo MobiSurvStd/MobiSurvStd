@@ -19,13 +19,10 @@ classifiers = [
 ]
 keywords = ["mobility survey", "polars", "data format"]
 dependencies = [
-    "Cartopy>=0.24.1",
     "fastexcel>=0.14.0",
-    "fsspec>=2025.9.0",
     "geopandas>=1.0.1",
     "humanize>=4.13.0",
     "loguru>=0.7.3",
-    "matplotlib>=3.10.1",
     "numpy>=2.2.4",
     "pandas>=2.2.3",
     "platformdirs>=4.3.8",
@@ -33,15 +30,17 @@ dependencies = [
     "py7zr>=0.20.8",
     "pyarrow>=19.0.1",
     "requests>=2.32.3",
-    "seaborn>=0.13.2",
     "typer>=0.16.0",
 ]
 requires-python = ">=3.10"
 
 [dependency-groups]
 dev = [
+    "Cartopy>=0.24.1",
     "ipython>=8.37.0",
+    "matplotlib>=3.10.1",
     "pytest>=9.0.2",
+    "seaborn>=0.13.2",
     "ty>=0.0.15",
 ]
 

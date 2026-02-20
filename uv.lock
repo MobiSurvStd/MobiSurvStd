@@ -719,15 +719,6 @@ wheels = [
 ]
 
 [[package]]
-name = "fsspec"
-version = "2026.1.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d5/7d/5df2650c57d47c57232af5ef4b4fdbff182070421e405e0d62c6cdbfaa87/fsspec-2026.1.0.tar.gz", hash = "sha256:e987cb0496a0d81bba3a9d1cee62922fb395e7d4c3b575e57f547953334fe07b", size = 310496, upload-time = "2026-01-09T15:21:35.562Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/01/c9/97cc5aae1648dcb851958a3ddf73ccd7dbe5650d95203ecb4d7720b4cdbf/fsspec-2026.1.0-py3-none-any.whl", hash = "sha256:cb76aa913c2285a3b49bdd5fc55b1d7c708d7208126b60f2eb8194fe1b4cbdcc", size = 201838, upload-time = "2026-01-09T15:21:34.041Z" },
-]
-
-[[package]]
 name = "geopandas"
 version = "1.1.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1158,13 +1149,10 @@ name = "mobisurvstd"
 version = "1.0.2"
 source = { editable = "." }
 dependencies = [
-    { name = "cartopy" },
     { name = "fastexcel" },
-    { name = "fsspec" },
     { name = "geopandas" },
     { name = "humanize" },
     { name = "loguru" },
-    { name = "matplotlib" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -1174,27 +1162,26 @@ dependencies = [
     { name = "py7zr" },
     { name = "pyarrow" },
     { name = "requests" },
-    { name = "seaborn" },
     { name = "typer" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "cartopy" },
     { name = "ipython", version = "8.38.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "ipython", version = "9.10.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "matplotlib" },
     { name = "pytest" },
+    { name = "seaborn" },
     { name = "ty" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "cartopy", specifier = ">=0.24.1" },
     { name = "fastexcel", specifier = ">=0.14.0" },
-    { name = "fsspec", specifier = ">=2025.9.0" },
     { name = "geopandas", specifier = ">=1.0.1" },
     { name = "humanize", specifier = ">=4.13.0" },
     { name = "loguru", specifier = ">=0.7.3" },
-    { name = "matplotlib", specifier = ">=3.10.1" },
     { name = "numpy", specifier = ">=2.2.4" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "platformdirs", specifier = ">=4.3.8" },
@@ -1202,14 +1189,16 @@ requires-dist = [
     { name = "py7zr", specifier = ">=0.20.8" },
     { name = "pyarrow", specifier = ">=19.0.1" },
     { name = "requests", specifier = ">=2.32.3" },
-    { name = "seaborn", specifier = ">=0.13.2" },
     { name = "typer", specifier = ">=0.16.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "cartopy", specifier = ">=0.24.1" },
     { name = "ipython", specifier = ">=8.37.0" },
+    { name = "matplotlib", specifier = ">=3.10.1" },
     { name = "pytest", specifier = ">=9.0.2" },
+    { name = "seaborn", specifier = ">=0.13.2" },
     { name = "ty", specifier = ">=0.0.15" },
 ]
 

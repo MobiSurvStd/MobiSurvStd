@@ -39,29 +39,11 @@ SCHEMA = {
     "KVKM1AN2RT": pl.UInt8,  # Nb de km parcourus 12 derniers mois (par tranche)
 }
 
-TYPE_MAP = {
-    1: "motorbike",
-    2: "scooter",
-    3: "moped",
-}
+TYPE_MAP = {1: "motorbike", 2: "scooter", 3: "moped"}
 
-AN_MILEAGE_LB_MAP = {
-    1: 0,
-    2: 300,
-    3: 1_000,
-    4: 2_000,
-    5: 3_000,
-    6: 6_000,
-}
+AN_MILEAGE_LB_MAP = {1: 0, 2: 300, 3: 1_000, 4: 2_000, 5: 3_000, 6: 6_000}
 
-AN_MILEAGE_UB_MAP = {
-    1: 300,
-    2: 1_000,
-    3: 2_000,
-    4: 3_000,
-    5: 6_000,
-    6: None,
-}
+AN_MILEAGE_UB_MAP = {1: 300, 2: 1_000, 3: 2_000, 4: 3_000, 5: 6_000, 6: None}
 
 PARKING_LOCATION_MAP = {
     1: "garage",  # Dans un parking couvert, un garage ou un box
@@ -88,11 +70,7 @@ PARKING_TYPE_MAP = {
 
 def scan_motorcycles(filename: str):
     lf = pl.scan_csv(
-        filename,
-        separator=";",
-        encoding="utf8-lossy",
-        schema_overrides=SCHEMA,
-        null_values=".",
+        filename, separator=";", encoding="utf8-lossy", schema_overrides=SCHEMA, null_values="."
     ).sort("IDENT_MEN", "IDENT_NUMVEH")
     return lf
 

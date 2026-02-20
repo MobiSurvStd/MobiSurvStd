@@ -43,10 +43,7 @@ SCHEMA = {
     "POIDSM": pl.Float64,  # Poids du ménage
 }
 
-SURVEY_METHOD_MAP = {
-    "CAPI": "face_to_face",
-    "CATI": "phone",
-}
+SURVEY_METHOD_MAP = {"CAPI": "face_to_face", "CATI": "phone"}
 
 HOUSING_TYPE_MAP = {
     1: "house",  # Une maison
@@ -156,7 +153,7 @@ def standardize_households(filename: str):
             pl.when(pl.col("OCCUPLOG_txt").str.contains("(?i)gratuit|gracieux|fonction"))
             .then(pl.lit("rent_free"))
             .otherwise(pl.col("housing_status"))
-        ),
+        )
     )
     lf = lf.sort("original_household_id")
     lf = clean(lf, year=2020)

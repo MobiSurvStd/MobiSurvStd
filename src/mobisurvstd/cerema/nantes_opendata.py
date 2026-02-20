@@ -192,9 +192,7 @@ class OpenDataReader(CeremaStandardizer):
 
 
 def scan_fwf(
-    f: str | io.BytesIO,
-    format: list[tuple[int, int, str]],
-    schema: dict[str, DataTypeClass],
+    f: str | io.BytesIO, format: list[tuple[int, int, str]], schema: dict[str, DataTypeClass]
 ):
     # Decrease `start` by 1 because pandas starts counting at 0 but the survey document starts
     # counting at 1.

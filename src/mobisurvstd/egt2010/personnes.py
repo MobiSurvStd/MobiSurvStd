@@ -158,11 +158,7 @@ STUDENT_CATEGORY_MAP = {
     98: "supérieur:BAC+6&+",  # Bac+6 ou plus
 }
 
-DRIVING_LICENSE_MAP = {
-    1: "yes",
-    2: "no",
-    3: "in_progress",
-}
+DRIVING_LICENSE_MAP = {1: "yes", 2: "no", 3: "in_progress"}
 
 TRAVELED_MAP = {
     1: "yes",  # Oui

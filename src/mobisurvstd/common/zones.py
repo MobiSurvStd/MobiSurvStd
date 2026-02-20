@@ -4,13 +4,7 @@ import polars as pl
 
 def get_coords(gdf: gpd.GeoDataFrame, name: str) -> pl.DataFrame:
     centroids = gdf.geometry.centroid.to_crs("EPSG:4326")
-    df = pl.DataFrame(
-        {
-            f"{name}_id": gdf[f"{name}_id"],
-            "lng": centroids.x,
-            "lat": centroids.y,
-        }
-    )
+    df = pl.DataFrame({f"{name}_id": gdf[f"{name}_id"], "lng": centroids.x, "lat": centroids.y})
     return df
 
 

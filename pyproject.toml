@@ -49,3 +49,8 @@ Homepage = "https://github.com/MobiSurvStd/MobiSurvStd"
 Documentation = "https://mobisurvstd.github.io/MobiSurvStd/index.html"
 Repository = "https://github.com/MobiSurvStd/MobiSurvStd"
 Issues = "https://github.com/MobiSurvStd/MobiSurvStd/issues"
+
+[tool.ruff]
+line-length = 100
+[tool.ruff.format]
+skip-magic-trailing-comma = true

@@ -87,8 +87,7 @@ def households_filename(source: str | ZipFile):
 
 def persons_filename(source: str | ZipFile) -> tuple[str, str, str] | None:
     return read_files(
-        source,
-        ("tcm_ind_public_V3.csv", "tcm_ind_kish_public_V3.csv", "k_individu_public_V3.csv"),
+        source, ("tcm_ind_public_V3.csv", "tcm_ind_kish_public_V3.csv", "k_individu_public_V3.csv")
     )
 
 

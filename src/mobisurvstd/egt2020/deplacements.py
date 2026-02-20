@@ -120,11 +120,7 @@ def scan_trips(filename: str):
     # We use the inefficient `read_csv().lazy()` because we need to use `encoding="latin1"`, which
     # does not exist with `scan_csv()`.
     lf = pl.read_csv(
-        filename,
-        separator=";",
-        encoding="latin1",
-        schema_overrides=SCHEMA,
-        null_values=["-1"],
+        filename, separator=";", encoding="latin1", schema_overrides=SCHEMA, null_values=["-1"]
     ).lazy()
     return lf
 
@@ -183,7 +179,7 @@ def standardize_trips(filename: str, households: pl.LazyFrame, persons: pl.LazyF
         # Read the `origin_shop_type` from the `destination_shop_type` of the previous trip.
         origin_shop_type=pl.when(pl.col("origin_purpose").str.starts_with("shopping:")).then(
             pl.col("destination_shop_type").shift(1).over("person_id")
-        ),
+        )
     )
     lf = lf.sort("original_trip_id")
     # For EGT2020, we use the AAV and density data from 2020 (even if some interviews are from 2018

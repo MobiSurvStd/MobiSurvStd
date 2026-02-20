@@ -134,7 +134,6 @@ def standardize_trips(
     )
 
     lf = lf.with_columns(
-        sequence=pl.int_range(1, pl.len() + 1),
         original_trip_id=pl.col("KEY"),
         origin_purpose_group=pl.col("Motif_O").str.to_uppercase().replace_strict(PURPOSE_GROUP_MAP),
         destination_purpose_group=pl.col("Motif_D").str.to_uppercase().replace_strict(PURPOSE_GROUP_MAP),
@@ -182,7 +181,36 @@ def standardize_trips(
         .otherwise("destination_insee"),
     )
 
-    lf = lf.sort(["person_id", "sequence"]).drop("sequence")
+    # we order by departure time since some trips seem to have been added to the end of the day
+    # (from data correction?)
+    lf = lf.sort(["person_id", "trip_date", "departure_time"])
+
+    # generate an offset for the times
+    lf = lf.with_columns(
+        offset=pl.col("trip_date").ne(pl.col("trip_date").shift(1)).cum_sum().over("person_id").fill_null(0).cast(pl.UInt8)
+    )
+
+    lf = lf.with_columns(
+        departure_time=pl.col("departure_time").add(pl.col("offset").mul(24 * 60)),
+        arrival_time=pl.col("arrival_time").add(pl.col("offset").mul(24 * 60)),
+        sequence=pl.int_range(1, pl.len() + 1),
+    )
+
+    # fix the case where we are departing at 23:40 on day 1 and arrive at 00:20 on day 2
+    lf = lf.with_columns(
+        arrival_time=pl.when(
+            (pl.col("arrival_time") < pl.col("departure_time")) &
+            (
+                (pl.col("trip_date").shift(-1) == pl.col("trip_date") + timedelta(days = 1)) |
+                pl.col("sequence").eq(pl.col("sequence").last().over("person_id"))
+            )
+        ).then(pl.col("arrival_time") + 24 * 60).otherwise("arrival_time").over("person_id")
+    )
+
+    # filter out days without trace (PDT), without trip (PDD), or outside IDF (HORS IDF)
+    lf = lf.filter(pl.col("Num_depl").is_in(["PDT", "PDD", "HORS IDF"]).not_())
+
+    lf = lf.drop("sequence")
 
     lf = clean_trips(
         lf,

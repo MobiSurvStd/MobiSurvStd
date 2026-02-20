@@ -122,7 +122,7 @@ def standardize_cars(filename: str, households: pl.LazyFrame):
             )
         )
         .then(pl.lit("personal"))
-        .otherwise(pl.col("ownership")),
+        .otherwise(pl.col("ownership"))
     )
     lf = lf.sort("original_car_id")
     lf = clean(lf)

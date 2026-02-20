@@ -115,9 +115,7 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
         )  # ty: ignore[invalid-assignment]
         self.households = self.households.join(
             household_dates.lazy(), on="household_id", how="left", coalesce=True
-        ).with_columns(
-            trips_weekday=pl.when("is_valid_weekday").then(pl.col("trips_weekday")),
-        )
+        ).with_columns(trips_weekday=pl.when("is_valid_weekday").then(pl.col("trips_weekday")))
 
     def fix_main_mode(self):
         # Special case for Douai 2012: Some trips have main mode set to "car_driver" but the legs

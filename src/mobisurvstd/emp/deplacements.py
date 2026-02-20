@@ -384,13 +384,9 @@ def standardize_legs(filename: str, trips: pl.LazyFrame):
 
 
 def time_col_to_seconds(col: str):
+    parts = pl.col(col).str.splitn(":", 3)
     return (
-        pl.col(col)
-        .str.splitn(":", 3)
-        .struct.with_fields(
-            seconds=pl.field("field_0").cast(pl.UInt32) * 3600
-            + pl.field("field_1").cast(pl.UInt32) * 60
-            + pl.field("field_2").cast(pl.UInt32)
-        )
-        .struct.field("seconds")
+        parts.struct.field("field_0").cast(pl.UInt32) * 3600
+        + parts.struct.field("field_1").cast(pl.UInt32) * 60
+        + parts.struct.field("field_2").cast(pl.UInt32)
     )

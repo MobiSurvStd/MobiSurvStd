@@ -4,12 +4,7 @@ import polars as pl
 from loguru import logger
 from polars.datatypes import DataTypeClass
 
-from .guarantees import (
-    AutoFixed,
-    Guarantee,
-    Invalid,
-    Valid,
-)
+from .guarantees import AutoFixed, Guarantee, Invalid, Valid
 
 
 class Variable:

@@ -1,15 +1,7 @@
 import polars as pl
 
 from .common import CURRENT_YEAR, PARKING_LOCATION_ENUM, PARKING_TYPE_ENUM, Variable
-from .guarantees import (
-    Bounded,
-    Defined,
-    Indexed,
-    LargerThan,
-    NonDecreasing,
-    Null,
-    SmallerThan,
-)
+from .guarantees import Bounded, Defined, Indexed, LargerThan, NonDecreasing, Null, SmallerThan
 
 MOTORCYCLE_SCHEMA = [
     # Identifier of the motorcycle.

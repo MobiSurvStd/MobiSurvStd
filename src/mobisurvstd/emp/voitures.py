@@ -106,43 +106,13 @@ FUEL_TYPE_GROUP_MAP = {
     9: None,
 }
 
-TOT_MILEAGE_LB_MAP = {
-    1: 0,
-    2: 25_000,
-    3: 50_000,
-    4: 75_000,
-    5: 100_000,
-    6: 150_000,
-    7: 200_000,
-}
+TOT_MILEAGE_LB_MAP = {1: 0, 2: 25_000, 3: 50_000, 4: 75_000, 5: 100_000, 6: 150_000, 7: 200_000}
 
-TOT_MILEAGE_UB_MAP = {
-    1: 25_000,
-    2: 50_000,
-    3: 75_000,
-    4: 100_000,
-    5: 150_000,
-    6: 200_000,
-    7: None,
-}
+TOT_MILEAGE_UB_MAP = {1: 25_000, 2: 50_000, 3: 75_000, 4: 100_000, 5: 150_000, 6: 200_000, 7: None}
 
-AN_MILEAGE_LB_MAP = {
-    1: 0,
-    2: 4_000,
-    3: 8_000,
-    4: 10_000,
-    5: 15_000,
-    6: 20_000,
-}
+AN_MILEAGE_LB_MAP = {1: 0, 2: 4_000, 3: 8_000, 4: 10_000, 5: 15_000, 6: 20_000}
 
-AN_MILEAGE_UB_MAP = {
-    1: 4_000,
-    2: 8_000,
-    3: 10_000,
-    4: 15_000,
-    5: 20_000,
-    6: None,
-}
+AN_MILEAGE_UB_MAP = {1: 4_000, 2: 8_000, 3: 10_000, 4: 15_000, 5: 20_000, 6: None}
 
 PARKING_LOCATION_MAP = {
     1: "garage",  # Dans un parking couvert, un garage ou un box
@@ -167,11 +137,7 @@ PARKING_TYPE_MAP = {
 
 def scan_cars(filename: str):
     lf = pl.scan_csv(
-        filename,
-        separator=";",
-        encoding="utf8-lossy",
-        schema_overrides=SCHEMA,
-        null_values=".",
+        filename, separator=";", encoding="utf8-lossy", schema_overrides=SCHEMA, null_values="."
     ).sort("IDENT_MEN", "IDENT_NUMVEH")
     return lf
 

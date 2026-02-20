@@ -342,7 +342,7 @@ class LegsReader(CeremaReader):
             .then(pl.col("nb_majors_in_vehicle") + 1)
             .otherwise("nb_majors_in_vehicle"),
             nb_minors_in_vehicle=pl.when(
-                pl.col("is_major").not_() & pl.col("mode").str.contains("driver"),
+                pl.col("is_major").not_() & pl.col("mode").str.contains("driver")
             )
             .then(pl.col("nb_minors_in_vehicle") + 1)
             .otherwise("nb_minors_in_vehicle"),

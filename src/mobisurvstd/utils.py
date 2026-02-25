@@ -2,7 +2,6 @@ import csv
 import io
 import os
 import re
-import shutil
 import tempfile
 from contextlib import contextmanager
 from zipfile import BadZipFile, ZipFile, ZipInfo
@@ -10,6 +9,7 @@ from zipfile import BadZipFile, ZipFile, ZipInfo
 import polars as pl
 import requests
 from loguru import logger
+from tqdm import tqdm
 
 
 class MissingFileError(str):
@@ -158,8 +158,16 @@ def tmp_download(url):
         response = requests.get(url, stream=True)
         response.raise_for_status()
         logger.debug(f"Saving returned data to file `{tmp_file.name}`")
-        with open(tmp_file.name, "wb") as f:
-            shutil.copyfileobj(response.raw, f)
+        with tqdm(
+            total=int(response.headers.get("content-length", 0)),
+            desc="Download",
+            unit="b",
+            unit_scale=True,
+        ) as progress:
+            with open(tmp_file.name, "wb") as f:
+                for data in response.iter_content(chunk_size=1024):
+                    size = f.write(data)
+                    progress.update(size)
         try:
             yield tmp_file.name
         finally:

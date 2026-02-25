@@ -261,11 +261,7 @@ MOTORCYCLE_CM3_UB_MAP = {
 
 def scan_households(filename: str):
     separator = detect_csv_delimiter(filename)
-    lf = pl.scan_csv(
-        filename,
-        separator=separator,
-        schema_overrides=SCHEMA,
-    )
+    lf = pl.scan_csv(filename, separator=separator, schema_overrides=SCHEMA)
     return lf
 
 

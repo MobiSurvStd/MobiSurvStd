@@ -58,20 +58,12 @@ PARKING_LOCATION_MAP = {
     9: "other",  # Autre
 }
 
-PARKING_TYPE_MAP = {
-    0: "free",
-    1: "paid",
-    2: "free",
-}
+PARKING_TYPE_MAP = {0: "free", 1: "paid", 2: "free"}
 
 
 def scan_motorcycles(filename: str):
     lf = pl.scan_csv(
-        filename,
-        separator=";",
-        encoding="utf8-lossy",
-        schema_overrides=SCHEMA,
-        null_values=["-1"],
+        filename, separator=";", encoding="utf8-lossy", schema_overrides=SCHEMA, null_values=["-1"]
     )
     return lf
 

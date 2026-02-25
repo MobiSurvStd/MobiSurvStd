@@ -16,6 +16,9 @@ format, feel free to <a href="https://github.com/MobiSurvStd/MobiSurvStd/issues"
 GitHub</a>.
 </div>
 
+All surveys can be processed *without spatial / zonal data* when running with the `--skip-spatial` flag.
+
+
 ## Enquête mobilité des personnes 2019 (EMP)
 
 Code: `emp2019`

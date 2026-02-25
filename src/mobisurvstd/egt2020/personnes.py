@@ -223,11 +223,7 @@ STUDENT_CATEGORY_MAP = {
     98: "supérieur:BAC+6&+",  # Bac+6 ou plus
 }
 
-DRIVING_LICENSE_MAP = {
-    0: "no",
-    1: "yes",
-    2: "in_progress",
-}
+DRIVING_LICENSE_MAP = {0: "no", 1: "yes", 2: "in_progress"}
 
 CAR_SHARING_MAP = {
     # 0 is used instead of -1?

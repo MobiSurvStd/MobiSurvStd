@@ -33,10 +33,7 @@ df = df.with_columns(
 )
 
 df = df.filter("valid_sequence", pl.col("trip_id") <= pl.col("work_trip_id"))
-df = df.filter(
-    pl.col("nb_persons_in_vehicle").is_not_null(),
-    pl.col("mode_group").eq("car_driver"),
-)
+df = df.filter(pl.col("nb_persons_in_vehicle").is_not_null(), pl.col("mode_group").eq("car_driver"))
 
 df = df.filter(pl.col("leg_euclidean_distance_km").is_null().mean().over("survey_name") < 0.1)
 

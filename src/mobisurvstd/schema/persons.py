@@ -63,15 +63,7 @@ IS_NOT_WORKER_EXPR = (
     & pl.col("detailed_professional_occupation").ne("student:apprenticeship")
 )
 
-AGE_CLASS_TO_CODE = {
-    "17-": 1,
-    "18-24": 2,
-    "25-34": 3,
-    "35-49": 4,
-    "50-64": 5,
-    "65-74": 6,
-    "75+": 7,
-}
+AGE_CLASS_TO_CODE = {"17-": 1, "18-24": 2, "25-34": 3, "35-49": 4, "50-64": 5, "65-74": 6, "75+": 7}
 
 
 PCS_CODES = {
@@ -449,11 +441,7 @@ PERSON_SCHEMA = [
         ],
     ),
     # Whether the person work only at home.
-    Variable(
-        "work_only_at_home",
-        pl.Boolean,
-        [Null(when=IS_NOT_WORKER_EXPR)],
-    ),
+    Variable("work_only_at_home", pl.Boolean, [Null(when=IS_NOT_WORKER_EXPR)]),
     # Whether the person has a unique, fixed workplace location.
     Variable(
         "workplace_singularity",
@@ -467,46 +455,31 @@ PERSON_SCHEMA = [
     Variable(
         "work_lng",
         pl.Float64,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # Latitude of usual workplace.
     Variable(
         "work_lat",
         pl.Float64,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # Special location of the usual work location of the person.
     Variable(
         "work_special_location",
         pl.String,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # Detailed zone of the usual work location of the person.
     Variable(
         "work_detailed_zone",
         pl.String,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # Draw zone of the usual work location.
     Variable(
         "work_draw_zone",
         pl.String,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # INSEE code of the municipality where the usual work location is.
     Variable(
@@ -523,10 +496,7 @@ PERSON_SCHEMA = [
     Variable(
         "work_insee_name",
         pl.String,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # Département code of the usual work location.
     Variable(
@@ -542,46 +512,31 @@ PERSON_SCHEMA = [
     Variable(
         "work_dep_name",
         pl.String,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # NUTS 2 code of the usual work location.
     Variable(
         "work_nuts2",
         pl.String,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # NUTS 2 name of the usual work location.
     Variable(
         "work_nuts2_name",
         pl.String,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # NUTS 1 code of the usual work location.
     Variable(
         "work_nuts1",
         pl.String,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # NUTS 1 name of the usual work location.
     Variable(
         "work_nuts1_name",
         pl.String,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # Euclidean distance between the person's home location and usual work location.
     Variable(
@@ -597,37 +552,25 @@ PERSON_SCHEMA = [
     Variable(
         "has_car_for_work_commute",
         COMMUTE_CAR_ENUM,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # Frequency of telework for the person.
     Variable(
         "telework",
         pl.Enum(["yes:weekly", "yes:monthly", "yes:occasionally", "no"]),
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # Whether the person has access to a car parking spot at work location.
     Variable(
         "work_car_parking",
         CAR_PARKING_ENUM,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # Whether the person has access to a bicycle parking spot at work location.
     Variable(
         "work_bicycle_parking",
         BICYCLE_PARKING_ENUM,
-        [
-            Null(when=IS_NOT_WORKER_EXPR),
-            Null(when=pl.col("work_only_at_home").eq(True)),
-        ],
+        [Null(when=IS_NOT_WORKER_EXPR), Null(when=pl.col("work_only_at_home").eq(True))],
     ),
     # Category indicating the detailed current education level for students.
     Variable(

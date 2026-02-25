@@ -365,10 +365,7 @@ REFERENCE_PERSON_LINK_MAP = {
     90: "other:non_relative",
 }
 
-DRIVING_LICENSE_MAP = {
-    1: "yes",
-    2: "no",
-}
+DRIVING_LICENSE_MAP = {1: "yes", 2: "no"}
 
 EDUCATION_LEVEL_MAP = {
     10: "higher:at_least_bac+3",

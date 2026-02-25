@@ -92,10 +92,7 @@ SCHEMA = {
     "COE0": pl.Float64,  # COEFFICIENT DE REDRESSEMENT MENAGE
 }
 
-SURVEY_METHOD_MAP = {
-    1: "face_to_face",
-    2: "phone",
-}
+SURVEY_METHOD_MAP = {1: "face_to_face", 2: "phone"}
 
 HOUSING_TYPE_MAP = {
     1: "house",  # Individuel isolé
@@ -195,37 +192,15 @@ MOTORCYCLE_FUEL_TYPE_MAP = {
     90: "other",
 }
 
-MOTORCYCLE_SIZE_LOWERBOUND_MAP = {
-    1: 0,
-    2: 50,
-    3: 125,
-    4: 250,
-    5: 750,
-    9: 125,
-}
+MOTORCYCLE_SIZE_LOWERBOUND_MAP = {1: 0, 2: 50, 3: 125, 4: 250, 5: 750, 9: 125}
 
-MOTORCYCLE_SIZE_UPPERBOUND_MAP = {
-    1: 50,
-    2: 125,
-    3: 250,
-    4: 750,
-}
+MOTORCYCLE_SIZE_UPPERBOUND_MAP = {1: 50, 2: 125, 3: 250, 4: 750}
 
-MOTORCYCLE_KW_LOWERBOUND_MAP = {
-    6: 0,
-    7: 4,
-    8: 11,
-}
+MOTORCYCLE_KW_LOWERBOUND_MAP = {6: 0, 7: 4, 8: 11}
 
-MOTORCYCLE_KW_UPPERBOUND_MAP = {
-    6: 4,
-    7: 11,
-}
+MOTORCYCLE_KW_UPPERBOUND_MAP = {6: 4, 7: 11}
 
-MOTORCYCLE_THERMIC_ENGINE_TYPE_MAP = {
-    1: "two_stroke",
-    2: "four_stroke",
-}
+MOTORCYCLE_THERMIC_ENGINE_TYPE_MAP = {1: "two_stroke", 2: "four_stroke"}
 
 
 def scan_households_impl(source: str | io.BytesIO):

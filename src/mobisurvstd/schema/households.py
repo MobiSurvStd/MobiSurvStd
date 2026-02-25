@@ -88,9 +88,7 @@ HOUSEHOLD_SCHEMA = [
     Variable("income_lower_bound", pl.UInt16),
     # Upper bound for the net income of the household, in euros.
     Variable(
-        "income_upper_bound",
-        pl.UInt16,
-        [LargerThan(pl.col("income_lower_bound"), strict=False)],
+        "income_upper_bound", pl.UInt16, [LargerThan(pl.col("income_lower_bound"), strict=False)]
     ),
     # Type of the housing the household is living in.
     Variable("housing_type", pl.Enum(["house", "apartment", "other"])),

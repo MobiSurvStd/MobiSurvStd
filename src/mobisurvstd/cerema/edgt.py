@@ -41,9 +41,7 @@ class EDGTReader(CeremaStandardizer):
         else:
             return [
                 find_file_path(
-                    self.source,
-                    ".*(_zf_gt|zinterne_gen_.*)[.](tab|shp|mif)",
-                    subdir=subdir,
+                    self.source, ".*(_zf_gt|zinterne_gen_.*)[.](tab|shp|mif)", subdir=subdir
                 )
             ]
 

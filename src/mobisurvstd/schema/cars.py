@@ -1,15 +1,7 @@
 import polars as pl
 
 from .common import CURRENT_YEAR, PARKING_LOCATION_ENUM, PARKING_TYPE_ENUM, Variable
-from .guarantees import (
-    Bounded,
-    Defined,
-    EqualTo,
-    Indexed,
-    LargerThan,
-    NonDecreasing,
-    SmallerThan,
-)
+from .guarantees import Bounded, Defined, EqualTo, Indexed, LargerThan, NonDecreasing, SmallerThan
 
 CAR_SCHEMA = [
     # Identifier of the car.
@@ -47,11 +39,7 @@ CAR_SCHEMA = [
     Variable(
         "fuel_type_group",
         pl.Enum(["thermic", "electric", "hybrid", "other"]),
-        [
-            EqualTo(
-                pl.col("fuel_type").cast(pl.String).str.extract(r"(\w+):?"), '"fuel_type" group'
-            ),
-        ],
+        [EqualTo(pl.col("fuel_type").cast(pl.String).str.extract(r"(\w+):?"), '"fuel_type" group')],
     ),
     # Year the car was first used.
     Variable("year", pl.UInt16, [Bounded(1900, CURRENT_YEAR)]),

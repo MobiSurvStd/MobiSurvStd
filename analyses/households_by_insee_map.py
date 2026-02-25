@@ -26,12 +26,7 @@ df = df.filter(pl.col("home_insee").str.slice(0, 2).is_in(("97", "98", "99")).no
 
 # Create categories.
 bins = [10, 100, 1000]
-labels = [
-    "[1, 10)",
-    "[10, 100)",
-    "[100, 1000)",
-    "[1000, +∞)",
-]
+labels = ["[1, 10)", "[10, 100)", "[100, 1000)", "[1000, +∞)"]
 df = df.with_columns(count_bin=pl.col("count").cut(bins, labels=labels))
 
 # Load INSEE geometries and add them to the DataFrame.

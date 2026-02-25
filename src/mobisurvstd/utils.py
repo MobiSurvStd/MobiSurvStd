@@ -2,7 +2,6 @@ import csv
 import io
 import os
 import re
-import shutil
 import tempfile
 from contextlib import contextmanager
 from zipfile import BadZipFile, ZipFile, ZipInfo
@@ -159,7 +158,12 @@ def tmp_download(url):
         response = requests.get(url, stream=True)
         response.raise_for_status()
         logger.debug(f"Saving returned data to file `{tmp_file.name}`")
-        with tqdm(total=int(response.headers.get('content-length', 0)), desc="Download") as progress:
+        with tqdm(
+            total=int(response.headers.get("content-length", 0)),
+            desc="Download",
+            unit="b",
+            unit_scale=True,
+        ) as progress:
             with open(tmp_file.name, "wb") as f:
                 for data in response.iter_content(chunk_size=1024):
                     size = f.write(data)

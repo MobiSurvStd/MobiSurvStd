@@ -34,6 +34,7 @@ dependencies = [
     "pyarrow >= 19.0.1",
     "requests >= 2.32.3",
     "seaborn>=0.13.2",
+    "tqdm>=4.67.3",
     "typer >= 0.16.0",
 ]
 requires-python = ">=3.10"

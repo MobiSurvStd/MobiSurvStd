@@ -284,6 +284,7 @@ def standardize_households(filename: str, detailed_zones: pl.DataFrame | None):
     lf = lf.with_columns(
         original_household_id=pl.struct("NQUEST"),
         survey_method=pl.lit("face_to_face"),
+        complete_household=True,
         income_lower_bound=pl.col("REVENU").replace_strict(REVENU_LB_MAP),
         income_upper_bound=pl.col("REVENU").replace_strict(REVENU_UB_MAP),
         housing_type=pl.col("TYPELOG").replace_strict(HOUSING_TYPE_MAP),

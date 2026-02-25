@@ -167,6 +167,7 @@ Currently, MobiSurvStd supports the following survey types:
 
 - `emp2019`
 - `emc2`
+- `emg2023` (thanks to @sebhorl)
 - `egt2020`
 - `egt2010`
 - `edgt` (including the [open-data version of Nantes 2015](https://www.data.gouv.fr/datasets/enquete-deplacements-2015-en-loire-atlantique))
@@ -175,7 +176,7 @@ Currently, MobiSurvStd supports the following survey types:
 
 See [Survey Types](https://mobisurvstd.github.io/MobiSurvStd/surveys.html) for more.
 
-Other survey types that are planned to be integrated are: `entd`, `emg`.
+Other survey types that are planned to be integrated are: `entd`.
 If you know another survey format that could be integrated, feel free to open an issue on GitHub.
 
 MobiSurvStd covers only French mobility survey formats.

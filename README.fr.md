@@ -130,13 +130,14 @@ Actuellement :
 
 * `emp2019`
 * `emc2`
+* `emg2023` (merci à @sebhoerl)
 * `egt2020`
 * `egt2010`
 * `edgt` (y compris [la version open-data de Nantes 2015](https://www.data.gouv.fr/datasets/enquete-deplacements-2015-en-loire-atlantique))
 * `edvm`
 * `emd`
 
-À venir : `entd`, `emg`
+À venir : `entd`
 
 📬 Vous connaissez un autre format ? Ouvrez un ticket sur GitHub.
 

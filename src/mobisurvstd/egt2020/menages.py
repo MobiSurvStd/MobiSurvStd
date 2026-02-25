@@ -130,6 +130,7 @@ def standardize_households(filename: str):
     lf = lf.with_columns(
         original_household_id=pl.struct("IDCEREMA"),
         survey_method=pl.col("TYPE_QUEST").replace_strict(SURVEY_METHOD_MAP),
+        complete_household=True,
         interview_date=pl.date(year="ANNEE", month="MOIS", day="JOUR") + timedelta(days=1),
         trips_weekday=pl.col("JOURSEM").replace_strict(WEEKDAY_MAP),
         income_lower_bound=pl.col("REVENU").replace_strict(REVENU_LB_MAP),

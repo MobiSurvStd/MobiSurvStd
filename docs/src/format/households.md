@@ -77,6 +77,15 @@ survey area.
   - Values are either all null or all defined.
   - The value is non-negative.
 
+### `complete_household`
+
+Whether all the persons from the household have an entry in the `persons.parquet` table.
+
+If this is `true`, it does not mean that all household members have been surveyed for their trips
+but there are at least some basic characteristics on them (e.g., age class, gender, etc.).
+
+- **Type:** Boolean
+
 ## Home location
 
 ### `home_lng`

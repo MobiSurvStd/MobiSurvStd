@@ -170,6 +170,7 @@ def standardize_households(filename1: str, filename2: str):
     lf = lf.with_columns(
         original_household_id=pl.struct("IDENT_MEN"),
         survey_method=pl.lit("face_to_face"),
+        complete_household=True,
         housing_status=(10 * pl.col("STOC") + pl.col("PROPRI").fill_null(0)).replace_strict(
             HOUSING_STATUS_MAP
         ),

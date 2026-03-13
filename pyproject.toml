@@ -37,6 +37,7 @@ requires-python = ">=3.10"
 [dependency-groups]
 dev = [
     "Cartopy>=0.24.1",
+    "folium>=0.20.0",
     "ipython>=8.37.0",
     "matplotlib>=3.10.1",
     "pytest>=9.0.2",

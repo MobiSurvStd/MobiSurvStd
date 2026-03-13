@@ -4,6 +4,7 @@ from mobisurvstd.common.cars import clean
 
 SCHEMA = {
     "IDCEREMA": pl.String,  # Identifiant du ménage
+    "POIDSM": pl.Float64,  # Poids du ménage
     "TYPE_QUEST": pl.String,  # Type de questionnaire
     "NVP": pl.UInt8,  # Numéro de la voiture parmi ceux du ménage
     "MARQ": pl.String,  # Marque

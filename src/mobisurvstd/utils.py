@@ -118,7 +118,7 @@ def find_in_zipfile(z: ZipFile, subdir: str, regex: str) -> ZipInfo | None:
     if subdir:
         pattern = re.compile(f".*{subdir}/{regex}", flags=re.IGNORECASE)
     else:
-        pattern = re.compile(regex, flags=re.IGNORECASE)
+        pattern = re.compile(f".*{regex}", flags=re.IGNORECASE)
     for fileinfo in z.infolist():
         if pattern.match(fileinfo.filename):
             return fileinfo
@@ -191,6 +191,8 @@ def guess_survey_type(source: str | ZipFile) -> str | None:
     if find_file_path(source, "k_individu_public_V3.csv"):
         return "emp2019"
     if find_file_path(source, "a_menage_egt1820.csv", subdir="Csv"):
+        return "egt2020"
+    if find_file_path(source, "01_menage_egt1820.csv"):
         return "egt2020"
     if find_file_path(source, "menages_semaine.csv", subdir="Csv"):
         return "egt2010"

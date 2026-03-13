@@ -6,6 +6,10 @@ SCHEMA = {
     "IDCEREMA": pl.String,  # Identifiant du ménage
     "TYPE_QUEST": pl.String,  # Type de questionnaire
     "NP": pl.UInt8,  # Numéro de personne dans le ménage
+    "POIDSI": pl.Float64,  # Poids de l'individu (uniquement les 5 ans et plus et ayant été enquêtés)
+    "POIDSTI": pl.Float64,  # Poids de l'individu (tous les individus du ménage)
+    "KISH": pl.UInt8,  # Dans le cas des enquêtes CATI, vaut 1 si l'individu  a été tiré au sort, sinon 0
+    "ENQ": pl.UInt8,  # La personne a-t-elle été enquêtée ? (for v3)
     "RESDEP": pl.String,  # Département de résidence
     "RESCOUR": pl.UInt8,  # Couronne de résidence
     "RESCOMM": pl.String,  # Commune de résidence
@@ -14,10 +18,16 @@ SCHEMA = {
     "SEXE": pl.UInt8,  # Sexe
     "AGE": pl.UInt8,  # Age
     "TRAGE": pl.UInt8,  # Classes d'âge
+    "OCCP": pl.UInt8,  # Occupation principale
+    "OCCP_txt": pl.String,  # Occupation principale
+    "DIPL": pl.UInt8,  # Plus haut niveau de diplôme obtenu
+    "PROF": pl.String,  # Profession
+    "CS8": pl.UInt8,  # Catégorie socioprofessionnelle Niveau 1
+    "CS24L": pl.UInt8,  # Catégorie socioprofessionnelle Niveau 2
     "PERMVP": pl.UInt8,  # Permis de conduire voiture
+    "PERM2RM": pl.UInt8,  # Permis de conduire 2RM
     "ABONVP": pl.UInt8,  # Abonnement autopartage
     "T_ABONVP": pl.UInt8,  # Type d'abonnement autopartage
-    "PERM2RM": pl.UInt8,  # Permis de conduire 2RM
     "ABONTC": pl.UInt8,  # Abonnement TC
     "ABONTC_10": pl.UInt8,  # Forfait Navigo
     "ABONC_11": pl.UInt8,  # Forfait Navigo + Annuel
@@ -41,23 +51,22 @@ SCHEMA = {
     "NV_SEM": pl.UInt8,  # Nombre de forfaits Semaine
     "REMBTC": pl.UInt8,  # Prise en charge de l’abonnement TC par l’employeur
     "ABONVLS": pl.UInt8,  # Abonnement de Vélib ou VLS
-    "OCCP": pl.UInt8,  # Occupation principale
-    "OCCP_txt": pl.String,  # Occupation principale
-    "DIPL": pl.UInt8,  # Plus haut niveau de diplôme obtenu
-    "PROF": pl.String,  # Profession
-    "CS8": pl.UInt8,  # Catégorie socioprofessionnelle Niveau 1
-    "CS24L": pl.UInt8,  # Catégorie socioprofessionnelle Niveau 2
     "LIEU_TRAV": pl.UInt8,  # Habitude de travail
     "LIEU_TRAV_txt": pl.String,
     "TRAVCOMM": pl.String,  # Commune du lieu de travail
     "TRAVLNG": pl.Float64,  # Longitude du lieu de travail
     "TRAVLAT": pl.Float64,  # Latitude du lieu de travail
+    "PKVPTRAV": pl.UInt8,  # Disponibilité d'un  parking au lieu de travail
+    "PKVLTRAV": pl.UInt8,  # Disponibilité d'un  parking vélo au lieu de travail
+    "DDOMTRAV": pl.Float64,  # Distance à vol d’oiseau entre le domicile et le lieu de travail ou d’étude (en km avec une décimale)
     "HIER_TRAV": pl.UInt8,  # Avez-vous travaillé hier ?
     "HIER_TRAV_txt": pl.String,  # 	Avez-vous travaillé hier ?
     "HIER_NON_TRAV": pl.String,  # Raison pour laquelle la personne n'a pas travaillé
     "HIER_NON_TRAV_txt": pl.String,  # 	Raison pour laquelle la personne n'a pas travaillé
-    "PKVPTRAV": pl.UInt8,  # Disponibilité d'un  parking au lieu de travail
-    "PKVLTRAV": pl.UInt8,  # Disponibilité d'un  parking vélo au lieu de travail
+    "TPS_PART": pl.UInt8,  # Quantité de temps partiel
+    "ORG_TP": pl.UInt8,  # Organisation du temps partiel
+    "HOR_TRAV": pl.UInt8,  # Horaires de travail
+    "HOR_TRAV_txt": pl.String,  # 	Horaires de travail
     "LIEU_ETUD": pl.UInt8,  # Habitude d'études
     "LIEU_ETUD_txt": pl.String,  # 	Habitude d'études
     "ETUDCOMM": pl.String,  # Commune du lieu d'études principal
@@ -65,7 +74,6 @@ SCHEMA = {
     "ETUDLAT": pl.Float64,  # Latitude du lieu d'études
     "PKVPETUD": pl.UInt8,  # Disponibilité d'un  parking au lieu d'études
     "PKVLETUD": pl.UInt8,  # Disponibilité d'un  parking vélo au lieu d'études
-    "GENE": pl.UInt8,  # Gêne ressentie lors des déplacements
     "DEPL": pl.UInt8,  # La personne s'est-elle déplacée la veille ?
     "NBDEPL": pl.UInt8,  # Nombre de déplacements réalisés
     "NBDEPLVP": pl.UInt8,  # Nombre de déplacements réalisés en voiture (passager ou conducteur)
@@ -74,7 +82,6 @@ SCHEMA = {
     "NBDEPLVELO": pl.UInt8,  # Nombre de déplacements réalisés à vélo
     "NBDEPL2RM": pl.UInt8,  # Nombre de déplacements réalisés en deux roues-motorisé
     "NBDEPLMAP": pl.UInt8,  # Nombre de déplacements réalisés à pied
-    "DDOMTRAV": pl.Float64,  # Distance à vol d’oiseau entre le domicile et le lieu de travail ou d’étude (en km avec une décimale)
     "NONDEPL_T": pl.UInt8,  # Si la personne ne s’est pas déplacée pour aller au travail, quelle en était la raison ?
     "NONDEPL_T_txt": pl.String,  # 	Si la personne ne s’est pas déplacée pour aller au travail, quelle en était la raison ?
     "NONDEPL": pl.UInt8,  # Si la personne ne s’est pas déplacée du tout, quelle en était la raison ?
@@ -84,10 +91,6 @@ SCHEMA = {
     "DER_CL": pl.UInt8,  # Classe du dernier déplacement
     "NB_7JOURS": pl.UInt8,  # Nombre de jours où la personne s'est déplacée la semaine passée
     "NB_7JOURS_T": pl.UInt8,  # Nombre de jours où la personne s'est déplacée la semaine passée pour le travail
-    "TPS_PART": pl.UInt8,  # Quantité de temps partiel
-    "ORG_TP": pl.UInt8,  # Organisation du temps partiel
-    "HOR_TRAV": pl.UInt8,  # Horaires de travail
-    "HOR_TRAV_txt": pl.String,  # 	Horaires de travail
     "FREQ_T": pl.UInt8,  # Fréquence des déplacements pour le travail ou les études
     "FREQ_A": pl.UInt8,  # Fréquence des déplacements pour les achats
     "FREQ_L": pl.UInt8,  # Fréquence des déplacements pour les loisirs
@@ -99,10 +102,6 @@ SCHEMA = {
     "ACH_INT14": pl.UInt8,  # Avez-vous effectué des achats sur internet au cours des 7 derniers jours  pour des biens ou services culturels ?
     "ACH_INT15": pl.UInt8,  # Avez-vous effectué des achats sur internet au cours des 7 derniers jours  pour des billets de transport ?
     "ACH_INT19": pl.String,  # Détails des achats sur internet au cours des 7 derniers jours
-    "PORTAB": pl.UInt8,  # Possession d'un téléphone portable
-    "APPS": pl.UInt8,  # Utilisation d'applications sur son smartphone pour se déplacer en Île-de-France
-    "APPS_LIST": pl.String,  # Type d'application utilisée
-    "APPS_LIST_txt": pl.String,  # 	Type d'application utilisée
     "TROT_LS": pl.UInt8,  # Utilisation d'une trottinette en libre-service au cours du dernier mois
     "TROT_LS_APP": pl.String,  # Type d'application de trottinette électrique utilisée au cours du dernier mois
     "TROT_LS_APP_txt": pl.String,  # 	Type d'application de trottinette électrique utilisée au cours du dernier mois
@@ -116,9 +115,11 @@ SCHEMA = {
     "COVOIT_ROLE": pl.UInt8,  # Rôle pendant le covoiturage
     "COVOIT_APP": pl.String,  # Type d'application de covoiturage utilisée au cours du dernier mois
     "COVOIT_APP_txt": pl.String,  # 	Type d'application de covoiturage utilisée au cours du dernier mois
-    "KISH": pl.UInt8,  # Dans le cas des enquêtes CATI, vaut 1 si l'individu  a été tiré au sort, sinon 0
-    "POIDSI": pl.Float64,  # Poids de l'individu (uniquement les 5 ans et plus et ayant été enquêtés)
-    "POIDSTI": pl.Float64,  # Poids de l'individu (tous les individus du ménage)
+    "GENE": pl.UInt8,  # Gêne ressentie lors des déplacements
+    "PORTAB": pl.UInt8,  # Possession d'un téléphone portable
+    "APPS": pl.UInt8,  # Utilisation d'applications sur son smartphone pour se déplacer en Île-de-France
+    "APPS_LIST": pl.String,  # Type d'application utilisée
+    "APPS_LIST_txt": pl.String,  # 	Type d'application utilisée
 }
 
 REFERENCE_PERSON_LINK_MAP = {
@@ -251,11 +252,12 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
     lf = scan_persons(filename)
     # Add household_id.
     lf = lf.with_columns(original_household_id=pl.struct("IDCEREMA")).join(
-        households.select("original_household_id", "household_id"),
+        households.select("original_household_id", "household_id", "sample_weight"),
         on="original_household_id",
         how="left",
         coalesce=True,
     )
+    # For v3, POIDSTI does not exist but can be read from household's `sample_weight`.
     lf = lf.rename(
         {
             "AGE": "age",
@@ -264,7 +266,7 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
             "TRAVLAT": "work_lat",
             "ETUDLNG": "study_lng",
             "ETUDLAT": "study_lat",
-            "POIDSTI": "sample_weight_all",
+            "sample_weight": "sample_weight_all",
             "POIDSI": "sample_weight_surveyed",
         }
     )

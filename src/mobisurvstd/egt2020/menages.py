@@ -9,6 +9,7 @@ SCHEMA = {
     "TYPE_QUEST": pl.String,  # Type de questionnaire
     "NBP_CATI": pl.UInt8,  # Nombre d’occupants du logement recueilli par téléphone
     "RESCOMM": pl.String,  # Commune de résidence
+    "RESINSEE": pl.String,  # Commune de résidence (for v3)
     "RESDEP": pl.String,  # Département de résidence
     "RESCOUR": pl.UInt8,  # Couronne de résidence
     "RESLNG": pl.Float64,  # Longitude du lieu de résidence
@@ -38,6 +39,8 @@ SCHEMA = {
     "VP_ASS": pl.UInt8,  # Dépense Voiture assurance
     "DEUXRM_ENT": pl.UInt8,  # Dépense Deux-roues motorisé entretien
     "DEUXRM_ASS": pl.UInt8,  # Dépense Deux-roues motorisé assurance
+    "X2RM_ENT": pl.UInt8,  # Dépense Deux-roues motorisé entretien (for v3)
+    "X2RM_ASS": pl.UInt8,  # Dépense Deux-roues motorisé assurance (for v3)
     "ABRI_VL": pl.UInt8,  # Abri Vélo
     "REVENU": pl.UInt8,  # Classe de revenu net mensuel
     "POIDSM": pl.Float64,  # Poids du ménage
@@ -102,14 +105,17 @@ WEEKDAY_MAP = {
 def scan_households(filename: str):
     # We use the inefficient `read_csv().lazy()` because we need to use `encoding="latin1"`, which
     # does not exist with `scan_csv()`.
-    lf = pl.read_csv(
+    df = pl.read_csv(
         filename,
         separator=";",
         encoding="latin1",
         schema_overrides=SCHEMA,
         null_values=["-1", "-2"],
-    ).lazy()
-    return lf
+    )
+    # Rename variables for v3.
+    if "RESCOMM" in df.columns:
+        df = df.rename({"RESCOMM": "RESINSEE"})
+    return df.lazy()
 
 
 def standardize_households(filename: str):
@@ -119,7 +125,7 @@ def standardize_households(filename: str):
             "POIDSM": "sample_weight",
             "RESLNG": "home_lng",
             "RESLAT": "home_lat",
-            "RESCOMM": "home_insee",
+            "RESINSEE": "home_insee",
             "RESDEP": "home_dep",
             "NB_VD": "nb_cars",
             "NB_2RM": "nb_motorcycles",

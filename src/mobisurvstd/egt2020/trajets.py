@@ -8,16 +8,18 @@ SCHEMA = {
     "NP": pl.UInt8,  # Numéro de personne dans le ménage
     "ND": pl.UInt8,  # Numéro de déplacement de la personne
     "NT": pl.UInt8,  # Numéro de trajet dans le déplacement
+    "POIDSI": pl.Float64,  # Poids de l'individu ayant réalisé le déplacement
     "JOURSEM": pl.String,  # Jour de la semaine de la date schéma des déplacements
-    "MOYEN": pl.String,  # Mode utilisé pour le trajet
-    "LIGNE": pl.String,  # Ligne utilisée (Nom commercial)
     "ENTLNG": pl.Float64,  # Longitude de début du trajet
     "ENTLAT": pl.Float64,  # Latitude de début du trajet
-    "ENTGARE": pl.String,  # Station/gare de début du trajet
     "SORLNG": pl.Float64,  # Longitude de fin du trajet
     "SORLAT": pl.Float64,  # Latitude de fin du trajet
+    "ENTGARE": pl.String,  # Station/gare de début du trajet
     "SORGARE": pl.String,  # Station/gare de fin du trajet
     "TPORTEE": pl.Float64,  # Distance à vol d'oiseau du trajet
+    "MOYEN": pl.String,  # Mode utilisé pour le trajet
+    "LIB": pl.String,  # Libellé du moyen de transport
+    "LIGNE": pl.String,  # Ligne utilisée (Nom commercial)
     "TT": pl.String,  # Titre de transport utilisé
     "UTBP": pl.UInt8,  # Utilisation du boulevard périphérique
     "UTA86": pl.UInt8,  # Utilisation de l'A86
@@ -31,28 +33,29 @@ SCHEMA = {
     "VP_COVOIT": pl.UInt8,  # Mise en relation du conducteur et/ou des passagers avec une application dans le cas d'un covoiturage
     "VP_COVOIT_APP": pl.UInt8,  # Type d'application de voiture en autopartage ou libre-service utilisée au cours du dernier mois
     "VP_COVOIT_APP_txt": pl.String,  # Type d'application de covoiturage utilisée
+    "VPASS_COVOIT": pl.UInt8,  # Si le trajet s’est fait en covoiturage en tant que passager et en dehors du ménage, avez-vous été mis en relation avec le conducteur à l’aide d’une application ?
     "TSTAT_VP": pl.String,  # Stationnement du véhicule au terme du trajet
     "TSTAT_VP_txt": pl.String,  # Stationnement du véhicule au terme du trajet
     "PSTAT_CVP": pl.Float64,  # Prix du stationnement si payant
+    # "UVP_LS_APP": pl.UInt8,  # Type de voiture en autopartage ou libre-service utilisée
+    # "UVP_LS_APP_txt": pl.String,  # Type de voitures en autopartage ou libre-service utilisée
+    "UVP_LS": pl.UInt8,  # Type de voitures en autopartage ou libre-service utilisée
+    "UVP_LS_txt": pl.String,  # Type de voitures en autopartage ou libre-service utilisée
     "U2RM": pl.UInt8,  # Deux-roues motorisé utilisé
     "U2RM_txt": pl.String,  # Deux-roues motorisé utilisé
     "TSTAT_2RM": pl.String,  # Stationnement du deux-roues motorisé au terme du trajet
     "TSTAT_2RM_txt": pl.String,  # Stationnement du deux-roues motorisé au terme du trajet
     "PSTAT_2RM": pl.Float64,  # Prix du stationnement deux-roues motorisé si payant
-    "PTAXI": pl.Float64,  # Prix du taxi
-    "UVELO": pl.UInt8,  # Vélo utilisé
-    "UTROT": pl.UInt8,  # Trottinette utilisée
-    "UTROT_txt": pl.String,  # Trottinette utilisée
-    # "UVP_LS_APP": pl.UInt8,  # Type de voiture en autopartage ou libre-service utilisée
-    # "UVP_LS_APP_txt": pl.String,  # Type de voitures en autopartage ou libre-service utilisée
-    "UVP_LS_txt": pl.String,  # Type de voitures en autopartage ou libre-service utilisée
-    "UTROT_LS": pl.UInt8,  # Type de trottinette en libre-service utilisée
-    "UTROT_LS_txt": pl.String,  # Type d'application de trottinette électrique utilisée
-    "UVELO_LS": pl.UInt8,  # Type de vélo en libre-service utilisé
-    "UVELO_LS_txt": pl.String,  # Type d'application de vélo en libre-service utilisée
     "U2RM_LS": pl.UInt8,  # Type de deux-roues motorisé en libre-service utilisée
     "U2RM_LS_txt": pl.String,  # Type de deux-roues motorisé en libre-service utilisée
-    "VPASS_COVOIT": pl.UInt8,  # Si le trajet s’est fait en covoiturage en tant que passager et en dehors du ménage, avez-vous été mis en relation avec le conducteur à l’aide d’une application ?
+    "PTAXI": pl.Float64,  # Prix du taxi
+    "UVELO": pl.UInt8,  # Vélo utilisé
+    "UVELO_LS": pl.UInt8,  # Type de vélo en libre-service utilisé
+    "UVELO_LS_txt": pl.String,  # Type d'application de vélo en libre-service utilisée
+    "UTROT": pl.UInt8,  # Trottinette utilisée
+    "UTROT_txt": pl.String,  # Trottinette utilisée
+    "UTROT_LS": pl.UInt8,  # Type de trottinette en libre-service utilisée
+    "UTROT_LS_txt": pl.String,  # Type d'application de trottinette électrique utilisée
 }
 
 
@@ -197,7 +200,7 @@ def scan_legs(filename: str):
     # We use the inefficient `read_csv().lazy()` because we need to use `encoding="latin1"`, which
     # does not exist with `scan_csv()`.
     lf = pl.read_csv(
-        filename, separator=";", encoding="latin1", schema_overrides=SCHEMA, null_values=["-1"]
+        filename, separator=";", encoding="latin1", schema_overrides=SCHEMA, null_values=["-1", ""]
     ).lazy()
     return lf
 
@@ -239,10 +242,15 @@ def standardize_legs(
         motorcycle_index=pl.col("U2RM").replace_strict(
             VEHICLE_INDEX_MAP, return_dtype=pl.UInt8, default=None
         ),
-        # There is no NULL values for columns NBPV, NBPV_M, NBPV_A: 0 is used instead.
+        # In some data versions, there is no NULL values for columns NBPV, NBPV_M, NBPV_A: 0 is used
+        # instead.
         nb_persons_in_vehicle=pl.when(pl.col("NBPV") > 0).then("NBPV"),
-        nb_household_members_in_vehicle=pl.when(pl.col("NBPV") > 0).then("NBPV_M"),
-        nb_non_household_members_in_vehicle=pl.when(pl.col("NBPV") > 0).then("NBPV_A"),
+        nb_household_members_in_vehicle=pl.when(pl.col("NBPV") > 0).then(
+            pl.col("NBPV_M").fill_null(0)
+        ),
+        nb_non_household_members_in_vehicle=pl.when(pl.col("NBPV") > 0).then(
+            pl.col("NBPV_A").fill_null(0)
+        ),
         in_vehicle_person_index=pl.col("LISTE_PV")
         .str.replace_all(".", ",", literal=True)
         .str.split(",")

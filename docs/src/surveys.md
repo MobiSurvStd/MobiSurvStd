@@ -120,7 +120,20 @@ Code: `egt2020`
 
 Link: [https://data.progedo.fr/studies/doi/10.13144/lil-1581](https://data.progedo.fr/studies/doi/10.13144/lil-1581)
 
-Expected format:
+Expected format (version 3):
+
+```bash
+egt_2020/
+├── 01_menage_egt1820.csv
+├── 02_individu_egt1820.csv
+├── 03_deplacement_egt1820.csv
+├── 04_trajet_egt1820.csv
+├── 05_voiture_egt1820.csv
+├── 06_drm_egt1820.csv
+└── 07_velo_egt1820.csv
+```
+
+Expected format (older versions):
 
 ```bash
 egt_2020/
@@ -136,6 +149,8 @@ egt_2020/
 
 Notes:
 
+- Due to some households not being surveyed with the expected method (phone vs face to face), you
+  should not rely to much on the sample weights of this survey.
 - There is no draw zones because the survey was interrupted before the end due to Covid-19.
 - There is no detailed zone but the coordinates of the origins / destinations are known (rounded to
   100 meters).

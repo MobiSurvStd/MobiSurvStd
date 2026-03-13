@@ -14,25 +14,36 @@ SCHEMA = {
     "JOURSEM": pl.String,  # Jour de la semaine de la date schéma des déplacements
     "ORLNG": pl.Float64,  # Longitude du lieu d'origine
     "ORLAT": pl.Float64,  # Latitude du lieu d'origine
-    "ORCOMM": pl.String,  # Commune d'origine du déplacement
-    "ORDEP": pl.String,  # Département d'origine du déplacement
-    "ORINSEE": pl.String,  # Code INSEE de la commune d'origine du déplacement
-    "ORCOUR": pl.UInt8,  # Couronne d'origine du déplacement
-    "ORHOR": pl.UInt16,  # Horaire de départ
-    "ORMOT": pl.UInt16,  # Motif au départ
-    "ORMOT_H9": pl.UInt8,  # Motif au départ (regroupé en 9 catégories)
     "DESTLNG": pl.Float64,  # Longitude du lieu de destination
     "DESTLAT": pl.Float64,  # Latitude du lieu de destination
-    "DESTCOMM": pl.String,  # Commune de destination du déplacement
-    "DESTDEP": pl.String,  # Département de destination du déplacement
+    "ORINSEE": pl.String,  # Code INSEE de la commune d'origine du déplacement
     "DESTINSEE": pl.String,  # Code INSEE de la commune de destination du déplacement
+    "ORCOMM": pl.String,  # Commune d'origine du déplacement
+    "DESTCOMM": pl.String,  # Commune de destination du déplacement
+    "ORDEP": pl.String,  # Département d'origine du déplacement
+    "DESTDEP": pl.String,  # Département de destination du déplacement
+    "ORCOUR": pl.UInt8,  # Couronne d'origine du déplacement
     "DESTCOUR": pl.UInt8,  # Couronne de destination du déplacement
-    "DESTHOR": pl.UInt16,  # Horaire d'arrivée
-    "DESTMOT": pl.UInt16,  # Motif à l'arrivée
-    "DESTMOT_H9": pl.UInt8,  # Motif à l'arrivée (regroupé en 9 catégories)
-    "MOTIF_COMBINE": pl.UInt8,  # Motif combiné origine / destination
-    "DUREE": pl.UInt16,  # Durée du déplacement en minutes
     "DPORTEE": pl.Float64,  # Distance à vol d'oiseau du déplacement en kilomètres
+    "TLA": pl.UInt8,  # Type de lieu d'achat (si destination = lieu d'achat)
+    "TLA_txt": pl.String,
+    "ORHOR": pl.UInt16,  # Horaire de départ
+    "DESTHOR": pl.UInt16,  # Horaire d'arrivée
+    "DUREE": pl.UInt16,  # Durée du déplacement en minutes
+    "DUR_TC1": pl.UInt32,  # Si l’itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l’aide de ViaNavigo, cette variable indique la durée totale de l’itinéraire choisi. En secondes.
+    "DUR_TC2": pl.UInt32,  # Si l’itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l’aide de ViaNavigo, cette variable indique la durée totale de l’itinéraire le plus rapide (qui n’est pas forcément celui choisi par la personne). En secondes.
+    "ORMOT": pl.UInt16,  # Motif au départ
+    "DESTMOT": pl.UInt16,  # Motif à l'arrivée
+    "ORMOT_H9": pl.UInt8,  # Motif au départ (regroupé en 9 catégories)
+    "DESTMOT_H9": pl.UInt8,  # Motif à l'arrivée (regroupé en 9 catégories)
+    "ORMOT_TXT": pl.String,  # Motif au départ (regroupé en 9 catégories)
+    "DESTMOT_TXT": pl.String,  # Motif à l'arrivée (regroupé en 9 catégories)
+    "MOTIF_COMBINE": pl.UInt8,  # Motif combiné origine / destination
+    "MODP_H6": pl.String,  # Mode principal en 6 modalités
+    "MODP_H7": pl.String,  # Mode principal en 7 modalités
+    "MODP_H12": pl.String,  # Mode principal en 12 modalités
+    "MRAB": pl.String,  # Mode principal de rabattement vers les transports collectifs (avant d'emprunter la première ligne de transports collectifs du déplacement)
+    "MDIFF": pl.String,  # Mode principal de diffusion depuis les transports collectifs (après avoir emprunté la dernière ligne de transports collectifs du déplacement)
     "N_MAP": pl.UInt8,  # Nombre d'utilisation de la marche à pied dans le déplacement
     "N_UFR": pl.UInt8,  # Nombre d'utilisation d'un fauteuil roulant dans le déplacement
     "N_VEL": pl.UInt8,  # Nombre d'utilisation d'un vélo dans le déplacement
@@ -41,15 +52,7 @@ SCHEMA = {
     "N_TCO": pl.UInt8,  # Nombre d'utilisation des transports collectifs dans le déplacement
     "N_TAX": pl.UInt8,  # Nombre d'utilisation d'un taxi dans le déplacement
     "N_AUT": pl.UInt8,  # Nombre d'utilisation d'autres modes dans le déplacement
-    "TLA": pl.UInt8,  # Type de lieu d'achat (si destination = lieu d'achat)
-    "MODP_H6": pl.String,  # Mode principal en 6 modalités
-    "MODP_H7": pl.String,  # Mode principal en 7 modalités
-    "MODP_H12": pl.String,  # Mode principal en 12 modalités
-    "MRAB": pl.String,  # Mode principal de rabattement vers les transports collectifs (avant d'emprunter la première ligne de transports collectifs du déplacement)
-    "MDIFF": pl.String,  # Mode principal de diffusion depuis les transports collectifs (après avoir emprunté la dernière ligne de transports collectifs du déplacement)
     "NBCO_1": pl.UInt8,  # Nombre de correspondances si déplacement effectué en transports collectifs
-    "DUR_TC1": pl.UInt32,  # Si l’itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l’aide de ViaNavigo, cette variable indique la durée totale de l’itinéraire choisi. En secondes.
-    "DUR_TC2": pl.UInt32,  # Si l’itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l’aide de ViaNavigo, cette variable indique la durée totale de l’itinéraire le plus rapide (qui n’est pas forcément celui choisi par la personne). En secondes.
     "NBCO_2": pl.UInt8,  # Si l’itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l’aide de ViaNavigo, cette variable indique le nombre minimal théorique de correspondances, basé sur les divers itinéraires possibles. Il est en effet possible que la personne ait un itinéraire préférentiel qui ne soit pas forcément celui considéré comme optimal par l’application.
     "POIDSI": pl.Float64,  # Poids de l'individu ayant réalisé le déplacement
 }
@@ -154,8 +157,9 @@ def standardize_trips(filename: str, households: pl.LazyFrame, persons: pl.LazyF
     )
     lf = lf.with_columns(
         original_trip_id=pl.struct("IDCEREMA", "NP", "ND"),
-        # TODO: In the current version, home purpose is not specified but almost all nulls purposes
+        # NOTE: In the current version, home purpose is not specified but almost all nulls purposes
         # seem to be home.
+        # NOTE 2026-03-13: This seems to have been fixed with v3.
         origin_purpose=pl.col("ORMOT").replace_strict(PURPOSE_MAP).fill_null("home:main"),
         destination_purpose=pl.col("DESTMOT").replace_strict(PURPOSE_MAP).fill_null("home:main"),
         destination_shop_type=pl.col("TLA").replace_strict(SHOP_TYPE_MAP),

@@ -296,12 +296,17 @@ TRIP_SCHEMA = [
     # NUTS 1 name of the trip's destination.
     Variable("destination_nuts1_name", pl.String),
     # Departure time from origin, in number of minutes after midnight.
-    Variable("departure_time", pl.UInt16, [Sorted(over="person_id")]),
+    Variable(
+        "departure_time", pl.UInt16, [Sorted(over=["person_id", "trip_date"], ignore_nulls=True)]
+    ),
     # Arrival time at destination, in number of minutes after midnight.
     Variable(
         "arrival_time",
         pl.UInt16,
-        [Sorted(over="person_id"), LargerThan(pl.col("departure_time"), strict=False)],
+        [
+            Sorted(over=["person_id", "trip_date"], ignore_nulls=True),
+            LargerThan(pl.col("departure_time"), strict=False),
+        ],
     ),
     # Trip travel time, in minutes.
     Variable(

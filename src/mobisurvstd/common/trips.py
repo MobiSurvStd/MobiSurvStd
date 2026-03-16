@@ -111,9 +111,10 @@ def add_purpose_groups(lf: pl.LazyFrame, existing_cols: list[str]):
     ):
         if col in existing_cols:
             group_col = f"{col}_group"
-            lf = lf.with_columns(
-                pl.col(col).cast(pl.String).str.extract(r"(\w+):?").alias(group_col)
-            )
+            if group_col not in existing_cols:
+                lf = lf.with_columns(
+                    pl.col(col).cast(pl.String).str.extract(r"(\w+):?").alias(group_col)
+                )
     return lf
 
 

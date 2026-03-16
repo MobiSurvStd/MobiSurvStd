@@ -128,7 +128,7 @@ def create_metadata(
         "nb_motorcycles": len(data["motorcycles"]),
         "nb_persons": len(data["persons"]),
         "nb_trips": len(data["trips"]),
-        "nb_legs": len(data["legs"]),
+        "nb_legs": len(data["legs"]) if "legs" in data else 0,
         "nb_special_locations": nb_special_locations,
         "nb_detailed_zones": nb_detailed_zones,
         "nb_draw_zones": nb_draw_zones,
@@ -151,22 +151,33 @@ def count_nb_persons(households: pl.LazyFrame, persons: pl.LazyFrame):
     has_age = "age" in persons.collect_schema().names()
     has_age_class = "age_class_code" in persons.collect_schema().names()
     person_counts = persons.group_by("household_id").agg(
+        complete_household=True,
         nb_persons=pl.len(),
-        nb_persons_5plus=pl.when(pl.col("age").is_not_null().all()).then(pl.col("age").ge(5).sum())
-        if has_age
-        else None,
-        nb_majors=pl.when(pl.col("age_class_code").is_not_null().all()).then(
-            pl.col("age_class_code").gt(1).sum()
-        )
-        if has_age_class
-        else None,
-        nb_minors=pl.when(pl.col("age_class_code").is_not_null().all()).then(
-            pl.col("age_class_code").eq(1).sum()
-        )
-        if has_age_class
-        else None,
+        nb_persons_5plus=(
+            pl.when(pl.col("age").is_not_null().all()).then(pl.col("age").ge(5).sum())
+            if has_age
+            else None
+        ),
+        nb_majors=(
+            pl.when(pl.col("age_class_code").is_not_null().all()).then(
+                pl.col("age_class_code").gt(1).sum()
+            )
+            if has_age_class
+            else None
+        ),
+        nb_minors=(
+            pl.when(pl.col("age_class_code").is_not_null().all()).then(
+                pl.col("age_class_code").eq(1).sum()
+            )
+            if has_age_class
+            else None
+        ),
     )
-    households = households.join(person_counts, on="household_id", how="left", coalesce=True)
+    # Join on both "household_id" and "complete_household" so that counts are not added for
+    # incomplete households.
+    households = households.join(
+        person_counts, on=["household_id", "complete_household"], how="left", coalesce=True
+    )
     return households
 
 
@@ -238,6 +249,7 @@ def count_nb_trips(persons: pl.LazyFrame, trips: pl.LazyFrame):
 
 def add_worked_during_surveyed_day(persons: pl.LazyFrame, trips: pl.LazyFrame):
     persons_cols = persons.collect_schema().names()
+    trips_cols = trips.collect_schema().names()
     # Fill null values of `traveled_during_surveyed_day` (when `is_surveyed` is True) according
     # to the existence of trips.
     if "traveled_during_surveyed_day" not in persons_cols:
@@ -250,7 +262,7 @@ def add_worked_during_surveyed_day(persons: pl.LazyFrame, trips: pl.LazyFrame):
             .then(pl.lit("no"))
         )
     )
-    if "worked_during_surveyed_day" not in persons_cols:
+    if "worked_during_surveyed_day" not in persons_cols and "destination_purpose" in trips_cols:
         persons = persons.join(
             trips.group_by("person_id").agg(
                 has_work_activity=pl.col("destination_purpose")

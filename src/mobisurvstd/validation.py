@@ -80,7 +80,6 @@ def validate(data):
                 data.legs = df
             case Invalid():
                 is_valid = False
-
     for variable in CAR_SCHEMA:
         result = variable.check_guarantees(data.cars)
         match result:
@@ -90,7 +89,6 @@ def validate(data):
                 data.cars = df
             case Invalid():
                 is_valid = False
-
     for variable in MOTORCYCLE_SCHEMA:
         result = variable.check_guarantees(data.motorcycles)
         match result:
@@ -203,14 +201,15 @@ def validate_households(data):
                 ),
             ).cast(data.households["nb_cars"].dtype)
         )
-    # Guarantee that `nb_persons` matches the actual number of persons.
+    # Guarantee that `nb_persons` matches the actual number of persons (if household is "complete").
     nb_persons = data.persons.group_by("household_id").len()
     invalid_households = set(
         data.households.filter(
+            "complete_household",
             pl.col("nb_persons")
             != pl.col("household_id").replace_strict(
                 nb_persons["household_id"], nb_persons["len"], default=0
-            )
+            ),
         )["household_id"]
     )
     if invalid_households:
@@ -227,8 +226,9 @@ def validate_households(data):
     )
     invalid_households = set(
         data.households.join(nb_persons, on="household_id", how="left").filter(
+            "complete_household",
             (pl.col("nb_persons_5plus") < pl.col("nb_persons_5plus_lb"))
-            | (pl.col("nb_persons_5plus") > pl.col("nb_persons_5plus_ub"))
+            | (pl.col("nb_persons_5plus") > pl.col("nb_persons_5plus_ub")),
         )["household_id"]
     )
     if invalid_households:
@@ -249,9 +249,10 @@ def validate_households(data):
     )
     invalid_households = set(
         data.households.join(nb_majors, on="household_id", how="left").filter(
+            "complete_household",
             (pl.col("nb_majors") < pl.col("nb_majors_lb"))
             | (pl.col("nb_majors") > pl.col("nb_majors_ub"))
-            | (pl.col("nb_majors").is_null() & pl.col("nb_majors_lb").eq(pl.col("nb_majors_ub")))
+            | (pl.col("nb_majors").is_null() & pl.col("nb_majors_lb").eq(pl.col("nb_majors_ub"))),
         )["household_id"]
     )
     if invalid_households:
@@ -271,9 +272,10 @@ def validate_households(data):
     )
     invalid_households = set(
         data.households.join(nb_minors, on="household_id", how="left").filter(
+            "complete_household",
             (pl.col("nb_minors") < pl.col("nb_minors_lb"))
             | (pl.col("nb_minors") > pl.col("nb_minors_ub"))
-            | (pl.col("nb_minors").is_null() & pl.col("nb_minors_lb").eq(pl.col("nb_minors_ub")))
+            | (pl.col("nb_minors").is_null() & pl.col("nb_minors_lb").eq(pl.col("nb_minors_ub"))),
         )["household_id"]
     )
     if invalid_households:
@@ -421,9 +423,9 @@ def validate_trips(data):
     # 28:00.
     recompute_durs = False
     invalid_trips = set(
-        data.trips.filter(pl.col("departure_time").diff().cum_sum().over("person_id") < 0)[
-            "trip_id"
-        ]
+        data.trips.filter(
+            pl.col("departure_time").diff().cum_sum().over("person_id", "trip_date") < 0
+        )["trip_id"]
     )
     if invalid_trips:
         n = len(invalid_trips)
@@ -442,7 +444,9 @@ def validate_trips(data):
         )
         recompute_durs = True
     invalid_trips = set(
-        data.trips.filter(pl.col("arrival_time").diff().cum_sum().over("person_id") < 0)["trip_id"]
+        data.trips.filter(
+            pl.col("arrival_time").diff().cum_sum().over("person_id", "trip_date") < 0
+        )["trip_id"]
     )
     if invalid_trips:
         n = len(invalid_trips)
@@ -481,7 +485,8 @@ def validate_trips(data):
         )
     invalid_persons = set(
         data.trips.filter(
-            pl.col("arrival_time") > pl.col("departure_time").shift(-1).over("person_id")
+            pl.col("arrival_time")
+            > pl.col("departure_time").shift(-1).over("person_id", "trip_date")
         )["person_id"]
     )
     if invalid_persons:
@@ -504,42 +509,44 @@ def validate_trips(data):
                 "destination_activity_duration",
             )
         )
-    invalid_persons = set(
-        data.trips.filter(
-            pl.col("departure_time").is_null().any().over("person_id")
-            | pl.col("arrival_time").is_null().any().over("person_id"),
-            pl.col("departure_time").is_not_null().any().over("person_id")
-            | pl.col("arrival_time").is_not_null().any().over("person_id"),
-        )["person_id"]
-    )
-    if invalid_persons:
-        n = len(invalid_persons)
-        logger.warning(
-            f"{n} persons have at least one trip with NULL departure or arrival time. "
-            "The `departure_time`, `arrival_time`, and `travel_time` values for these persons "
-            "are all automatically set to null."
-        )
-        data.trips = data.trips.with_columns(
-            pl.when(pl.col("person_id").is_in(invalid_persons))
-            .then(pl.lit(None))
-            .otherwise(col)
-            .alias(col)
-            for col in (
-                "departure_time",
-                "arrival_time",
-                "travel_time",
-                "origin_activity_duration",
-                "destination_activity_duration",
-            )
-        )
+    #  invalid_persons = set(
+        #  data.trips.filter(
+            #  pl.col("departure_time").is_null().any().over("person_id")
+            #  | pl.col("arrival_time").is_null().any().over("person_id"),
+            #  pl.col("departure_time").is_not_null().any().over("person_id")
+            #  | pl.col("arrival_time").is_not_null().any().over("person_id"),
+        #  )["person_id"]
+    #  )
+    #  if invalid_persons:
+        #  n = len(invalid_persons)
+        #  logger.warning(
+            #  f"{n} persons have at least one trip with NULL departure or arrival time. "
+            #  "The `departure_time`, `arrival_time`, and `travel_time` values for these persons "
+            #  "are all automatically set to null."
+        #  )
+        #  data.trips = data.trips.with_columns(
+            #  pl.when(pl.col("person_id").is_in(invalid_persons))
+            #  .then(pl.lit(None))
+            #  .otherwise(col)
+            #  .alias(col)
+            #  for col in (
+                #  "departure_time",
+                #  "arrival_time",
+                #  "travel_time",
+                #  "origin_activity_duration",
+                #  "destination_activity_duration",
+            #  )
+        #  )
     if recompute_durs:
         # Durations need to be recomputed due to changes of deparure / arrival times.
         # The previous check ensure that all durations will be positive.
         data.trips = data.trips.with_columns(
             travel_time=pl.col("arrival_time") - pl.col("departure_time"),
             origin_activity_duration=pl.col("departure_time")
-            - pl.col("arrival_time").shift(1).over("person_id"),
-            destination_activity_duration=pl.col("departure_time").shift(-1).over("person_id")
+            - pl.col("arrival_time").shift(1).over("person_id", "trip_date"),
+            destination_activity_duration=pl.col("departure_time")
+            .shift(-1)
+            .over("person_id", "trip_date")
             - pl.col("arrival_time"),
         )
     # Guarantee that the `trip_date` is not later than the `interview_date`.
@@ -614,7 +621,9 @@ def validate_legs(data):
             "The `car_type` value is set to null."
         )
         data.legs = data.legs.with_columns(
-            car_type=pl.when(pl.col("leg_id").is_in(invalid_legs)).then(None).otherwise("car_type")
+            car_type=pl.when(pl.col("leg_id").is_in(invalid_legs))
+            .then(None)
+            .otherwise("car_type")
         )
     # Guarantee that `car_id` values are valid.
     invalid_legs = (

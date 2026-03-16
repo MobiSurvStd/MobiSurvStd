@@ -25,20 +25,19 @@
 │                                  [default: None]                                                   │
 │                                  [required]                                                        │
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────╮
-│ --survey-type               TEXT  Format of the original survey. Possible values: `emc2`,          │
-│                                   `emp2019`, `egt2010`, `egt2020`, `edgt`, `edvm`, `emd`.          │
-│                                   [default: None]                                                  │
-│ --bulk                            Import surveys in bulk from the given directory                  │
-│ --skip-spatial                    Do not read spatial data                                         │
-│ --no-validation                   Do not validate the standardized data (some guarantees might not │
-│                                   be satisfied)                                                    │
-│ --clear-cache                     Clear the cache data and exit                                    │
-│ --install-completion              Install completion for the current shell.                        │
-│ --show-completion                 Show completion for the current shell, to copy it or customize   │
-│                                   the installation.                                                │
-│ --help                            Show this message and exit.                                      │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --survey-type               TEXT  Format of the original survey. Possible values: `emc2`, `emp2019`, │
+│                                   `egt2010`, `egt2020`, `edgt`, `edvm`, `emd`, `emg2023`.            │
+│ --bulk                            Import surveys in bulk from the given directory                    │
+│ --skip-spatial                    Do not read spatial data                                           │
+│ --no-validation                   Do not validate the standardized data (some guarantees might not   │
+│                                   be satisfied)                                                      │
+│ --clear-cache                     Clear the cache data and exit                                      │
+│ --install-completion              Install completion for the current shell.                          │
+│ --show-completion                 Show completion for the current shell, to copy it or customize the │
+│                                   installation.                                                  │
+│ --help                            Show this message and exit.                                        │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 ### Examples
@@ -102,7 +101,7 @@ output_directory
 survey_type
     String indicating the type of the survey to be converted.
     If the value is omitted, MobiSurvStd will do its best to guess the survey type.
-    Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd".
+    Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd", "emg2023".
 add_name_subdir
     Whether the standardized survey is stored directly in `output_directory` or within a
     subdirectory of `output_directory`.
@@ -166,7 +165,7 @@ survey_type
     String indicating the type of the surveys to be converted.
     If the directory contains surveys of different types, leave this value to None and
     MobiSurvStd will try to guess the type of each survey.
-    Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd".
+    Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd", "emg2023".
 skip_spatial
     If True, MobiSurvStd will not try to read spatial data from the surveys.
     This means that special locations, detailed zones, and draw zones will not be read and

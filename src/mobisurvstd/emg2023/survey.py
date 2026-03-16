@@ -1,4 +1,3 @@
-import os
 from zipfile import ZipFile
 
 from loguru import logger
@@ -6,7 +5,6 @@ import polars as pl
 
 from mobisurvstd.common.clean import clean
 from mobisurvstd.utils import find_file
-from mobisurvstd.schema import CAR_SCHEMA, MOTORCYCLE_SCHEMA, LEG_SCHEMA
 
 from .deplacements import standardize_trips, standardize_distances, standardize_legs
 from .menages import standardize_households

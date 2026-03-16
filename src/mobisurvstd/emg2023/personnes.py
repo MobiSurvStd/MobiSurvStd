@@ -84,7 +84,7 @@ DRIVING_LICENSE_MAP = {"Oui": "yes", "Non": "no", "NR": None}
 
 
 def scan_persons(filename: str):
-    lf = pl.read_excel(filename, schema_overrides=SCHEMA).lazy()
+    lf = pl.read_excel(filename, schema_overrides=SCHEMA).lazy()  # ty: ignore[possibly-missing-attribute]
     return lf
 
 

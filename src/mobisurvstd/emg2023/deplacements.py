@@ -1,10 +1,7 @@
-from datetime import timedelta
-
 import polars as pl
 
-from mobisurvstd.common.trips import clean as clean_trips
 from mobisurvstd.common.legs import clean as clean_legs
-
+from mobisurvstd.common.trips import clean as clean_trips
 
 SCHEMA = {
     "KEY": pl.String,  # Identifiant unique des déplacements (ID* jour * date au format numérique * numéro de déplacement)
@@ -84,7 +81,7 @@ WEEKDAY_MAP = {
 
 
 def scan_trips(filename: str):
-    lf = pl.read_excel(filename, schema_overrides=SCHEMA).lazy()
+    lf = pl.read_excel(filename, schema_overrides=SCHEMA).lazy()  # ty: ignore[possibly-missing-attribute]
     return lf
 
 
@@ -181,7 +178,7 @@ DISTANCES_SCHEMA = {
 
 
 def scan_distances(filename: str):
-    lf = pl.read_excel(filename, schema_overrides=DISTANCES_SCHEMA).lazy()
+    lf = pl.read_excel(filename, schema_overrides=DISTANCES_SCHEMA).lazy()  # ty: ignore[possibly-missing-attribute]
     return lf
 
 

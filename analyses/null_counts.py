@@ -14,16 +14,7 @@ from mobisurvstd.schema import (
 from mobisurvstd.schema.common import Variable
 from mobisurvstd.schema.guarantees import Null
 
-SURVEY_TYPES = [
-    "EMC2",
-    "EMP2019",
-    "EGT2020",
-    "EMG2023",
-    "EDGT",
-    "EDVM",
-    "EGT2010",
-    "EMD",
-]
+SURVEY_TYPES = ["EMC2", "EMP2019", "EGT2020", "EMG2023", "EDGT", "EDVM", "EGT2010", "EMD"]
 
 GROUPS = {
     "households": HOUSEHOLD_SCHEMA,

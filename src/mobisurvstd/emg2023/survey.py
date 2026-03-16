@@ -16,15 +16,15 @@ from .personnes import standardize_persons
 def standardize(source: str | ZipFile, skip_spatial: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EMG2023 survey from `{source_name}`")
-    
+
     filename = persons_filename(source)
     if not filename:
         logger.error(f"Missing persons file: {filename}")
         return None
-    
+
     # Households.
     households = standardize_households(filename)
-    
+
     # Persons.
     persons = standardize_persons(filename, households)
 
@@ -37,8 +37,8 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
     if not filename:
         logger.error(f"Missing trips file: {filename}")
         return None
-    
-    trips = standardize_trips(filename, persons, distances = distances)
+
+    trips = standardize_trips(filename, persons, distances=distances)
 
     legs = standardize_legs(filename, trips)
 

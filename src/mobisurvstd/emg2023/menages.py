@@ -6,6 +6,7 @@ from mobisurvstd.common.households import clean as clean_households
 
 from .personnes import scan_persons
 
+
 def standardize_households(filename: str):
     lf = scan_persons(filename)
 

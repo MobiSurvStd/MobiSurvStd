@@ -510,33 +510,33 @@ def validate_trips(data):
             )
         )
     #  invalid_persons = set(
-        #  data.trips.filter(
-            #  pl.col("departure_time").is_null().any().over("person_id")
-            #  | pl.col("arrival_time").is_null().any().over("person_id"),
-            #  pl.col("departure_time").is_not_null().any().over("person_id")
-            #  | pl.col("arrival_time").is_not_null().any().over("person_id"),
-        #  )["person_id"]
+    #  data.trips.filter(
+    #  pl.col("departure_time").is_null().any().over("person_id")
+    #  | pl.col("arrival_time").is_null().any().over("person_id"),
+    #  pl.col("departure_time").is_not_null().any().over("person_id")
+    #  | pl.col("arrival_time").is_not_null().any().over("person_id"),
+    #  )["person_id"]
     #  )
     #  if invalid_persons:
-        #  n = len(invalid_persons)
-        #  logger.warning(
-            #  f"{n} persons have at least one trip with NULL departure or arrival time. "
-            #  "The `departure_time`, `arrival_time`, and `travel_time` values for these persons "
-            #  "are all automatically set to null."
-        #  )
-        #  data.trips = data.trips.with_columns(
-            #  pl.when(pl.col("person_id").is_in(invalid_persons))
-            #  .then(pl.lit(None))
-            #  .otherwise(col)
-            #  .alias(col)
-            #  for col in (
-                #  "departure_time",
-                #  "arrival_time",
-                #  "travel_time",
-                #  "origin_activity_duration",
-                #  "destination_activity_duration",
-            #  )
-        #  )
+    #  n = len(invalid_persons)
+    #  logger.warning(
+    #  f"{n} persons have at least one trip with NULL departure or arrival time. "
+    #  "The `departure_time`, `arrival_time`, and `travel_time` values for these persons "
+    #  "are all automatically set to null."
+    #  )
+    #  data.trips = data.trips.with_columns(
+    #  pl.when(pl.col("person_id").is_in(invalid_persons))
+    #  .then(pl.lit(None))
+    #  .otherwise(col)
+    #  .alias(col)
+    #  for col in (
+    #  "departure_time",
+    #  "arrival_time",
+    #  "travel_time",
+    #  "origin_activity_duration",
+    #  "destination_activity_duration",
+    #  )
+    #  )
     if recompute_durs:
         # Durations need to be recomputed due to changes of deparure / arrival times.
         # The previous check ensure that all durations will be positive.
@@ -621,9 +621,7 @@ def validate_legs(data):
             "The `car_type` value is set to null."
         )
         data.legs = data.legs.with_columns(
-            car_type=pl.when(pl.col("leg_id").is_in(invalid_legs))
-            .then(None)
-            .otherwise("car_type")
+            car_type=pl.when(pl.col("leg_id").is_in(invalid_legs)).then(None).otherwise("car_type")
         )
     # Guarantee that `car_id` values are valid.
     invalid_legs = (

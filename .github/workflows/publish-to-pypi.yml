@@ -23,7 +23,12 @@ jobs:
         run: uv build
       - name: Publish
         run: uv publish
-      - name: Create GitHub Release
+      - name: Create release from Changelog
+        uses: taiki-e/create-gh-release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          changelog: CHANGELOG.md
+      - name: Add files to release
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*

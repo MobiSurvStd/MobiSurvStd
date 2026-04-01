@@ -143,7 +143,7 @@ Name of the municipality where the household is located.
 
 Density category of the household municipality.
 
-Density categories are defined by [INSEE](https://www.insee.fr/fr/information/6439600).
+Density categories are defined by [INSEE](https://www.insee.fr/fr/information/8571524).
 
 - **Modalities:**
   - `1`: "commune densément peuplée"
@@ -153,6 +153,33 @@ Density categories are defined by [INSEE](https://www.insee.fr/fr/information/64
   - `5`: "bourg rural"
   - `6`: "rural à habitat dispersé"
   - `7`: "rural à habitat très dispersé"
+
+### `home_insee_urban_type`
+
+Urban type of the household municipality.
+
+Urban types are defined by INSEE based on the
+[urban units](https://www.insee.fr/fr/information/4802589).
+
+- **Modalities:**
+  - `"central_city"`: "Ville-centre"
+  - `"suburb"`: "Banlieu"
+  - `"isolated_city"`: "Ville isolée"
+  - `"outside_urban_unit"`: "Hors unité urbaine"
+
+### `home_urban_unit`
+
+Code of the [urban unit](https://www.insee.fr/fr/information/4802589) where the household is
+located.
+
+- **Type:** String
+
+### `home_urban_unit_name`
+
+Name of the [urban unit](https://www.insee.fr/fr/information/4802589) where the household is
+located.
+
+- **Type:** String
 
 ### `home_insee_aav_type`
 

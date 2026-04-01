@@ -2,6 +2,8 @@ import polars as pl
 
 from mobisurvstd.common.households import clean
 
+from .common import URBAN_TYPE_MAP
+
 SCHEMA1 = {
     "ident_men": pl.String,  # IDENTIFIANT DU MENAGE
     "ident_log": pl.String,  # Identifiant du logement
@@ -174,6 +176,7 @@ def standardize_households(filename1: str, filename2: str):
         housing_status=(10 * pl.col("STOC") + pl.col("PROPRI").fill_null(0)).replace_strict(
             HOUSING_STATUS_MAP
         ),
+        home_insee_urban_type=pl.col("STATUTCOM_UU_RES").replace_strict(URBAN_TYPE_MAP),
         home_aav_category=pl.col("TAA2017_RES").replace({0: None, 8: None, 9: None}),
         home_insee_aav_type=pl.col("CATCOM_AA_RES").replace({98: None, 99: None}),
         # There should be no null values so we can safely sum the two columns without facing null

@@ -1,6 +1,6 @@
 import polars as pl
 
-from .common import Variable
+from .common import URBAN_TYPE_ENUM, Variable
 from .guarantees import (
     AllDefinedOrAllNull,
     Bounded,
@@ -59,6 +59,12 @@ HOUSEHOLD_SCHEMA = [
     Variable("home_aav_name", pl.String),
     # Category of the AAV of the household home.
     Variable("home_aav_category", pl.UInt8, [Bounded(1, 5)]),
+    # Category of the home municipality within its urban unit.
+    Variable("home_insee_urban_type", URBAN_TYPE_ENUM),
+    # Code of the urban unit of the household home.
+    Variable("home_urban_unit", pl.String),
+    # Name of the urban unit of the household home.
+    Variable("home_urban_unit_name", pl.String),
     # Département code of the household home.
     Variable("home_dep", pl.String, [ValidDepCode()]),
     # Département name of the household home.

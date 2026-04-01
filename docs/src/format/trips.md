@@ -386,7 +386,7 @@ Name of the municipality of the trip's origin.
 
 Density category of the origin INSEE municipality.
 
-Density categories are defined by [INSEE](https://www.insee.fr/fr/information/6439600).
+Density categories are defined by [INSEE](https://www.insee.fr/fr/information/8571524).
 
 - **Modalities:**
   - `1`: "commune densément peuplée"
@@ -396,6 +396,31 @@ Density categories are defined by [INSEE](https://www.insee.fr/fr/information/64
   - `5`: "bourg rural"
   - `6`: "rural à habitat dispersé"
   - `7`: "rural à habitat très dispersé"
+
+### `origin_insee_urban_type`
+
+Urban type of the origin INSEE municipality.
+
+Urban types are defined by INSEE based on the
+[urban units](https://www.insee.fr/fr/information/4802589).
+
+- **Modalities:**
+  - `"central_city"`: "Ville-centre"
+  - `"suburb"`: "Banlieu"
+  - `"isolated_city"`: "Ville isolée"
+  - `"outside_urban_unit"`: "Hors unité urbaine"
+
+### `origin_urban_unit`
+
+Code of the [urban unit](https://www.insee.fr/fr/information/4802589) of the trip's origin.
+
+- **Type:** String
+
+### `origin_urban_unit_name`
+
+Name of the [urban unit](https://www.insee.fr/fr/information/4802589) of the trip's origin.
+
+- **Type:** String
 
 ### `origin_insee_aav_type`
 
@@ -574,7 +599,7 @@ Name of the municipality of the trip's destination.
 
 Density category of the destination INSEE municipality.
 
-Density categories are defined by [INSEE](https://www.insee.fr/fr/information/6439600).
+Density categories are defined by [INSEE](https://www.insee.fr/fr/information/8571524).
 
 - **Modalities:**
   - `1`: "commune densément peuplée"
@@ -584,6 +609,31 @@ Density categories are defined by [INSEE](https://www.insee.fr/fr/information/64
   - `5`: "bourg rural"
   - `6`: "rural à habitat dispersé"
   - `7`: "rural à habitat très dispersé"
+
+### `destination_insee_urban_type`
+
+Urban type of the destination INSEE municipality.
+
+Urban types are defined by INSEE based on the
+[urban units](https://www.insee.fr/fr/information/4802589).
+
+- **Modalities:**
+  - `"central_city"`: "Ville-centre"
+  - `"suburb"`: "Banlieu"
+  - `"isolated_city"`: "Ville isolée"
+  - `"outside_urban_unit"`: "Hors unité urbaine"
+
+### `destination_urban_unit`
+
+Code of the [urban unit](https://www.insee.fr/fr/information/4802589) of the trip's destination.
+
+- **Type:** String
+
+### `destination_urban_unit_name`
+
+Name of the [urban unit](https://www.insee.fr/fr/information/4802589) of the trip's destination.
+
+- **Type:** String
 
 ### `destination_insee_aav_type`
 

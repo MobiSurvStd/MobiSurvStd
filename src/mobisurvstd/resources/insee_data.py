@@ -3,6 +3,7 @@ import zipfile
 
 import geopandas as gpd
 import polars as pl
+import pyarrow.parquet as pq
 from loguru import logger
 
 from mobisurvstd.utils import tmp_download
@@ -18,19 +19,39 @@ INSEE_CHANGE_URL = (
 )
 
 DENSITY_URL_DICT = {
-    "2015_to_2020": "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2015-2020.zip",
-    "2021": "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2021.xlsx",
-    "2022": "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2022.xlsx",
-    "2023": "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2023.xlsx",
-    "2024": "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2024.xlsx",
+    2015: "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2015-2020.zip",
+    2021: "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2021.xlsx",
+    2022: "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2022.xlsx",
+    2023: "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2023.xlsx",
+    2024: "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2024.xlsx",
+}
+
+URBAN_URL_DICT = {
+    2018: "https://www.insee.fr/fr/statistiques/fichier/2115018/UU2010_au_01-01-2018.zip",
+    2019: "https://www.insee.fr/fr/statistiques/fichier/2115018/UU2010_au_01-01-2019.zip",
+    2020: "https://www.insee.fr/fr/statistiques/fichier/4802589/UU2020_au_01-01-2020.zip",
+    2021: "https://www.insee.fr/fr/statistiques/fichier/4802589/UU2020_au_01-01-2021.zip",
+    2022: "https://www.insee.fr/fr/statistiques/fichier/4802589/UU2020_au_01-01-2022.zip",
+    2023: "https://www.insee.fr/fr/statistiques/fichier/4802589/UU2020_au_01-01-2023.zip",
+    2024: "https://www.insee.fr/fr/statistiques/fichier/4802589/UU2020_au_01-01-2024.zip",
+    2025: "https://www.insee.fr/fr/statistiques/fichier/4802589/UU2020_au_01-01-2025.zip",
+    2026: "https://www.insee.fr/fr/statistiques/fichier/4802589/UU2020_au_01-01-2026.zip",
 }
 
 AAV_URL_DICT = {
-    "2020": "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_AAV2020_geo20.zip",
-    "2021": "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_AAV2020_geo21.zip",
-    "2022": "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2022.zip",
-    "2023": "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2023.zip",
-    "2024": "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2024.zip",
+    2020: "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_AAV2020_geo20.zip",
+    2021: "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_AAV2020_geo21.zip",
+    2022: "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2022.zip",
+    2023: "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2023.zip",
+    2024: "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2024.zip",
+}
+
+URBAN_TYPE_MAP = {
+    "H": "outside_urban_unit",
+    "R": "outside_urban_unit",  # R is used in pre-2020 data.
+    "B": "suburb",
+    "C": "central_city",
+    "I": "isolated_city",
 }
 
 
@@ -77,7 +98,7 @@ def get_insee_changes():
     return df
 
 
-def read_density_excel(source: bytes | str, year: str) -> pl.DataFrame:
+def read_density_excel(source: bytes | str, year: int) -> pl.DataFrame:
     df: pl.DataFrame = pl.read_excel(
         source,
         read_options={"header_row": 4},
@@ -89,17 +110,66 @@ def read_density_excel(source: bytes | str, year: str) -> pl.DataFrame:
 
 def get_insee_density():
     df = pl.DataFrame({"insee": pl.Series(dtype=pl.String)})
-    with tmp_download(DENSITY_URL_DICT["2015_to_2020"]) as fn:
+    with tmp_download(DENSITY_URL_DICT[2015]) as fn:
+        # Special case: years 2015 to 2020 are store in the same nested zipfiles.
         with zipfile.ZipFile(fn) as z:
             for year in range(2015, 2021):
-                tmp_df = read_density_excel(
-                    z.read(f"grille_densite_7_niveaux_{year}.xlsx"), str(year)
-                )
+                tmp_df = read_density_excel(z.read(f"grille_densite_7_niveaux_{year}.xlsx"), year)
                 df = df.join(tmp_df, on="insee", how="full", coalesce=True)
-    for year in range(2021, 2025):
-        with tmp_download(DENSITY_URL_DICT[str(year)]) as fn:
-            tmp_df = read_density_excel(fn, str(year))
+    for year, url in DENSITY_URL_DICT.items():
+        if year == 2015:
+            # Already handled above.
+            continue
+        with tmp_download(url) as fn:
+            tmp_df = read_density_excel(fn, year)
             df = df.join(tmp_df, on="insee", how="full", coalesce=True)
+    df = df.sort("insee")
+    return df
+
+
+def read_urban_excel(source: bytes | str, year: int, ref_year: int) -> pl.DataFrame:
+    if ref_year == 2010:
+        # Statut column for year 2018 is STATUT_2015; for year 2019 it is STATUT_2016.
+        statut_col = f"STATUT_{year - 3}"
+    else:
+        statut_col = "STATUT_COM_UU"
+    df: pl.DataFrame = pl.read_excel(
+        source,
+        sheet_name="Composition_communale",
+        read_options={"header_row": 5},
+        columns=["CODGEO", f"UU{ref_year}", f"LIBUU{ref_year}", statut_col],
+        schema_overrides={
+            "CODGEO": pl.String,
+            f"UU{ref_year}": pl.String,
+            f"LIBUU{ref_year}": pl.String,
+            statut_col: pl.String,
+        },
+    )  # ty: ignore[invalid-assignment]
+    df = df.with_columns(pl.col(statut_col).replace_strict(URBAN_TYPE_MAP))
+    return df.rename(
+        {
+            "CODGEO": "insee",
+            f"UU{ref_year}": f"urban_unit_{year}",
+            f"LIBUU{ref_year}": f"urban_unit_name_{year}",
+            statut_col: f"insee_urban_type_{year}",
+        }
+    )
+
+
+def get_insee_urban():
+    df = pl.DataFrame({"insee": pl.Series(dtype=pl.String)})
+    for year, url in URBAN_URL_DICT.items():
+        with tmp_download(url) as fn:
+            with zipfile.ZipFile(fn) as z:
+                assert len(z.filelist) == 1, "Only 1 file is expected in INSEE urban data"
+                if "UU2010" in url:
+                    ref_year = 2010
+                elif "UU2020" in url:
+                    ref_year = 2020
+                else:
+                    raise Exception("Invalid INSEE urban data url")
+                tmp_df = read_urban_excel(z.read(z.filelist[0].filename), year, ref_year)
+                df = df.join(tmp_df, on="insee", how="full", coalesce=True)
     df = df.sort("insee")
     return df
 
@@ -124,9 +194,9 @@ AAV_CAT_MAP = {
 }
 
 
-def read_aav(source: zipfile.ZipExtFile | str, year: str):
+def read_aav(source: zipfile.ZipExtFile | str, year: int):
     with zipfile.ZipFile(source) as z:
-        if year == "2020":
+        if year == 2020:
             # Format is different for year 2020.
             df = pl.concat(
                 (
@@ -151,7 +221,7 @@ def read_aav(source: zipfile.ZipExtFile | str, year: str):
                 ),
             )
         else:
-            if year == "2021":
+            if year == 2021:
                 fn_insee = f"AAV20_compcom_geo{year}.zip"
                 fn_aav = f"AAV20_contours_geo{year}.zip"
             else:
@@ -212,16 +282,15 @@ def read_aav(source: zipfile.ZipExtFile | str, year: str):
 
 def get_insee_aav():
     df = pl.DataFrame({"insee": pl.Series(dtype=pl.String)})
-    for year in range(2020, 2025):
-        with tmp_download(AAV_URL_DICT[str(year)]) as fn:
-            tmp_df = read_aav(fn, str(year))
+    for year, url in AAV_URL_DICT.items():
+        with tmp_download(url) as fn:
+            tmp_df = read_aav(fn, year)
             df = df.join(tmp_df, on="insee", how="full", coalesce=True)
     df = df.sort("insee")
     return df
 
 
 def download_insee_data():
-    logger.warning("INSEE municipality-level data not found")
     logger.warning("Data will be downloaded from the INSEE website")
     logger.warning("This operation only needs to be performed once")
     logger.debug("Retrieving INSEE codes")
@@ -230,6 +299,8 @@ def download_insee_data():
     df_changes = get_insee_changes()
     logger.debug("Retrieving INSEE densities")
     df_density = get_insee_density()
+    logger.debug("Retrieving INSEE urban units")
+    df_urban = get_insee_urban()
     logger.debug("Retrieving INSEE AAV")
     df_aav = get_insee_aav()
     # Add INSEE codes missing from code géo.
@@ -248,6 +319,17 @@ def download_insee_data():
         )
         .alias(col)
         for col in df_density.columns
+        if col != "insee"
+    )
+    # Add urban units data.
+    df = df.with_columns(
+        pl.col("insee")
+        .replace_strict(df_urban["insee"], df_urban[col], default=None)
+        .fill_null(
+            pl.col("parent_insee").replace_strict(df_urban["insee"], df_urban[col], default=None)
+        )
+        .alias(col)
+        for col in df_urban.columns
         if col != "insee"
     )
     # Add AAV data.
@@ -270,15 +352,37 @@ def download_insee_data():
 
 def load_insee_data(columns: list[str] | None = None):
     if not os.path.isfile(OUTPUT_FILE):
+        logger.warning("INSEE municipality-level data not found")
         return download_insee_data()
-    else:
-        return pl.read_parquet(OUTPUT_FILE, columns=columns)
+    elif "insee_urban_type_2026" not in pq.read_schema(OUTPUT_FILE).names:
+        # If the file was created for previous versions of MobiSurvStd, some variables might be
+        # missing and so it needs to be created again.
+        logger.warning(
+            "INSEE data is available in cache but urban type is missing. "
+            "Data will be re-downloaded."
+        )
+        return download_insee_data()
+    return pl.read_parquet(OUTPUT_FILE, columns=columns)
+
+
+def find_data_year(year):
+    """Returns the closest available year for INSEE data given the survey year."""
+    min_density_year = min(DENSITY_URL_DICT.keys())
+    max_density_year = max(DENSITY_URL_DICT.keys())
+    min_urban_year = min(URBAN_URL_DICT.keys())
+    max_urban_year = max(URBAN_URL_DICT.keys())
+    min_aav_year = min(AAV_URL_DICT.keys())
+    max_aav_year = max(AAV_URL_DICT.keys())
+    density_year = max(min_density_year, min(max_density_year, year))
+    urban_year = max(min_urban_year, min(max_urban_year, year))
+    aav_year = max(min_aav_year, min(max_aav_year, year))
+    return density_year, urban_year, aav_year
 
 
 def add_insee_data(lf: pl.LazyFrame, prefix: str, year: int | None = None, skip_dep=False):
     """Add the municipality name and département code from the INSEE code column.
 
-    If `year` is not None, then also add density and AAV data for that year.
+    If `year` is not None, then also add density, urban and AAV data for that year.
 
     If `skip_dep` is True, then the corresponding département code is not added (useful to use the
     département codes reported by the travel survey when some observations have a département code
@@ -288,11 +392,13 @@ def add_insee_data(lf: pl.LazyFrame, prefix: str, year: int | None = None, skip_
     if not skip_dep:
         columns.append("dep")
     if year is not None:
-        density_year = max(2015, min(2024, year))
-        aav_year = max(2020, min(2024, year))
+        density_year, urban_year, aav_year = find_data_year(year)
         columns.extend(
             [
                 f"insee_density_{density_year}",
+                f"insee_urban_type_{urban_year}",
+                f"urban_unit_{urban_year}",
+                f"urban_unit_name_{urban_year}",
                 f"aav_{aav_year}",
                 f"insee_aav_type_{aav_year}",
                 f"aav_name_{aav_year}",
@@ -309,6 +415,9 @@ def add_insee_data(lf: pl.LazyFrame, prefix: str, year: int | None = None, skip_
         lf = lf.rename(
             {
                 f"insee_density_{density_year}": f"{prefix}_insee_density",
+                f"insee_urban_type_{urban_year}": f"{prefix}_insee_urban_type",
+                f"urban_unit_{urban_year}": f"{prefix}_urban_unit",
+                f"urban_unit_name_{urban_year}": f"{prefix}_urban_unit_name",
                 f"aav_{aav_year}": f"{prefix}_aav",
                 f"insee_aav_type_{aav_year}": f"{prefix}_insee_aav_type",
                 f"aav_name_{aav_year}": f"{prefix}_aav_name",

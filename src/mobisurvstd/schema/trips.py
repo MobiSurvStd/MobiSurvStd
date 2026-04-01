@@ -1,6 +1,6 @@
 import polars as pl
 
-from .common import MODE_ENUM, MODE_GROUP_ENUM, MODE_TO_GROUP, Variable
+from .common import MODE_ENUM, MODE_GROUP_ENUM, MODE_TO_GROUP, URBAN_TYPE_ENUM, Variable
 from .guarantees import (
     AtMostOneOf,
     Bounded,
@@ -245,6 +245,12 @@ TRIP_SCHEMA = [
     Variable("origin_aav_name", pl.String),
     # Category of the AAV of the trip's origin.
     Variable("origin_aav_category", pl.UInt8, [Bounded(1, 5)]),
+    # Category of the origin INSEE municipality within its urban unit.
+    Variable("origin_insee_urban_type", URBAN_TYPE_ENUM),
+    # Code of the urban unit of the trip's origin.
+    Variable("origin_urban_unit", pl.String),
+    # Name of the urban unit of the trip's origin.
+    Variable("origin_urban_unit_name", pl.String),
     # Département code of the trip's origin.
     Variable("origin_dep", pl.String, [ValidDepCode()]),
     # Département name of the trip's origin.
@@ -283,6 +289,12 @@ TRIP_SCHEMA = [
     Variable("destination_aav_name", pl.String),
     # Category of the AAV of the trip's destination.
     Variable("destination_aav_category", pl.UInt8, [Bounded(1, 5)]),
+    # Category of the destination INSEE municipality within its urban unit.
+    Variable("destination_insee_urban_type", URBAN_TYPE_ENUM),
+    # Code of the urban unit of the trip's destination.
+    Variable("destination_urban_unit", pl.String),
+    # Name of the urban unit of the trip's destination.
+    Variable("destination_urban_unit_name", pl.String),
     # Département code of the trip's destination.
     Variable("destination_dep", pl.String, [ValidDepCode()]),
     # Département name of the trip's destination.

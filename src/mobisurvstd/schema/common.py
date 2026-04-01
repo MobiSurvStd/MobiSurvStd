@@ -33,6 +33,8 @@ class Variable:
         return res
 
 
+URBAN_TYPE_ENUM = pl.Enum(["central_city", "suburb", "isolated_city", "outside_urban_unit"])
+
 PARKING_LOCATION_ENUM = pl.Enum(["garage", "street", "parking_lot", "other"])
 
 PARKING_TYPE_ENUM = pl.Enum(["forbidden", "free", "paid", "paid_by_other", "other"])

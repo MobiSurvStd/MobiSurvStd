@@ -1,5 +1,14 @@
 import polars as pl
 
+URBAN_TYPE_MAP = {
+    "H": "outside_urban_unit",
+    "B": "suburb",
+    "C": "central_city",
+    "I": "isolated_city",
+    "8": None,  # Undefined value.
+    "9": None,  # Undefined value.
+}
+
 
 def insee_density_col(col: str):
     # The encoding of the file is incorrect so we need to resort to the following function to

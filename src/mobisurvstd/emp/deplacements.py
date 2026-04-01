@@ -4,7 +4,7 @@ from mobisurvstd.common.legs import clean as clean_legs
 from mobisurvstd.common.trips import clean as clean_trips
 from mobisurvstd.resources.nuts import NUTS_DF
 
-from .common import insee_density_col
+from .common import URBAN_TYPE_MAP, insee_density_col
 
 SCHEMA = {
     "IDENT_DEP": pl.String,  # Identifiant déplacement
@@ -261,6 +261,8 @@ def standardize_trips(filename: str, persons: pl.LazyFrame):
         destination_shop_type=pl.col("MMOTIFDES").replace_strict(SHOP_TYPE_MAP, default=None),
         origin_insee_density=insee_density_col("densite_7_ORI"),
         destination_insee_density=insee_density_col("densite_7_DES"),
+        origin_insee_urban_type=pl.col("STATUTCOM_UU_ORI").replace_strict(URBAN_TYPE_MAP),
+        destination_insee_urban_type=pl.col("STATUTCOM_UU_DES").replace_strict(URBAN_TYPE_MAP),
         origin_aav_category=pl.col("TAA2017_ORI").replace({0: None, 8: None, 9: None}),
         destination_aav_category=pl.col("TAA2017_DES").replace({0: None, 8: None, 9: None}),
         origin_insee_aav_type=pl.col("CATCOM_AA_ORI").replace({98: None, 99: None}),

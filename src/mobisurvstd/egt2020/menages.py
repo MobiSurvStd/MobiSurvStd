@@ -127,7 +127,6 @@ def standardize_households(filename: str):
             "RESLAT": "home_lat",
             "RESINSEE": "home_insee",
             "RESDEP": "home_dep",
-            "NB_VD": "nb_cars",
             "NB_2RM": "nb_motorcycles",
             "NB_VELO": "nb_bicycles",
             "NB_VAE": "nb_electric_bicycles",
@@ -144,6 +143,8 @@ def standardize_households(filename: str):
         housing_type=pl.col("TYPELOG").replace_strict(HOUSING_TYPE_MAP),
         housing_status=pl.col("OCCUPLOG").replace_strict(HOUSING_STATUS_MAP),
         has_internet=pl.col("INTERNET") == 1,
+        # Null values for number of cars = 0 car.
+        nb_cars=pl.col("NB_VD").fill_null(0),
         nb_standard_bicycles=pl.col("nb_bicycles") - pl.col("nb_electric_bicycles"),
         has_bicycle_parking=pl.col("ABRI_VL") == 1,
         # Set `nb_electric_bicycles` to NULL when `nb_bicycles` is NULL (column NB_VAE is 0 instead

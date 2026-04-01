@@ -85,7 +85,12 @@ def scan_trips(filename: str):
     return lf
 
 
-def standardize_trips(filename: str, persons: pl.LazyFrame, distances: pl.LazyFrame | None = None):
+def standardize_trips(
+    filename: str,
+    persons: pl.LazyFrame,
+    skip_insee: bool = False,
+    distances: pl.LazyFrame | None = None,
+):
     lf = scan_trips(filename)
 
     lf = lf.with_columns(original_person_id=pl.col("ID")).join(
@@ -166,7 +171,12 @@ def standardize_trips(filename: str, persons: pl.LazyFrame, distances: pl.LazyFr
     # filter out days without trace (PDT), without trip (PDD), or outside IDF (HORS IDF)
     lf = lf.filter(pl.col("Num_depl").is_in(["PDT", "PDD", "HORS IDF"]).not_())
 
-    lf = clean_trips(lf, 2023, perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"])
+    lf = clean_trips(
+        lf,
+        2023,
+        perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"],
+        skip_insee=skip_insee,
+    )
 
     return lf
 

@@ -134,6 +134,7 @@ def standardize_trips(
     persons: pl.LazyFrame,
     households: pl.LazyFrame,
     detailed_zones: pl.DataFrame | None,
+    skip_insee: bool = False,
 ):
     lf = scan_trips(filename)
     # Add household_id and person_id.
@@ -204,6 +205,7 @@ def standardize_trips(
         2010,
         perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"],
         detailed_zones=detailed_zones,
+        skip_insee=skip_insee,
     )
     # When the INSEE code ends with "000" it means "rest of the département".
     # We drop these values because they do not add any additional information compared to `_dep`

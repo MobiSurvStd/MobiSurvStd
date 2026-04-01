@@ -128,7 +128,9 @@ def scan_trips(filename: str):
     return lf
 
 
-def standardize_trips(filename: str, households: pl.LazyFrame, persons: pl.LazyFrame):
+def standardize_trips(
+    filename: str, households: pl.LazyFrame, persons: pl.LazyFrame, skip_insee: bool = False
+):
     lf = scan_trips(filename)
     # Add household_id and person_id.
     lf = lf.with_columns(original_person_id=pl.struct("IDCEREMA", "NP")).join(
@@ -189,5 +191,10 @@ def standardize_trips(filename: str, households: pl.LazyFrame, persons: pl.LazyF
     # For EGT2020, we use the AAV and density data from 2020 (even if some interviews are from 2018
     # and 2019).
     # The survey perimeter cover excatly the 8 départements of the IDF region.
-    lf = clean(lf, 2020, perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"])
+    lf = clean(
+        lf,
+        2020,
+        perimeter_deps=["75", "77", "78", "91", "92", "93", "94", "95"],
+        skip_insee=skip_insee,
+    )
     return lf

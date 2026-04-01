@@ -16,6 +16,7 @@ def clean(
     perimeter_deps: list[str] | None = None,
     special_locations: pl.DataFrame | None = None,
     detailed_zones: pl.DataFrame | None = None,
+    skip_insee: bool = False,
 ):
     existing_cols = lf.collect_schema().names()
     columns = [variable.name for variable in TRIP_SCHEMA if variable.name in existing_cols]
@@ -26,8 +27,9 @@ def clean(
     lf = add_durations(lf, existing_cols)
     lf = add_weekdays(lf, existing_cols)
     lf = add_lng_lat(lf, existing_cols, special_locations, detailed_zones)
-    lf = add_insee_columns(lf, existing_cols)
-    lf = add_insee_data_columns(lf, existing_cols, year)
+    if not skip_insee:
+        lf = add_insee_columns(lf, existing_cols)
+        lf = add_insee_data_columns(lf, existing_cols, year)
     lf = add_nuts_columns(lf, existing_cols)
     lf = add_intra_zones(lf, existing_cols)
     lf = add_main_mode_groups(lf, existing_cols)

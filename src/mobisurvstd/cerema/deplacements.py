@@ -123,7 +123,7 @@ class TripsReader(CeremaReader):
         lf = lf.sort(self.get_trip_index_cols())
         return lf
 
-    def standardize_trips(self):
+    def standardize_trips(self, skip_insee: bool = False):
         lf = self.scan_trips()
         # Add household_id, person_id, trip date, and trip weekday.
         lf = lf.with_columns(
@@ -203,6 +203,7 @@ class TripsReader(CeremaReader):
             year=self.survey_year() or CURRENT_YEAR,
             special_locations=self.special_locations_coords,
             detailed_zones=self.detailed_zones_coords,
+            skip_insee=skip_insee,
         )
         # When the INSEE code ends with "000" or "999" it means "rest of the département".
         # We drop these values because they do not add any additional information compared to `_dep`

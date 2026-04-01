@@ -1,17 +1,17 @@
 from zipfile import ZipFile
 
-from loguru import logger
 import polars as pl
+from loguru import logger
 
 from mobisurvstd.common.clean import clean
 from mobisurvstd.utils import find_file
 
-from .deplacements import standardize_trips, standardize_distances, standardize_legs
+from .deplacements import standardize_distances, standardize_legs, standardize_trips
 from .menages import standardize_households
 from .personnes import standardize_persons
 
 
-def standardize(source: str | ZipFile, skip_spatial: bool = False):
+def standardize(source: str | ZipFile, skip_spatial: bool = False, skip_insee: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EMG2023 survey from `{source_name}`")
 
@@ -21,7 +21,7 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
         return None
 
     # Households.
-    households = standardize_households(filename)
+    households = standardize_households(filename, skip_insee)
 
     # Persons.
     persons = standardize_persons(filename, households)
@@ -36,7 +36,7 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
         logger.error(f"Missing trips file: {filename}")
         return None
 
-    trips = standardize_trips(filename, persons, distances=distances)
+    trips = standardize_trips(filename, persons, skip_insee, distances=distances)
 
     legs = standardize_legs(filename, trips)
 

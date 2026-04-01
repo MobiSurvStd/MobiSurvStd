@@ -14,7 +14,7 @@ from .trajets import standardize_legs
 from .zones import read_detailed_zones
 
 
-def standardize(source: str | ZipFile, skip_spatial: bool = False):
+def standardize(source: str | ZipFile, skip_spatial: bool = False, skip_insee: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EGT2010 survey from `{source_name}`")
     if skip_spatial:
@@ -33,7 +33,7 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
     if not filename:
         logger.error(f"Missing households file: {filename}")
         return None
-    households = standardize_households(filename, detailed_zone_coords)
+    households = standardize_households(filename, detailed_zone_coords, skip_insee)
     # Cars.
     cars = standardize_cars(filename, households)
     # motorcycles.
@@ -49,7 +49,7 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False):
     if not filename:
         logger.error(f"Missing trips file: {filename}")
         return None
-    trips = standardize_trips(filename, persons, households, detailed_zone_coords)
+    trips = standardize_trips(filename, persons, households, detailed_zone_coords, skip_insee)
     # Legs.
     filename = legs_filename(source)
     if not filename:

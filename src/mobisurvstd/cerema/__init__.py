@@ -7,7 +7,9 @@ from .emd import EMDReader
 from .nantes_opendata import OpenDataReader
 
 
-def standardize(source: str | ZipFile, survey_type: str, skip_spatial: bool = False):
+def standardize(
+    source: str | ZipFile, survey_type: str, skip_spatial: bool = False, skip_insee: bool = False
+):
     if survey_type == "EMC2":
         reader = EMC2Reader(source)
     elif survey_type == "EDGT":
@@ -20,4 +22,4 @@ def standardize(source: str | ZipFile, survey_type: str, skip_spatial: bool = Fa
         reader = EMDReader(source)
     else:
         raise NotImplementedError
-    return reader.standardize(skip_spatial)
+    return reader.standardize(skip_spatial, skip_insee)

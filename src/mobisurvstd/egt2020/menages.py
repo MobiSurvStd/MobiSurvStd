@@ -118,7 +118,7 @@ def scan_households(filename: str):
     return df.lazy()
 
 
-def standardize_households(filename: str):
+def standardize_households(filename: str, skip_insee: bool = False):
     lf = scan_households(filename)
     lf = lf.rename(
         {
@@ -164,5 +164,5 @@ def standardize_households(filename: str):
         )
     )
     lf = lf.sort("original_household_id")
-    lf = clean(lf, year=2020)
+    lf = clean(lf, year=2020, skip_insee=skip_insee)
     return lf

@@ -1,4 +1,3 @@
-
 import polars as pl
 
 from mobisurvstd.common.households import clean as clean_households
@@ -6,7 +5,7 @@ from mobisurvstd.common.households import clean as clean_households
 from .personnes import scan_persons
 
 
-def standardize_households(filename: str):
+def standardize_households(filename: str, skip_insee: bool = False):
     lf = scan_persons(filename)
 
     lf = lf.with_columns(
@@ -20,6 +19,6 @@ def standardize_households(filename: str):
     )
 
     lf = lf.sort("original_household_id")
-    lf = clean_households(lf, year=2023)
+    lf = clean_households(lf, year=2023, skip_insee=skip_insee)
 
     return lf

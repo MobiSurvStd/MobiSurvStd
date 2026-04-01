@@ -26,7 +26,7 @@ LOCATION_COLUMNS = (
 class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReader, ZonesReader):
     SURVEY_TYPE = ""
 
-    def standardize(self, skip_spatial: bool = False):
+    def standardize(self, skip_spatial: bool = False, skip_insee: bool = False):
         logger.info(f"Standardizing {self.SURVEY_TYPE} survey from `{self.source_name()}`")
         if not self.validate():
             return None
@@ -34,11 +34,11 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
         if not skip_spatial:
             self.read_spatial_data()
 
-        self.standardize_households()
+        self.standardize_households(skip_insee)
         self.standardize_cars()
         self.standardize_motorcycles()
         self.standardize_persons()
-        self.standardize_trips()
+        self.standardize_trips(skip_insee)
         self.standardize_legs()
 
         self.finish()

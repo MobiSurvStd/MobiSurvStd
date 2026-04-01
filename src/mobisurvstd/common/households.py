@@ -14,6 +14,7 @@ def clean(
     year: int | None,
     special_locations: pl.DataFrame | None = None,
     detailed_zones: pl.DataFrame | None = None,
+    skip_insee: bool = False,
 ):
     existing_cols = lf.collect_schema().names()
     columns = [variable.name for variable in HOUSEHOLD_SCHEMA if variable.name in existing_cols]
@@ -21,8 +22,9 @@ def clean(
     lf = indexing(lf)
     lf = add_bicycle_counts(lf, existing_cols)
     lf = add_lng_lat(lf, existing_cols, special_locations, detailed_zones)
-    lf = add_insee_columns(lf, existing_cols)
-    lf = add_insee_data_columns(lf, existing_cols, year)
+    if not skip_insee:
+        lf = add_insee_columns(lf, existing_cols)
+        lf = add_insee_data_columns(lf, existing_cols, year)
     if "home_dep" in existing_cols:
         lf = add_nuts_data(lf, "home")
     if DEBUG:

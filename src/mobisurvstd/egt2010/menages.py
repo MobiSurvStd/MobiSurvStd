@@ -265,7 +265,9 @@ def scan_households(filename: str):
     return lf
 
 
-def standardize_households(filename: str, detailed_zones: pl.DataFrame | None):
+def standardize_households(
+    filename: str, detailed_zones: pl.DataFrame | None, skip_insee: bool = False
+):
     lf = scan_households(filename)
     lf = lf.rename(
         {
@@ -311,7 +313,7 @@ def standardize_households(filename: str, detailed_zones: pl.DataFrame | None):
         .otherwise("home_insee"),
     )
     lf = lf.sort("original_household_id")
-    lf = clean_households(lf, year=2010, detailed_zones=detailed_zones)
+    lf = clean_households(lf, year=2010, detailed_zones=detailed_zones, skip_insee=skip_insee)
     return lf
 
 

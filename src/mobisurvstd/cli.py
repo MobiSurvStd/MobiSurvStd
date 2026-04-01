@@ -36,6 +36,7 @@ def standardizer(
         False, "--bulk", help="Import surveys in bulk from the given directory"
     ),
     skip_spatial: bool = typer.Option(False, "--skip-spatial", help="Do not read spatial data"),
+    skip_insee: bool = typer.Option(False, "--skip-insee", help="Do not add INSEE data"),
     no_validation: bool = typer.Option(
         False,
         "--no-validation",
@@ -57,6 +58,7 @@ def standardizer(
             output_directory,
             survey_type,
             skip_spatial=skip_spatial,
+            skip_insee=skip_insee,
             no_validation=no_validation,
         )
     else:
@@ -65,6 +67,7 @@ def standardizer(
             output_directory,
             survey_type,
             skip_spatial=skip_spatial,
+            skip_insee=skip_insee,
             no_validation=no_validation,
         )
 

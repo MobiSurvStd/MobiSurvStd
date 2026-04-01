@@ -14,6 +14,7 @@ def standardize(
     survey_type: str | None = None,
     add_name_subdir: bool = False,
     skip_spatial: bool = False,
+    skip_insee: bool = False,
     no_validation: bool = False,
 ) -> SurveyData | None:
     """Converts a mobility survey to a clean standardized format.
@@ -45,6 +46,10 @@ def standardize(
         This means that special locations, detailed zones, and draw zones will not be read and
         proposed as an output.
         Some variables (e.g., home_lng, home_lat) might also be missing as a result.
+    skip_insee
+        If True, MobiSurvStd will not try to download and add INSEE data to the surveys.
+        This means that some variables, like municipality name, density level, urban type, etc.,
+        might be missing.
     no_validation
         If True, MobiSurvStd will not validate the standardized data.
         This means that guarantees for some variables might not be satisfied.
@@ -78,23 +83,40 @@ def standardize(
     # Note that I actually define here some aliases for the `survey_type` argument that are not
     # documented (because why not?).
     if survey_type == "emc2":
-        survey_data = cerema.standardize(dir_or_zip, "EMC2", skip_spatial=skip_spatial)
+        survey_data = cerema.standardize(
+            dir_or_zip, "EMC2", skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
     elif survey_type == "edgt":
-        survey_data = cerema.standardize(dir_or_zip, "EDGT", skip_spatial=skip_spatial)
+        survey_data = cerema.standardize(
+            dir_or_zip, "EDGT", skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
     elif survey_type == "edgt-opendata":
-        survey_data = cerema.standardize(dir_or_zip, "EDGT-opendata", skip_spatial=skip_spatial)
+        survey_data = cerema.standardize(
+            dir_or_zip, "EDGT-opendata", skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
     elif survey_type == "edvm":
-        survey_data = cerema.standardize(dir_or_zip, "EDVM", skip_spatial=skip_spatial)
+        survey_data = cerema.standardize(
+            dir_or_zip, "EDVM", skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
     elif survey_type == "emd":
-        survey_data = cerema.standardize(dir_or_zip, "EMD", skip_spatial=skip_spatial)
+        survey_data = cerema.standardize(
+            dir_or_zip, "EMD", skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
     elif survey_type in ("emp", "emp2019"):
+        # There is no `skip_insee` argument for EMP since INSEE data never needs to be read.
         survey_data = emp.standardize(dir_or_zip, skip_spatial=skip_spatial)
     elif survey_type in ("egt2020", "egt20", "egt1820"):
-        survey_data = egt2020.standardize(dir_or_zip, skip_spatial=skip_spatial)
+        survey_data = egt2020.standardize(
+            dir_or_zip, skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
     elif survey_type in ("egt2010", "egt10"):
-        survey_data = egt2010.standardize(dir_or_zip, skip_spatial=skip_spatial)
+        survey_data = egt2010.standardize(
+            dir_or_zip, skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
     elif survey_type in ("emg", "emg2023", "emg23"):
-        survey_data = emg2023.standardize(dir_or_zip, skip_spatial=skip_spatial)
+        survey_data = emg2023.standardize(
+            dir_or_zip, skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
     else:
         logger.error(f"Unsupported survey type: {survey_type}")
         return None
@@ -118,6 +140,7 @@ def bulk_standardize(
     output_directory: str,
     survey_type: str | None = None,
     skip_spatial: bool = False,
+    skip_insee: bool = False,
     no_validation: bool = False,
 ):
     """Standardizes mobility surveys in bulk from a given directory.
@@ -145,6 +168,10 @@ def bulk_standardize(
         This means that special locations, detailed zones, and draw zones will not be read and
         proposed as an output.
         Some variables (e.g., home_lng, home_lat) might also be missing as a result.
+    skip_insee
+        If True, MobiSurvStd will not try to download and add INSEE data to the surveys.
+        This means that some variables, like municipality name, density level, urban type, etc.,
+        might be missing.
     no_validation
         If True, MobiSurvStd will not validate the standardized data.
         This means that guarantees for some variables might not be satisfied.
@@ -159,7 +186,7 @@ def bulk_standardize(
     >>> mobisurvstd.bulk_standardize("my_surveys", "standardized_surveys")
     """
     n = bulk_standardize_impl(
-        directory, output_directory, survey_type, skip_spatial, no_validation, n=0
+        directory, output_directory, survey_type, skip_spatial, skip_insee, no_validation, n=0
     )
     if n > 0:
         logger.success(f"Successfully read {n} surveys from `{directory}`")
@@ -172,6 +199,7 @@ def bulk_standardize_impl(
     output_directory: str,
     survey_type: str | None = None,
     skip_spatial: bool = False,
+    skip_insee: bool = False,
     no_validation: bool = False,
     n: int = 0,
 ):
@@ -186,7 +214,13 @@ def bulk_standardize_impl(
                 # The directory does not seem to be a valid survey.
                 # We try to iteratively read that directory.
                 n = bulk_standardize_impl(
-                    source, output_directory, survey_type, skip_spatial, no_validation, n
+                    source,
+                    output_directory,
+                    survey_type,
+                    skip_spatial,
+                    skip_insee,
+                    no_validation,
+                    n,
                 )
             else:
                 data = standardize(
@@ -195,6 +229,7 @@ def bulk_standardize_impl(
                     survey_type,
                     add_name_subdir=True,
                     skip_spatial=skip_spatial,
+                    skip_insee=skip_insee,
                     no_validation=no_validation,
                 )
                 if data is not None:
@@ -206,6 +241,7 @@ def bulk_standardize_impl(
                 survey_type,
                 add_name_subdir=True,
                 skip_spatial=skip_spatial,
+                skip_insee=skip_insee,
                 no_validation=no_validation,
             )
             if data is not None:

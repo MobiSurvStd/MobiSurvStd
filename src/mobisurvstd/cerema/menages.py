@@ -223,7 +223,7 @@ class HouseholdsReader(CeremaReader):
     def main_insee(self):
         return self.scan_households().select("IDM4").first().collect().item()  # ty: ignore[possibly-missing-attribute]
 
-    def standardize_households(self):
+    def standardize_households(self, skip_insee: bool = False):
         lf = self.scan_households()
         lf = lf.rename(
             {
@@ -254,6 +254,7 @@ class HouseholdsReader(CeremaReader):
             year=self.survey_year() or CURRENT_YEAR,
             special_locations=self.special_locations_coords,
             detailed_zones=self.detailed_zones_coords,
+            skip_insee=skip_insee,
         )
         # When the INSEE code ends with "000" or "999" it means "rest of the département".
         # We drop these values because they do not add any additional information compared to `_dep`

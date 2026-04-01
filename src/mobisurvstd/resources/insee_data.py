@@ -12,18 +12,19 @@ from . import CACHE_DIR
 
 OUTPUT_FILE = os.path.join(CACHE_DIR, "insee_data.parquet")
 
-CODE_GEO_URL = "https://www.insee.fr/fr/statistiques/fichier/8377162/v_commune_2025.csv"
+CODE_GEO_URL = "https://www.insee.fr/fr/statistiques/fichier/8740222/v_commune_2026.csv"
 
 INSEE_CHANGE_URL = (
-    "https://www.insee.fr/fr/statistiques/fichier/7671867/table_passage_geo2003_geo2025.zip"
+    "https://www.insee.fr/fr/statistiques/fichier/7671867/table_passage_geo2003_geo2026.zip"
 )
 
 DENSITY_URL_DICT = {
     2015: "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2015-2020.zip",
-    2021: "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2021.xlsx",
-    2022: "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2022.xlsx",
-    2023: "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2023.xlsx",
-    2024: "https://www.insee.fr/fr/statistiques/fichier/6439600/grille_densite_7_niveaux_2024.xlsx",
+    2021: "https://www.insee.fr/fr/statistiques/fichier/8571524/fichier_diffusion_2021.xlsx",
+    2022: "https://www.insee.fr/fr/statistiques/fichier/8571524/fichier_diffusion_2022.xlsx",
+    2023: "https://www.insee.fr/fr/statistiques/fichier/8571524/fichier_diffusion_2023.xlsx",
+    2024: "https://www.insee.fr/fr/statistiques/fichier/8571524/fichier_diffusion_2024.xlsx",
+    2025: "https://www.insee.fr/fr/statistiques/fichier/8571524/fichier_diffusion_2025.xlsx",
 }
 
 URBAN_URL_DICT = {
@@ -44,6 +45,8 @@ AAV_URL_DICT = {
     2022: "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2022.zip",
     2023: "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2023.zip",
     2024: "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2024.zip",
+    2025: "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2025.zip",
+    2026: "https://www.insee.fr/fr/statistiques/fichier/4803954/fonds_aav2020_2026.zip",
 }
 
 URBAN_TYPE_MAP = {
@@ -83,10 +86,10 @@ def get_insee_changes():
             df: pl.DataFrame = pl.read_excel(
                 z.read(z.filelist[0]),
                 read_options={"header_row": 5},
-                columns=["CODGEO_INI", "CODGEO_2025"],
-                schema_overrides={"CODGEO_INI": pl.String, "CODGEO_2025": pl.String},
+                columns=["CODGEO_INI", "CODGEO_2026"],
+                schema_overrides={"CODGEO_INI": pl.String, "CODGEO_2026": pl.String},
             )  # ty: ignore[invalid-assignment]
-    df = df.rename({"CODGEO_INI": "insee", "CODGEO_2025": "parent_insee"})
+    df = df.rename({"CODGEO_INI": "insee", "CODGEO_2026": "parent_insee"})
     # Construct the département from the INSEE code.
     # This is done so that former communes which switched to a new département during a merge are
     # registered in their former département.
@@ -99,13 +102,18 @@ def get_insee_changes():
 
 
 def read_density_excel(source: bytes | str, year: int) -> pl.DataFrame:
+    if year >= 2021:
+        # Starting for year 2021, 7-level density is stored in column DENS7.
+        dens_col = "DENS7"
+    else:
+        dens_col = "DENS"
     df: pl.DataFrame = pl.read_excel(
         source,
         read_options={"header_row": 4},
-        columns=["CODGEO", "DENS"],
-        schema_overrides={"CODGEO": pl.String, "DENS": pl.UInt8},
+        columns=["CODGEO", dens_col],
+        schema_overrides={"CODGEO": pl.String, dens_col: pl.UInt8},
     )  # ty: ignore[invalid-assignment]
-    return df.rename({"CODGEO": "insee", "DENS": f"insee_density_{year}"})
+    return df.rename({"CODGEO": "insee", dens_col: f"insee_density_{year}"})
 
 
 def get_insee_density():

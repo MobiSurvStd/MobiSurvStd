@@ -18,6 +18,7 @@ GitHub</a>.
 
 All surveys can be processed *without spatial / zonal data* when running with the `--skip-spatial` flag.
 
+![Map of all local surveys tested with MobiSurvStd](images/survey_map.jpg)
 
 ## Enquête mobilité des personnes 2019 (EMP)
 

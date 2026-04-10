@@ -411,12 +411,12 @@ Note that persons below 5 year old are sometimes excluded from the surveys.
 
 ### `nb_persons_5plus`
 
-Number of persons in the household whose age is 6 or more.
+Number of persons in the household whose age is 5 or more.
 
 - **Type:** UInt8
 - **Guarantees:**
-  - The value is not smaller than the number of persons in this household whose age is 6 or more.
-  - The value is not larger than the number of persons in this household whose age is unknown or 6
+  - The value is not smaller than the number of persons in this household whose age is 5 or more.
+  - The value is not larger than the number of persons in this household whose age is unknown or 5
     or more.
 
 ### `nb_majors`

@@ -6,6 +6,7 @@
 
 - Various fixes to support four new EMC² surveys (Clermont-Ferrand 2023, Toulouse 2023, Nice 2023,
   and Strasbourg 2024).
+- Update `py7zr` to `1.1.0`.
 
 ## [1.1.0] - 2026-04-01
 

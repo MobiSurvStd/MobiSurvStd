@@ -1319,7 +1319,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "platformdirs", specifier = ">=4.3.8" },
     { name = "polars", specifier = ">=1.38.0" },
-    { name = "py7zr", specifier = ">=0.20.8" },
+    { name = "py7zr", specifier = ">=1.1.0" },
     { name = "pyarrow", specifier = ">=19.0.1" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "tqdm", specifier = ">=4.67.3" },

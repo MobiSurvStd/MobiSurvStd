@@ -62,7 +62,19 @@ Link: [https://www.cerema.fr/fr/activites/mobilites/connaissance-modelisation-ev
 
 Download link (for researchers): [https://data.progedo.fr/series/adisp/enquetes-menages-deplacements-emd-enquetes-mobilite-certifiee-cerema-emc](https://data.progedo.fr/series/adisp/enquetes-menages-deplacements-emd-enquetes-mobilite-certifiee-cerema-emc)
 
-Expected format:
+Expected format (recent Progedo exports):
+
+```bash
+my_emc2_survey/
+├── *-Donnees_CSV  # Subdirectory names do not matter.
+│   └── fichiers_standards
+│       ├── *_std_depl.csv
+│       ├── *_std_men.csv
+│       ├── *_std_pers.csv
+│       └── *_std_traj.csv
+```
+
+Expected format (older Progedo exports):
 
 ```bash
 my_emc2_survey/
@@ -88,18 +100,22 @@ Tested surveys:
 - Bouzonville 2019
 - Brest 2018
 - Chambéry 2022
+- Clermont-Ferrand 2023  **New**
 - Évreux 2018
 - Gap 2018
 - Grenoble 2020
 - Lannion 2022
 - Le Havre 2018
 - Marseille 2020
+- Nice 2023  **New**
 - Pointe-à-Pitre 2021
 - Poitiers 2018
 - Reims 2021
 - Rennes 2018
 - Sables d'Olonne 2021
 - Saint-Étienne 2021
+- Strasbourg 2024  **New**
+- Toulouse 2023  **New**
 - Tours 2019
 - Valenciennes 2019
 - Vendée 2020

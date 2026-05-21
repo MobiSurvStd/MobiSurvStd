@@ -209,7 +209,7 @@ def bulk_standardize_impl(
     for inner in os.listdir(directory):
         source = os.path.join(directory, inner)
         if os.path.isdir(source):
-            maybe_type = guess_survey_type(directory)
+            maybe_type = guess_survey_type(source)
             if maybe_type is None:
                 # The directory does not seem to be a valid survey.
                 # We try to iteratively read that directory.

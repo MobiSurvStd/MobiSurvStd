@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-21
+
+- Various fixes to support four new EMC² surveys (Clermont-Ferrand 2023, Toulouse 2023, Nice 2023,
+  and Strasbourg 2024).
+
 ## [1.1.0] - 2026-04-01
 
 - EMG 2023 is now supported (@sebhoerl).
@@ -10,7 +15,7 @@
   `origin`, and `destination`.
 - New script to plot activity schedules of a household: `analysis/plot_household_schedule.py`.
 - New command-line option `--skip-spatial` to skip downloading INSEE data.
-- Show progress bars when downloading INSEE or IGN data.
+- Show progress bars when downloading INSEE or IGN data (@sebhoerl).
 - Add MobiSurvStd logos.
 - Update INSEE data for 2026.
 - Add ruff configuration to `pyproject.toml`.

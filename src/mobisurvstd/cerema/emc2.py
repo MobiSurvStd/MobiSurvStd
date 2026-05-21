@@ -14,32 +14,16 @@ class EMC2Reader(CeremaStandardizer):
     SURVEY_TYPE = "EMC2"
 
     def households_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
-        return [
-            find_file(
-                self.source, ".*_std_men.csv", subdir=os.path.join("Csv", "Fichiers_Standard")
-            )
-        ]
+        return [find_file(self.source, ".*_std_men.csv")]
 
     def persons_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
-        return [
-            find_file(
-                self.source, ".*_std_pers.csv", subdir=os.path.join("Csv", "Fichiers_Standard")
-            )
-        ]
+        return [find_file(self.source, ".*_std_pers.csv")]
 
     def trips_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
-        return [
-            find_file(
-                self.source, ".*_std_depl.csv", subdir=os.path.join("Csv", "Fichiers_Standard")
-            )
-        ]
+        return [find_file(self.source, ".*_std_depl.csv")]
 
     def legs_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
-        return [
-            find_file(
-                self.source, ".*_std_traj.csv", subdir=os.path.join("Csv", "Fichiers_Standard")
-            )
-        ]
+        return [find_file(self.source, ".*_std_traj.csv")]
 
     def detailed_zones_filenames(self):
         return [
@@ -63,9 +47,7 @@ class EMC2Reader(CeremaStandardizer):
         ]
 
     def survey_name(self):
-        filename = find_file_path(
-            self.source, ".*_std_men.csv", subdir=os.path.join("Csv", "Fichiers_Standard")
-        )
+        filename = find_file_path(self.source, ".*_std_men.csv")
         fn_match = re.match("(.*)_std_men.csv", os.path.basename(filename))
         if fn_match is not None:
             return fn_match.group(1)

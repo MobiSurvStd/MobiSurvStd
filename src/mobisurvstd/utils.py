@@ -225,8 +225,9 @@ def guess_survey_type(source: str | ZipFile) -> str | None:
         # Nantes 2015 open data format.
         return "edgt-opendata"
     if bytes := find_file(source, ".*_std_men.csv", subdir="Csv"):
+        separator = detect_csv_delimiter(bytes)
         survey_type = (
-            pl.scan_csv(bytes, separator=";", schema_overrides={"IDM1": pl.UInt8})
+            pl.scan_csv(bytes, separator=separator, schema_overrides={"IDM1": pl.UInt8})
             .select(pl.col("IDM1").first())
             .collect()
             .item()  # ty: ignore[possibly-missing-attribute]

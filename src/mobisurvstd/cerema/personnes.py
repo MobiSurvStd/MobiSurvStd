@@ -3,6 +3,7 @@ import io
 import polars as pl
 
 from mobisurvstd.common.persons import clean
+from mobisurvstd.utils import detect_csv_delimiter
 
 from .reader import CeremaReader
 
@@ -232,7 +233,10 @@ WEEKDAY_MAP = {
 
 
 def scan_persons_impl(source: str | io.BytesIO):
-    return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["a", "aa"])
+    separator = detect_csv_delimiter(source)
+    return pl.scan_csv(
+        source, separator=separator, schema_overrides=SCHEMA, null_values=["a", "aa"]
+    )
 
 
 class PersonsReader(CeremaReader):
@@ -240,6 +244,8 @@ class PersonsReader(CeremaReader):
         lfs_iter = map(scan_persons_impl, self.persons_filenames())
         lf = pl.concat(lfs_iter, how="vertical")
         lf = lf.sort(self.get_person_index_cols())
+        # Set empty strings and whitespace-only strings as NULL values.
+        lf = lf.with_columns(pl.col(pl.String).str.strip_chars().replace("", None))
         columns = lf.collect_schema().names()
         if "P13B" not in columns:
             # In the old Cerema surveys (EMD, EDGT, EDVM), the P13B column does not exist.

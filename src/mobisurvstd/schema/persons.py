@@ -855,7 +855,11 @@ PERSON_SCHEMA = [
         ),
         [
             Null(when=pl.col("is_surveyed").eq(False)),
-            ValueIsNot("yes:home:usual", when=pl.col("work_only_at_home").eq(False)),
+            ValueIsNot(
+                "yes:home:usual",
+                when=pl.col("work_only_at_home").eq(False),
+                fix_value="yes:home:other",
+            ),
         ],
     ),
     # Number of trips that this person performed.

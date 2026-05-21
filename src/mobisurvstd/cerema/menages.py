@@ -6,6 +6,7 @@ from mobisurvstd.common.cars import clean as clean_cars
 from mobisurvstd.common.households import clean as clean_households
 from mobisurvstd.common.motorcycles import clean as clean_motorcycles
 from mobisurvstd.schema.common import CURRENT_YEAR
+from mobisurvstd.utils import detect_csv_delimiter
 
 from .reader import CeremaReader
 
@@ -162,6 +163,7 @@ PARKING_LOCATION_MAP = {
     3: "parking_lot",  # Dans un parc à ciel ouvert (ou place publique)
     4: "parking_lot",  # Dans un parc couvert accessible au public
     5: "other",  # Autre (egt)
+    9: "other",  # Autre (egt)
 }
 
 PARKING_TYPE_MAP = {
@@ -170,6 +172,7 @@ PARKING_TYPE_MAP = {
     3: "paid",  # Payant à votre charge
     4: "paid_by_other",  # Payant à la charge de quelqu'un d'autre
     5: "other",  # Autre (egt)
+    9: "other",  # Autre (egt)
 }
 
 MOTORCYCLE_TYPE_MAP = {
@@ -204,7 +207,8 @@ MOTORCYCLE_THERMIC_ENGINE_TYPE_MAP = {1: "two_stroke", 2: "four_stroke"}
 
 
 def scan_households_impl(source: str | io.BytesIO):
-    return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["a"])
+    separator = detect_csv_delimiter(source)
+    return pl.scan_csv(source, separator=separator, schema_overrides=SCHEMA, null_values=["a"])
 
 
 class HouseholdsReader(CeremaReader):

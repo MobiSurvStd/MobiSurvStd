@@ -4,6 +4,7 @@ import polars as pl
 from loguru import logger
 
 from mobisurvstd.common.legs import clean
+from mobisurvstd.utils import detect_csv_delimiter
 
 from .reader import CeremaReader
 
@@ -93,8 +94,9 @@ MOTORCYCLE_MAP = {
 
 
 def scan_legs_impl(source: str | io.BytesIO):
+    separator = detect_csv_delimiter(source)
     return pl.scan_csv(
-        source, separator=";", schema_overrides=SCHEMA, null_values=["a", "aa", "aaaaa"]
+        source, separator=separator, schema_overrides=SCHEMA, null_values=["a", "aa", "aaaaa"]
     )
 
 

@@ -5,6 +5,7 @@ from loguru import logger
 
 from mobisurvstd.common.trips import clean
 from mobisurvstd.schema.common import CURRENT_YEAR
+from mobisurvstd.utils import detect_csv_delimiter
 
 from .reader import CeremaReader
 
@@ -113,7 +114,10 @@ TRIP_PERIMETER_MAP = {
 
 
 def scan_trips_impl(source: str | io.BytesIO):
-    return pl.scan_csv(source, separator=";", schema_overrides=SCHEMA, null_values=["aa", "aaaaa"])
+    separator = detect_csv_delimiter(source)
+    return pl.scan_csv(
+        source, separator=separator, schema_overrides=SCHEMA, null_values=["aa", "aaaaa"]
+    )
 
 
 class TripsReader(CeremaReader):

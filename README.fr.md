@@ -137,6 +137,10 @@ Actuellement :
 * `edvm`
 * `emd`
 
+Plus d'information dans [la documentation](https://mobisurvstd.github.io/MobiSurvStd/surveys.html).
+
+![Cartes de toutes les enquêtes locales prises en charge](https://raw.githubusercontent.com/MobiSurvStd/MobiSurvStd/main/docs/src/images/survey_map.jpg)
+
 À venir : `entd`
 
 📬 Vous connaissez un autre format ? Ouvrez un ticket sur GitHub.

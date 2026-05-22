@@ -176,6 +176,8 @@ Currently, MobiSurvStd supports the following survey types:
 
 See [Survey Types](https://mobisurvstd.github.io/MobiSurvStd/surveys.html) for more.
 
+![Map of all local surveys tested with MobiSurvStd](https://raw.githubusercontent.com/MobiSurvStd/MobiSurvStd/main/docs/src/images/survey_map.jpg)
+
 Other survey types that are planned to be integrated are: `entd`.
 If you know another survey format that could be integrated, feel free to open an issue on GitHub.
 

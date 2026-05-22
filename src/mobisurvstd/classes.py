@@ -264,12 +264,18 @@ class SurveyDataReader:
                 self._draw_zones = gpd.read_parquet(filename)
         return self._draw_zones
 
-    def mean_date(self) -> date:
+    def mean_date(self) -> date | None:
         """Returns the mean date at which the survey was conducted (the middle date between the
         survey's start and end date).
         """
-        start_date = date.fromisoformat(self.metadata["start_date"])
-        end_date = date.fromisoformat(self.metadata["end_date"])
+        if self.metadata["start_date"]:
+            start_date = date.fromisoformat(self.metadata["start_date"])
+        else:
+            return None
+        if self.metadata["end_date"]:
+            end_date = date.fromisoformat(self.metadata["end_date"])
+        else:
+            return None
         return start_date + (end_date - start_date) / 2
 
 

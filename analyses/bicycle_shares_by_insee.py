@@ -32,7 +32,9 @@ df = (
 # Create categories.
 bins = list(np.arange(0.0, 0.06, 0.01))
 labels = ["0%", "1%", "2%", "3%", "4%", "5%", "6%+"]
-df = df.with_columns(bicycle_share_bin=pl.col("bicycle_share").cut(bins, labels=labels))
+df = df.sort("bicycle_share").with_columns(
+    bicycle_share_bin=pl.col("bicycle_share").cut(bins, labels=labels)
+)
 
 # Load INSEE geometries and add them to the DataFrame.
 gdf = load_insee_geometries().to_crs("epsg:2154")

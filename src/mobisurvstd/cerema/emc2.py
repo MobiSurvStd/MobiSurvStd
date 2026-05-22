@@ -26,25 +26,18 @@ class EMC2Reader(CeremaStandardizer):
         return [find_file(self.source, ".*_std_traj.csv")]
 
     def detailed_zones_filenames(self):
-        return [
-            find_file_path(
-                self.source, r".*_ZF(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG")
-            )
-        ]
+        return [find_file_path(self.source, r".*_ZF(_.*)?\.(TAB|shp)", subdir="SIG")]
 
     def special_locations_filenames(self):
-        return [
-            find_file_path(
-                self.source, r".*_GT(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG")
-            )
-        ]
+        base = find_file_path(self.source, r".*_GT(?!_ext)(_.*)?\.(TAB|shp)", subdir="SIG")
+        ext = find_file_path(self.source, r".*_GT_externes(_.*)?\.(TAB|shp)", subdir="SIG")
+        if base and ext:
+            return [base, ext]
+        else:
+            return [base]
 
     def draw_zones_filenames(self):
-        return [
-            find_file_path(
-                self.source, r".*_DTIR(_.*)?\.(TAB|shp)", subdir=os.path.join("Doc", "SIG")
-            )
-        ]
+        return [find_file_path(self.source, r".*_DTIR(_.*)?\.(TAB|shp)", subdir="SIG")]
 
     def survey_name(self):
         filename = find_file_path(self.source, ".*_std_men.csv")
@@ -65,8 +58,8 @@ class EMC2Reader(CeremaStandardizer):
 
     def gt_type_columns(self):
         # Note that Bouzonville 2019 has some GT type data in MACRO but the MACRO column represents
-        # something else in the other surveys so it is not never.
-        return ["nature", "nom_typo", "theme_gt", "type"]
+        # something else in the other surveys so it is not used.
+        return ["nature", "nom_typo", "theme_gt", "famille_g", "type"]
 
     def zf_id_columns(self):
         return ["zf_fusion", "zf_160", "zf", "num_zf"]

@@ -72,6 +72,12 @@ my_emc2_survey/
 │       ├── *_std_men.csv
 │       ├── *_std_pers.csv
 │       └── *_std_traj.csv
+└── *-Documentation  # Subdirectory names do not matter.
+    └── SIG
+        ├── *_ZF(_*)?.(TAB|shp)           # Optional "Zones fines" file
+        ├── *_GT(_*)?.(TAB|shp)           # Optional "Générateurs de trafic" file
+        ├── *_GT_externes(_*)?.(TAB|shp)  # Optional "Générateurs de trafic" external file
+        └── *_DTIR(_*)?.(TAB|shp)         # Optional "Zones de tirage" file
 ```
 
 Expected format (older Progedo exports):

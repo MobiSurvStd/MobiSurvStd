@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-05-22
+
+- Minor fixes for spatial data in the new EMC² surveys.
+
 ## [1.2.0] - 2026-05-21
 
 - Various fixes to support four new EMC² surveys (Clermont-Ferrand 2023, Toulouse 2023, Nice 2023,

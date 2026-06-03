@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Add typing-extensions as an explicit dependency #8
 - Fixes for EGT 2010 and 2020 with recent polars versions #9
 
 ## [1.2.1] - 2026-05-22

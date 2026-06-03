@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-06-03
+
 - Add typing-extensions as an explicit dependency #8
 - Fixes for EGT 2010 and 2020 with recent polars versions #9
 
@@ -28,7 +30,8 @@
 - Update INSEE data for 2026.
 - Add ruff configuration to `pyproject.toml`.
 
-[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.2.1...HEAD
+[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.2.2...HEAD
+[1.2.2]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.2.2
 [1.2.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.2.1
 [1.2.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.2.0
 [1.1.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.1.0

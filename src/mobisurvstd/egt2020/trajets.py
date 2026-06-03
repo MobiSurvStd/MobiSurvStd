@@ -126,22 +126,22 @@ UVP_MAP = {
 
 # Index of household car based on "UVP" column.
 VEHICLE_INDEX_MAP = {
-    "1": 1,  # Modèle voiture 1
-    "2": 1,  # Modèle voiture 2
-    "3": 1,  # Modèle voiture 3
-    "4": 1,  # Modèle voiture 4
+    1: 1,  # Modèle voiture 1
+    2: 1,  # Modèle voiture 2
+    3: 1,  # Modèle voiture 3
+    4: 1,  # Modèle voiture 4
 }
 
 U2RM_MAP = {
-    "1": "household",  # Modèle 2RM 1
-    "2": "household",  # Modèle 2RM 2
-    "3": "household",  # Modèle 2RM 3
-    "4": "household",  # Modèle 2RM 4
-    "5": "other_household",  # Une autre moto / un autre scooter du ménage
-    "6": "shared",  # Une moto / scooter en libre-service
-    "7": "rental",  # Une moto / scooter de location
-    "9": "other",  # Autre - Veuillez préciser. (Champ textuel saisissable)
-    "10": "company",  # Un scooter mis à disposition par mon employeur
+    1: "household",  # Modèle 2RM 1
+    2: "household",  # Modèle 2RM 2
+    3: "household",  # Modèle 2RM 3
+    4: "household",  # Modèle 2RM 4
+    5: "other_household",  # Une autre moto / un autre scooter du ménage
+    6: "shared",  # Une moto / scooter en libre-service
+    7: "rental",  # Une moto / scooter de location
+    9: "other",  # Autre - Veuillez préciser. (Champ textuel saisissable)
+    10: "company",  # Un scooter mis à disposition par mon employeur
 }
 
 PARKING_LOCATION_MAP = {

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fixes for EGT 2010 and 2020 with recent polars versions #9
+
 ## [1.2.1] - 2026-05-22
 
 - Minor fixes for spatial data in the new EMC² surveys.

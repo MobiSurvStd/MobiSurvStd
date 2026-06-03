@@ -22,17 +22,17 @@ SCHEMA = {
 }
 
 FUEL_TYPE_MAP = {
-    "11": "thermic",  # Essence (moteur 2 temps)
-    "12": "thermic",  # Essence (moteur 4 temps)
-    "2": "electric",  # Electrique
-    "9": "other",  # Autre
+    11: "thermic",  # Essence (moteur 2 temps)
+    12: "thermic",  # Essence (moteur 4 temps)
+    2: "electric",  # Electrique
+    9: "other",  # Autre
 }
 
 THERMIC_ENGINE_TYPE_MAP = {
-    "11": "two_stroke",  # Essence (moteur 2 temps)
-    "12": "four_stroke",  # Essence (moteur 4 temps)
-    "2": None,  # Electrique
-    "9": None,  # Autre
+    11: "two_stroke",  # Essence (moteur 2 temps)
+    12: "four_stroke",  # Essence (moteur 4 temps)
+    2: None,  # Electrique
+    9: None,  # Autre
 }
 
 MILEAGE_LB_MAP = {

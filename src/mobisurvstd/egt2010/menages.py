@@ -200,33 +200,33 @@ CAR_OWNERSHIP_MAP = {
 }
 
 PARKING_LOCATION_MAP = {
-    "1": "street",  # Voie publique, payant à durée limitée
-    "2": "street",  # Voie publique, payant tarif résidentiel
-    "3": "street",  # Voie publique, gratuit autorisé
-    "4": "street",  # Voie publique, gratuit non autorisé
-    "5": "garage",  # Emplacement privé, gratuit
-    "6": "garage",  # Emplacement privé, propriétaire
-    "7": "garage",  # Emplacement privé, locataire
-    "8": "parking_lot",  # Stationnement ouvert au public, gratuit
-    "9": "parking_lot",  # Stationnement ouvert au public, propriétaire
-    "10": "parking_lot",  # Stationnement ouvert au public, locataire
-    "11": "parking_lot",  # Stationnement ouvert au public, payant à l'horaire
-    "12": "parking_lot",  # Stationnement ouvert au public, autres
+    1: "street",  # Voie publique, payant à durée limitée
+    2: "street",  # Voie publique, payant tarif résidentiel
+    3: "street",  # Voie publique, gratuit autorisé
+    4: "street",  # Voie publique, gratuit non autorisé
+    5: "garage",  # Emplacement privé, gratuit
+    6: "garage",  # Emplacement privé, propriétaire
+    7: "garage",  # Emplacement privé, locataire
+    8: "parking_lot",  # Stationnement ouvert au public, gratuit
+    9: "parking_lot",  # Stationnement ouvert au public, propriétaire
+    10: "parking_lot",  # Stationnement ouvert au public, locataire
+    11: "parking_lot",  # Stationnement ouvert au public, payant à l'horaire
+    12: "parking_lot",  # Stationnement ouvert au public, autres
 }
 
 PARKING_TYPE_MAP = {
-    "1": "paid",  # Voie publique, payant à durée limitée
-    "2": "paid",  # Voie publique, payant tarif résidentiel
-    "3": "free",  # Voie publique, gratuit autorisé
-    "4": "forbidden",  # Voie publique, gratuit non autorisé
-    "5": "free",  # Emplacement privé, gratuit
-    "6": "free",  # Emplacement privé, propriétaire
-    "7": "paid",  # Emplacement privé, locataire
-    "8": "free",  # Stationnement ouvert au public, gratuit
-    "9": "free",  # Stationnement ouvert au public, propriétaire
-    "10": "paid",  # Stationnement ouvert au public, locataire
-    "11": "paid",  # Stationnement ouvert au public, payant à l'horaire
-    "12": "other",  # Stationnement ouvert au public, autres
+    1: "paid",  # Voie publique, payant à durée limitée
+    2: "paid",  # Voie publique, payant tarif résidentiel
+    3: "free",  # Voie publique, gratuit autorisé
+    4: "forbidden",  # Voie publique, gratuit non autorisé
+    5: "free",  # Emplacement privé, gratuit
+    6: "free",  # Emplacement privé, propriétaire
+    7: "paid",  # Emplacement privé, locataire
+    8: "free",  # Stationnement ouvert au public, gratuit
+    9: "free",  # Stationnement ouvert au public, propriétaire
+    10: "paid",  # Stationnement ouvert au public, locataire
+    11: "paid",  # Stationnement ouvert au public, payant à l'horaire
+    12: "other",  # Stationnement ouvert au public, autres
 }
 
 MOTORCYCLE_TYPE_MAP = {
@@ -247,15 +247,15 @@ MOTORCYCLE_THERMIC_ENGINE_TYPE_MAP = {
 }
 
 MOTORCYCLE_CM3_LB_MAP = {
-    "1": 0,  # inférieur à 50 cm3
-    "2": 50,  # 50-125 cm3
-    "3": 125,  # Supérieur à 125 cm3
+    1: 0,  # inférieur à 50 cm3
+    2: 50,  # 50-125 cm3
+    3: 125,  # Supérieur à 125 cm3
 }
 
 MOTORCYCLE_CM3_UB_MAP = {
-    "1": 50,  # inférieur à 50 cm3
-    "2": 125,  # 50-125 cm3
-    "3": None,  # Supérieur à 125 cm3
+    1: 50,  # inférieur à 50 cm3
+    2: 125,  # 50-125 cm3
+    3: None,  # Supérieur à 125 cm3
 }
 
 

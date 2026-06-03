@@ -63,51 +63,51 @@ SCHEMA = {
 }
 
 PURPOSE_MAP = {
-    "1": "home:main",  # Domicile habituel (celui où la personne est enquêtée)
-    "2": "home:secondary",  # Un des domiciles correspondant à une garde alternée
-    "3": "home:secondary",  # Résidence secondaire, logement occasionnel, hôtel, autre domicile
+    1: "home:main",  # Domicile habituel (celui où la personne est enquêtée)
+    2: "home:secondary",  # Un des domiciles correspondant à une garde alternée
+    3: "home:secondary",  # Résidence secondaire, logement occasionnel, hôtel, autre domicile
     # Motifs professionnels
-    "11": "work:usual",  # Travail sur le lieu de travail déclaré dans la fiche personne
-    "12": "work:secondary",  #  Travail sur un autre lieu (hors affaires professionnelles)
-    "13": "work:other",  #  Affaires professionnelles hors lieu de travail habituel (RV professionnel, réunion, etc.)
-    "14": "work:professional_tour",  # Tournée professionnelle
+    11: "work:usual",  # Travail sur le lieu de travail déclaré dans la fiche personne
+    12: "work:secondary",  #  Travail sur un autre lieu (hors affaires professionnelles)
+    13: "work:other",  #  Affaires professionnelles hors lieu de travail habituel (RV professionnel, réunion, etc.)
+    14: "work:professional_tour",  # Tournée professionnelle
     # Restauration hors domicile
-    "15": "work:business_meal",  # Repas d’affaires, déjeuner professionnel
-    "16": "leisure:lunch_break",  # Pause déjeuner durant la journée de travail (cantine, cafétéria, restaurant situés hors du lieu de travail…)
-    "17": "leisure:restaurant",  # Autre restauration hors domicile (restaurant, bar, café, cybercafé…)
+    15: "work:business_meal",  # Repas d’affaires, déjeuner professionnel
+    16: "leisure:lunch_break",  # Pause déjeuner durant la journée de travail (cantine, cafétéria, restaurant situés hors du lieu de travail…)
+    17: "leisure:restaurant",  # Autre restauration hors domicile (restaurant, bar, café, cybercafé…)
     # Etudes -Garde d’enfants
-    "21": "education:childcare",  # Nourrice, crèche, garde d’enfants
-    "22": "education:usual",  # Études sur le lieu d'études déclaré (école maternelle et primaire)
-    "23": "education:usual",  # Études sur le lieu d'études déclaré (enseignement secondaire : collège et lycée)
-    "24": "education:usual",  # Études sur le lieu d'études déclaré (enseignement supérieur, universités et grandes écoles)
-    "25": "education:other",  # Études sur un autre lieu (école maternelle et primaire)
-    "26": "education:other",  # Études sur un autre lieu (enseignement secondaire : collège et lycée)
-    "27": "education:other",  # Études sur un autre lieu (enseignement supérieur, universités et grandes écoles)
+    21: "education:childcare",  # Nourrice, crèche, garde d’enfants
+    22: "education:usual",  # Études sur le lieu d'études déclaré (école maternelle et primaire)
+    23: "education:usual",  # Études sur le lieu d'études déclaré (enseignement secondaire : collège et lycée)
+    24: "education:usual",  # Études sur le lieu d'études déclaré (enseignement supérieur, universités et grandes écoles)
+    25: "education:other",  # Études sur un autre lieu (école maternelle et primaire)
+    26: "education:other",  # Études sur un autre lieu (enseignement secondaire : collège et lycée)
+    27: "education:other",  # Études sur un autre lieu (enseignement supérieur, universités et grandes écoles)
     # Achats
-    "31": "shopping:daily",  # Achats quotidiens (pain, journal, …)
-    "32": "shopping:weekly",  # Achats hebdomadaires ou bi hebdomadaires
-    "33": "shopping:specialized",  # Achats occasionnels (livres, vêtements, électroménager, musique, meubles etc.)
+    31: "shopping:daily",  # Achats quotidiens (pain, journal, …)
+    32: "shopping:weekly",  # Achats hebdomadaires ou bi hebdomadaires
+    33: "shopping:specialized",  # Achats occasionnels (livres, vêtements, électroménager, musique, meubles etc.)
     # Loisirs
-    "41": "leisure:sport_or_culture",  # Participation à une activité sportive, culturelle, associative ou religieuse
-    "42": "leisure:walk_or_driving_lesson",  # Promenade, lèche-vitrines (sans achat), leçons de conduite
-    "43": "leisure:visiting:parents",  # Visite à des parents
-    "44": "leisure:visiting:friends",  # Visite à des amis
-    "45": "leisure:sport_or_culture",  # Spectacle, exposition, cinéma, musée, théâtre, concert, match de foot…
-    "46": "leisure:sport_or_culture",  # Voyage, sortie touristique
-    "47": "leisure:other",  # Autres loisirs
+    41: "leisure:sport_or_culture",  # Participation à une activité sportive, culturelle, associative ou religieuse
+    42: "leisure:walk_or_driving_lesson",  # Promenade, lèche-vitrines (sans achat), leçons de conduite
+    43: "leisure:visiting:parents",  # Visite à des parents
+    44: "leisure:visiting:friends",  # Visite à des amis
+    45: "leisure:sport_or_culture",  # Spectacle, exposition, cinéma, musée, théâtre, concert, match de foot…
+    46: "leisure:sport_or_culture",  # Voyage, sortie touristique
+    47: "leisure:other",  # Autres loisirs
     # Démarches administratives/ Affaires personnelles
-    "50": "task:procedure",  # Démarches administratives
-    "51": "task:job_search",  # Recherche d’emploi (y. entretiens)
-    "52": "task:healthcare",  # Aide ou soins à des proches
-    "53": "task:healthcare:hospital",  # Santé (hôpital, clinique)
-    "54": "task:healthcare:doctor",  # Santé autres (consultation professionnel de la santé hors hôpital : médecin, dentiste, kiné, etc.)
-    "55": "task:other",  # Affaires personnelles autres (avocat, notaire, garage, réunion parents d’élèves, réunion de copropriétaires etc.)
+    50: "task:procedure",  # Démarches administratives
+    51: "task:job_search",  # Recherche d’emploi (y. entretiens)
+    52: "task:healthcare",  # Aide ou soins à des proches
+    53: "task:healthcare:hospital",  # Santé (hôpital, clinique)
+    54: "task:healthcare:doctor",  # Santé autres (consultation professionnel de la santé hors hôpital : médecin, dentiste, kiné, etc.)
+    55: "task:other",  # Affaires personnelles autres (avocat, notaire, garage, réunion parents d’élèves, réunion de copropriétaires etc.)
     # Accompagnement
-    "61": "escort:transport:drop_off",  # Dépose d’une personne à un mode de transport (station, gare, arrêt de bus, aéroport…)
-    "62": "escort:transport:pick_up",  # Reprise d’une personne à un mode de transport (station, gare, arrêt de bus, aéroport…)
-    "63": "escort:activity:drop_off",  # Accompagner quelqu’un dans un lieu autre qu’un mode de transport (école, garderie, amis, cinéma, sport, travail etc.)
-    "64": "escort:activity:pick_up",  # Aller chercher quelqu’un (dans un lieu autre qu’un mode de transport (école, garderie, amis, cinéma, sport, travail etc.)
-    "98": "other",  # Autre motif
+    61: "escort:transport:drop_off",  # Dépose d’une personne à un mode de transport (station, gare, arrêt de bus, aéroport…)
+    62: "escort:transport:pick_up",  # Reprise d’une personne à un mode de transport (station, gare, arrêt de bus, aéroport…)
+    63: "escort:activity:drop_off",  # Accompagner quelqu’un dans un lieu autre qu’un mode de transport (école, garderie, amis, cinéma, sport, travail etc.)
+    64: "escort:activity:pick_up",  # Aller chercher quelqu’un (dans un lieu autre qu’un mode de transport (école, garderie, amis, cinéma, sport, travail etc.)
+    98: "other",  # Autre motif
 }
 
 SHOP_TYPE_MAP = {

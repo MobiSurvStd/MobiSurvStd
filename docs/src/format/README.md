@@ -12,3 +12,5 @@ A survey standardized by MobiSurvStd consists in the following files stored with
 - [`special_locations.geo.parquet`](./zones.html) [optional]
 - [`detailed_zones.geo.parquet`](./zones.html) [optional]
 - [`draw_zones.geo.parquet`](./zones.html) [optional]
+
+![Reliationships between the main entities in MobiSurvStd](images/mobisurvstd-relationships.png)

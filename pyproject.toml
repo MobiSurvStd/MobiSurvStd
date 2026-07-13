@@ -36,6 +36,15 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 
+[project.scripts]
+mobisurvstd = "mobisurvstd:cli.app"
+
+[project.urls]
+Homepage = "https://github.com/MobiSurvStd/MobiSurvStd"
+Documentation = "https://mobisurvstd.github.io/MobiSurvStd/index.html"
+Repository = "https://github.com/MobiSurvStd/MobiSurvStd"
+Issues = "https://github.com/MobiSurvStd/MobiSurvStd/issues"
+
 [dependency-groups]
 dev = [
     "Cartopy>=0.24.1",
@@ -46,12 +55,6 @@ dev = [
     "seaborn>=0.13.2",
     "ty>=0.0.15",
 ]
-
-[project.urls]
-Homepage = "https://github.com/MobiSurvStd/MobiSurvStd"
-Documentation = "https://mobisurvstd.github.io/MobiSurvStd/index.html"
-Repository = "https://github.com/MobiSurvStd/MobiSurvStd"
-Issues = "https://github.com/MobiSurvStd/MobiSurvStd/issues"
 
 [tool.ruff]
 line-length = 100

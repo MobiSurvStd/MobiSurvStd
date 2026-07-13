@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add `mobisurvstd` executable
+
 ## [1.2.2] - 2026-06-03
 
 - Add typing-extensions as an explicit dependency #8

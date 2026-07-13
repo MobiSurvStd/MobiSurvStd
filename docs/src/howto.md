@@ -9,35 +9,43 @@
 ## Command Line Interface
 
 ```
- Usage: python -m mobisurvstd [OPTIONS] SOURCE OUTPUT_DIRECTORY
+ Usage: mobisurvstd [OPTIONS] SOURCE OUTPUT_DIRECTORY
 
  Mobility Survey Standardizer: a Python command line tool to convert mobility surveys to a clean
  standardized format.
 
 
-╭─ Arguments ────────────────────────────────────────────────────────────────────────────────────────╮
-│ *    source                TEXT  Path to the directory or the zipfile where the survey data is     │
-│                                  located.                                                          │
-│                                  [default: None]                                                   │
-│                                  [required]                                                        │
-│ *    output_directory      TEXT  Path to the directory where the standardized survey should be     │
-│                                  stored.                                                           │
-│                                  [default: None]                                                   │
-│                                  [required]                                                        │
-╰────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --survey-type               TEXT  Format of the original survey. Possible values: `emc2`, `emp2019`, │
-│                                   `egt2010`, `egt2020`, `edgt`, `edvm`, `emd`, `emg2023`.            │
-│ --bulk                            Import surveys in bulk from the given directory                    │
-│ --skip-spatial                    Do not read spatial data                                           │
-│ --no-validation                   Do not validate the standardized data (some guarantees might not   │
-│                                   be satisfied)                                                      │
-│ --clear-cache                     Clear the cache data and exit                                      │
-│ --install-completion              Install completion for the current shell.                          │
-│ --show-completion                 Show completion for the current shell, to copy it or customize the │
-│                                   installation.                                                  │
-│ --help                            Show this message and exit.                                        │
-╰──────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Arguments ─────────────────────────────────────────────────────────────────────────────────────────╮
+│ *    source                TEXT  Path to the directory or the zipfile where the survey data is      │
+│                                  located.                                                           │
+│                                  [required]                                                         │
+│ *    output_directory      TEXT  Path to the directory where the standardized survey should be      │
+│                                  stored.                                                            │
+│                                  [required]                                                         │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ───────────────────────────────────────────────────────────────────────────────────────────╮
+│ --survey-type               TEXT  Format of the original survey. Possible values: `emc2`,           │
+│                                   `emp2019`, `egt2010`, `egt2020`, `edgt`, `edvm`, `emd`,           │
+│                                   `emg2023`.                                                        │
+│ --bulk                            Import surveys in bulk from the given directory                   │
+│ --skip-spatial                    Do not read spatial data                                          │
+│ --skip-insee                      Do not add INSEE data                                             │
+│ --no-validation                   Do not validate the standardized data (some guarantees might not  │
+│                                   be satisfied)                                                     │
+│ --clear-cache                     Clear the cache data and exit                                     │
+│ --version                         Show MobiSurvStd version and exit                                 │
+│ --install-completion              Install completion for the current shell.                         │
+│ --show-completion                 Show completion for the current shell, to copy it or customize    │
+│                                   the installation.                                                 │
+│ --help                            Show this message and exit.                                       │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
+Note. If you have installed [`uv`](https://docs.astral.sh/uv/), you can execute `mobisurvstd`
+without installing it with:
+
+```bash
+uvx mobisurvstd
 ```
 
 ### Examples
@@ -48,7 +56,7 @@ Read the EGT2020 survey from the `original_egt2020` directory and store the stan
 the `standardized_egt2020` directory.
 
 ```bash
-python -m mobisurvstd original_egt2020 standardized_egt2020
+mobisurvstd original_egt2020 standardized_egt2020
 ```
 
 #### From zipfile
@@ -57,7 +65,7 @@ Read the EGT2020 survey from the `original_egt2020.zip` file and store the stand
 the `standardized_egt2020` directory.
 
 ```bash
-python -m mobisurvstd original_egt2020.zip standardized_egt2020
+mobisurvstd original_egt2020.zip standardized_egt2020
 ```
 
 #### Bulk import
@@ -66,7 +74,7 @@ Read all surveys in the `my_surveys` directory and store their standardized vers
 `standardized_surveys` directory.
 
 ```bash
-python -m mobisurvstd --bulk my_surveys standardized_surveys
+mobisurvstd --bulk my_surveys standardized_surveys
 ```
 
 ## Usage from Python

@@ -79,7 +79,7 @@ pip install mobisurvstd
 2. Lancez la commande suivante :
 
 ```bash
-python -m mobisurvstd emp_2019_donnees_individuelles_anonymisees_novembre2024.zip standardized_emp2019 --survey-type emp2019
+mobisurvstd emp_2019_donnees_individuelles_anonymisees_novembre2024.zip standardized_emp2019 --survey-type emp2019
 ```
 
 Un dossier `standardized_emp2019` sera créé avec les fichiers Parquet au format standard.

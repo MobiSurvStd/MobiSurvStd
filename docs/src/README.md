@@ -76,7 +76,7 @@ Download the
 _(Données individuelles anonymisées (fichiers au format CSV))_, then run the following command:
 
 ```bash
-python -m mobisurvstd emp_2019_donnees_individuelles_anonymisees_novembre2024.zip standardized_emp2019
+mobisurvstd emp_2019_donnees_individuelles_anonymisees_novembre2024.zip standardized_emp2019
 ```
 
 It will standardize the EMP 2019 survey and save the resulting Parquet files in the

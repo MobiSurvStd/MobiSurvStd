@@ -4,6 +4,8 @@ import os
 import re
 import tempfile
 from contextlib import contextmanager
+from pathlib import Path
+from typing import Literal, overload
 from zipfile import BadZipFile, ZipFile, ZipInfo
 
 import polars as pl
@@ -22,14 +24,14 @@ class MissingFileError(str):
         return False
 
 
-def read_source(source: str) -> str | ZipFile | None:
+def read_source(source: Path) -> Path | ZipFile | None:
     """Converts the input string given by the user as either a directory path or a ZipFile.
 
     Returns None if the source is not a directory or zipfile.
     """
-    if os.path.isdir(source):
-        return source
-    elif os.path.isfile(source):
+    if source.is_dir():
+        return Path(source)
+    elif source.is_file():
         try:
             z = ZipFile(source)
         except BadZipFile as e:
@@ -41,7 +43,9 @@ def read_source(source: str) -> str | ZipFile | None:
         return None
 
 
-def find_file_path(source: str | ZipFile, regex: str, subdir: str = "") -> str | MissingFileError:
+def find_file_path(
+    source: Path | ZipFile, regex: str, subdir: Path | None = None
+) -> Path | str | MissingFileError:
     """Reads the files in a source directory or zipfile and returns the first file that matches the
     given regex.
 
@@ -49,25 +53,12 @@ def find_file_path(source: str | ZipFile, regex: str, subdir: str = "") -> str |
 
     Returns `MissingFileException` if there is no file that matches the regex.
     """
-    if isinstance(source, str):
-        directory = os.path.join(source, subdir)
-        if os.path.isdir(directory):
-            res = find_file_in_directory(directory, regex)
-        else:
-            res = None
-    elif isinstance(source, ZipFile):
-        res = find_url_in_zipfile(source, subdir, regex)
-    else:
-        raise Exception(f"Invalid source: `{source}`")
-    if res is None:
-        return MissingFileError("`{}` in `{}`".format(os.path.join(subdir, regex), source))
-    else:
-        return res
+    return find_file_inner(source, True, regex, subdir)
 
 
 def find_file(
-    source: str | ZipFile, regex: str, subdir: str = ""
-) -> str | io.BytesIO | MissingFileError:
+    source: Path | ZipFile, regex: str, subdir: Path | None = None
+) -> Path | io.BytesIO | MissingFileError:
     """Reads the files in a source directory or zipfile and returns the first file that matches the
     given regex.
 
@@ -75,59 +66,83 @@ def find_file(
 
     Returns `MissingFileException` if there is no file that matches the regex.
     """
-    if isinstance(source, str):
-        directory = os.path.join(source, subdir)
-        if os.path.isdir(directory):
+    return find_file_inner(source, False, regex, subdir)
+
+
+@overload
+def find_file_inner(
+    source: Path | ZipFile, as_url: Literal[True], regex: str, subdir: Path | None = None
+) -> Path | str | MissingFileError: ...
+
+
+@overload
+def find_file_inner(
+    source: Path | ZipFile, as_url: Literal[False], regex: str, subdir: Path | None = None
+) -> Path | io.BytesIO | MissingFileError: ...
+
+
+def find_file_inner(
+    source: Path | ZipFile, as_url: bool, regex: str, subdir: Path | None = None
+) -> Path | str | io.BytesIO | MissingFileError:
+    if isinstance(source, Path):
+        if subdir is None:
+            directory = source
+        else:
+            directory = source / subdir
+        if directory.is_dir():
             res = find_file_in_directory(directory, regex)
         else:
             res = None
+        if res is None:
+            return MissingFileError("`{}` in `{}`".format(regex, directory))
     elif isinstance(source, ZipFile):
-        res = find_file_in_zipfile(source, subdir, regex)
+        if as_url:
+            res = find_url_in_zipfile(source, subdir, regex)
+        else:
+            res = find_file_in_zipfile(source, subdir, regex)
+        if res is None:
+            source_str = f"{source}" if subdir is None else f"{source}/{subdir}"
+            return MissingFileError(f"`{regex}` in `{source_str}`")
     else:
         raise Exception(f"Invalid source: `{source}`")
-    if res is None:
-        return MissingFileError("`{}` in `{}`".format(os.path.join(subdir, regex), source))
-    else:
-        return res
+    return res
 
 
-def find_file_in_directory(directory: str, regex: str) -> str | None:
+def find_file_in_directory(directory: Path, regex: str) -> Path | None:
     """Returns the path to the first file that matches the given regex in the input directory.
 
     Returns `None` if there is no file that matches the regex.
     """
     pattern = re.compile(regex, flags=re.IGNORECASE)
-    for filename in os.listdir(directory):
-        inner = os.path.join(directory, filename)
-        if os.path.isfile(inner) and pattern.match(filename):
-            return inner
-        elif os.path.isdir(inner):
+    for filename in directory.iterdir():
+        if filename.is_file() and pattern.match(filename.name):
+            return filename
+        elif filename.is_dir():
             # Go recursive.
-            if match := find_file_in_directory(inner, regex):
+            if match := find_file_in_directory(filename, regex):
                 return match
     return None
 
 
-def find_in_zipfile(z: ZipFile, subdir: str, regex: str) -> ZipInfo | None:
-    """Returns the ZipInfo of the first file that matches the given regex in the input ZipFile.
-
-    Optionally, the search can be constrained to the given `subdir`.
+def find_in_zipfile(z: ZipFile, subdir: Path | None, regex: str) -> ZipInfo | None:
+    """Returns the ZipInfo of the first file that matches the given regex in the input ZipFile,
+    within the given `subdir`.
 
     Returns `None` if there is no file that matches the regex.
     """
     if subdir:
-        pattern = re.compile(f".*{subdir}/{regex}", flags=re.IGNORECASE)
+        subdir_pattern = "{}/".format(re.escape(subdir.as_posix()))
     else:
-        pattern = re.compile(f".*{regex}", flags=re.IGNORECASE)
+        subdir_pattern = ""
+    pattern = re.compile(f".*{subdir_pattern}{regex}", flags=re.IGNORECASE)
     for fileinfo in z.infolist():
         if pattern.match(fileinfo.filename):
             return fileinfo
 
 
-def find_file_in_zipfile(z: ZipFile, subdir: str, regex: str, as_url=False) -> io.BytesIO | None:
-    """Returns the bytes of the first file that matches the given regex in the input ZipFile.
-
-    Optionally, the search can be constrained to the given `subdir`.
+def find_file_in_zipfile(z: ZipFile, subdir: Path | None, regex: str) -> io.BytesIO | None:
+    """Returns the bytes of the first file that matches the given regex in the input ZipFile, within
+    the given `subdir`.
 
     Returns `None` if there is no file that matches the regex.
     """
@@ -136,12 +151,11 @@ def find_file_in_zipfile(z: ZipFile, subdir: str, regex: str, as_url=False) -> i
         return io.BytesIO(z.read(fileinfo))
 
 
-def find_url_in_zipfile(z: ZipFile, subdir: str, regex: str) -> str | None:
-    """Returns the url of the first file that matches the given regex in the input ZipFile.
+def find_url_in_zipfile(z: ZipFile, subdir: Path | None, regex: str) -> str | None:
+    """Returns the url of the first file that matches the given regex in the input ZipFile, within
+    the given `subdir`.
 
     The url if of the form "zip://[ZIPFILE_PATH]!/FILE_PATH", suitable to be open by geopandas.
-
-    Optionally, the search can be constrained to the given `subdir`.
 
     Returns `None` if there is no file that matches the regex.
     """
@@ -179,8 +193,8 @@ def tmp_download(url):
                 pass
 
 
-def detect_csv_delimiter(source: str | io.BytesIO):
-    if isinstance(source, str):
+def detect_csv_delimiter(source: Path | io.BytesIO) -> str:
+    if isinstance(source, Path):
         with open(source, "r") as f:
             first_line = f.readline()
     else:
@@ -191,43 +205,44 @@ def detect_csv_delimiter(source: str | io.BytesIO):
     return delimiter
 
 
-def guess_survey_type(source: str | ZipFile) -> str | None:
+def guess_survey_type(source: Path | ZipFile) -> str | None:
     """Returns the type of the survey data stored in `source` as a string.
 
     If the survey type cannot be guessed, returns None.
     """
     if find_file_path(source, "k_individu_public_V3.csv"):
         return "emp2019"
-    if find_file_path(source, "a_menage_egt1820.csv", subdir="Csv"):
+    if find_file_path(source, "a_menage_egt1820.csv", subdir=Path("Csv")):
         return "egt2020"
     if find_file_path(source, "01_menage_egt1820.csv"):
         return "egt2020"
-    if find_file_path(source, "menages_semaine.csv", subdir="Csv"):
+    if find_file_path(source, "menages_semaine.csv", subdir=Path("Csv")):
         return "egt2010"
-    if find_file_path(source, "menages_semaine.csv", subdir="Format_csv"):
+    if find_file_path(source, "menages_semaine.csv", subdir=Path("Format_csv")):
         # Old EGT format
         return "egt2010"
-    if find_file_path(source, ".*_std_faf_men.csv", subdir="Csv"):
+    if find_file_path(source, ".*_std_faf_men.csv", subdir=Path("Csv")):
         return "edgt"
-    if find_file_path(source, ".*evreux_2018_std_men.csv", subdir="Csv"):
+    if find_file_path(source, ".*evreux_2018_std_men.csv", subdir=Path("Csv")):
         # Special case for Evreux 2018 which is an EMC2 survey but is defined as an EDVM survey in
         # the IDM1 variable.
         return "emc2"
-    if find_file_path(source, ".*gap_2018_std_men.csv", subdir="Csv"):
+    if find_file_path(source, ".*gap_2018_std_men.csv", subdir=Path("Csv")):
         # Special case for Gap 2018 which is an EMC2 survey but is defined as an EDVM survey in
         # the IDM1 variable.
         return "emc2"
-    if find_file_path(source, ".*poitiers_2018_std_men.csv", subdir="Csv"):
+    if find_file_path(source, ".*poitiers_2018_std_men.csv", subdir=Path("Csv")):
         # Special case for Poitiers 2018 which is an EMC2 survey but is defined as an EDVM survey in
         # the IDM1 variable.
         return "emc2"
     if find_file_path(source, ".*_EDGT_44_MENAGE_FAF_TEL_.*.txt"):
         # Nantes 2015 open data format.
         return "edgt-opendata"
-    if bytes := find_file(source, ".*_std_men.csv", subdir="Csv"):
-        separator = detect_csv_delimiter(bytes)
+    f = find_file(source, ".*_std_men.csv", subdir=Path("Csv"))
+    if not isinstance(f, MissingFileError):
+        separator = detect_csv_delimiter(f)
         survey_type = (
-            pl.scan_csv(bytes, separator=separator, schema_overrides={"IDM1": pl.UInt8})
+            pl.scan_csv(f, separator=separator, schema_overrides={"IDM1": pl.UInt8})
             .select(pl.col("IDM1").first())
             .collect()
             .item()  # ty: ignore[unresolved-attribute]

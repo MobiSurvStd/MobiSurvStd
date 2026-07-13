@@ -1,4 +1,5 @@
 from datetime import timedelta
+from pathlib import Path
 
 import polars as pl
 
@@ -123,14 +124,14 @@ SHOP_TYPE_MAP = {
 }
 
 
-def scan_trips(filename: str):
+def scan_trips(filename: Path):
     separator = detect_csv_delimiter(filename)
     lf = pl.scan_csv(filename, separator=separator, schema_overrides=SCHEMA)
     return lf
 
 
 def standardize_trips(
-    filename: str,
+    filename: Path,
     persons: pl.LazyFrame,
     households: pl.LazyFrame,
     detailed_zones: pl.DataFrame | None,

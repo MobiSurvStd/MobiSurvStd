@@ -1,6 +1,7 @@
 import io
 import os
 import re
+from pathlib import Path
 from zipfile import ZipFile
 
 import geopandas as gpd
@@ -28,7 +29,7 @@ class EDGTReader(CeremaStandardizer):
 
     def special_locations_and_detailed_zones_filenames(self):
         # This should match the Amiens 2010, Clermont-Ferrand 2012, and Lyon 2015 surveys.
-        subdir = os.path.join("Doc", "SIG")
+        subdir = Path("Doc", "SIG")
         faf_filename = find_file_path(
             self.source, ".*_faf_d.?coupagefin[.](tab|shp|mif)", subdir=subdir
         )
@@ -46,7 +47,7 @@ class EDGTReader(CeremaStandardizer):
             ]
 
     def special_locations_filenames(self):
-        subdir = os.path.join("Doc", "SIG")
+        subdir = Path("Doc", "SIG")
         faf_filename = find_file_path(
             self.source, ".*_faf_.*g.?n.?rateur.*[.](tab|shp|mif)", subdir=subdir
         )
@@ -64,7 +65,7 @@ class EDGTReader(CeremaStandardizer):
             ]
 
     def detailed_zones_filenames(self):
-        subdir = os.path.join("Doc", "SIG")
+        subdir = Path("Doc", "SIG")
         faf_filename = find_file_path(
             self.source, ".*_faf_zones_fines[.](tab|shp|mif)", subdir=subdir
         )
@@ -87,19 +88,17 @@ class EDGTReader(CeremaStandardizer):
     def draw_zones_filenames(self):
         return [
             find_file_path(
-                self.source,
-                ".*(_dtir|_secteurstirage)[.](tab|shp|mif)",
-                subdir=os.path.join("Doc", "SIG"),
+                self.source, ".*(_dtir|_secteurstirage)[.](tab|shp|mif)", subdir=Path("Doc", "SIG")
             )
         ]
 
     def survey_name(self):
-        filename = find_file_path(self.source, ".*_std_faf_men.csv", subdir="Csv")
+        filename = find_file_path(self.source, ".*_std_faf_men.csv", subdir=Path("Csv"))
         fn_match = re.match("(.*)_std_faf_men.csv", os.path.basename(filename))
         if fn_match is not None:
             return fn_match.group(1)
         else:
-            return "unkown"
+            return "unknown"
 
     def gt_id_columns(self):
         return [
@@ -270,7 +269,7 @@ class EDGTReader(CeremaStandardizer):
         return zfs, gts
 
 
-def get_files(source: str | ZipFile, name: str) -> list[str | io.BytesIO | MissingFileError]:
+def get_files(source: Path | ZipFile, name: str) -> list[Path | io.BytesIO | MissingFileError]:
     # In the EDGT surveys, there are two directories with "standardized" data in the Csv directory,
     # usually "Fichiers_Standard_Face_a_face" and "Fichiers_Standard_Telephone" but it can be
     # something else.
@@ -278,6 +277,6 @@ def get_files(source: str | ZipFile, name: str) -> list[str | io.BytesIO | Missi
     # "[SURVEY_NAME]_std_faf_[NAME].csv" and "[SURVEY_NAME]_std_tel_[NAME].csv" where NAME is either
     # "men", "pers", "depl", or "traj".
     return [
-        find_file(source, f".*_std_faf_{name}.csv", subdir="Csv"),
-        find_file(source, f".*_std_tel_{name}.csv", subdir="Csv"),
+        find_file(source, f".*_std_faf_{name}.csv", subdir=Path("Csv")),
+        find_file(source, f".*_std_tel_{name}.csv", subdir=Path("Csv")),
     ]

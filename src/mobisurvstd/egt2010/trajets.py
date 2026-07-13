@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import polars as pl
 
 from mobisurvstd.common.legs import clean
@@ -145,7 +147,7 @@ PARKING_TYPE_MAP = {
 }
 
 
-def scan_legs(filename: str):
+def scan_legs(filename: Path):
     separator = detect_csv_delimiter(filename)
     lf = pl.scan_csv(filename, separator=separator, schema_overrides=SCHEMA)
     if "entsect" not in lf.collect_schema().names():
@@ -155,7 +157,7 @@ def scan_legs(filename: str):
 
 
 def standardize_legs(
-    filename: str,
+    filename: Path,
     trips: pl.LazyFrame,
     cars: pl.LazyFrame,
     motorcycles: pl.LazyFrame,

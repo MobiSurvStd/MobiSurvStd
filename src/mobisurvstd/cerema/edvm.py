@@ -1,6 +1,7 @@
 import io
 import os
 import re
+from pathlib import Path
 
 import geopandas as gpd
 
@@ -13,26 +14,26 @@ from .zones import find_matching_column
 class EDVMReader(CeremaStandardizer):
     SURVEY_TYPE = "EDVM"
 
-    def households_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
+    def households_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
         # The filenames are usually stored in "Csv/Fichiers_Standard/[SURVEY_NAME]_std_[NAME].csv"
         # but in some cases (e.g., Ajaccio 2017) the directory "Fichiers_Standard" is named based
         # on the survey name (e.g., Ajaccio_2017_Standard).
-        return [find_file(self.source, ".*_std_men.csv", subdir="Csv")]
+        return [find_file(self.source, ".*_std_men.csv", subdir=Path("Csv"))]
 
-    def persons_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
-        return [find_file(self.source, ".*_std_pers.csv", subdir="Csv")]
+    def persons_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
+        return [find_file(self.source, ".*_std_pers.csv", subdir=Path("Csv"))]
 
-    def trips_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
-        return [find_file(self.source, ".*_std_depl.csv", subdir="Csv")]
+    def trips_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
+        return [find_file(self.source, ".*_std_depl.csv", subdir=Path("Csv"))]
 
-    def legs_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
-        return [find_file(self.source, ".*_std_traj.csv", subdir="Csv")]
+    def legs_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
+        return [find_file(self.source, ".*_std_traj.csv", subdir=Path("Csv"))]
 
     def special_locations_and_detailed_zones_filenames(self):
         # This should only match the Beauvais 2011 survey.
         return [
             find_file_path(
-                self.source, ".*beauvais.*_dfin[.](tab|shp|mif)", subdir=os.path.join("Doc", "SIG")
+                self.source, ".*beauvais.*_dfin[.](tab|shp|mif)", subdir=Path("Doc", "SIG")
             )
         ]
 
@@ -41,7 +42,7 @@ class EDVMReader(CeremaStandardizer):
             find_file_path(
                 self.source,
                 ".*(_zf_.*|_zf|zones?[_ ]?fines?.*|_dfin)[.](tab|shp|mif)",
-                subdir=os.path.join("Doc", "SIG"),
+                subdir=Path("Doc", "SIG"),
             )
         ]
 
@@ -50,19 +51,15 @@ class EDVMReader(CeremaStandardizer):
             find_file_path(
                 self.source,
                 ".*(_gt_.*|_gt|_pgt|_pg|g.?n.?rateur.*)[.](tab|shp|mif)",
-                subdir=os.path.join("Doc", "SIG"),
+                subdir=Path("Doc", "SIG"),
             )
         ]
 
     def draw_zones_filenames(self):
-        return [
-            find_file_path(
-                self.source, ".*_DTIR[.](tab|shp|mif)", subdir=os.path.join("Doc", "SIG")
-            )
-        ]
+        return [find_file_path(self.source, ".*_DTIR[.](tab|shp|mif)", subdir=Path("Doc", "SIG"))]
 
     def survey_name(self):
-        filename = find_file_path(self.source, ".*_std_men.csv", subdir="Csv")
+        filename = find_file_path(self.source, ".*_std_men.csv", subdir=Path("Csv"))
         fn_match = re.match("(.*)_std_men.csv", os.path.basename(filename))
         if fn_match is not None:
             return fn_match.group(1)

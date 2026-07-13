@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from zipfile import ZipFile
 
 from loguru import logger
@@ -9,8 +9,8 @@ from .utils import guess_survey_type, read_source
 
 
 def standardize(
-    source: str,
-    output_directory: str | None = None,
+    source: str | Path,
+    output_directory: str | Path | None = None,
     survey_type: str | None = None,
     add_name_subdir: bool = False,
     skip_spatial: bool = False,
@@ -71,7 +71,8 @@ def standardize(
     >>>     survey_type="egt2020",
     >>> )
     """
-    dir_or_zip = read_source(source)
+    source_path = Path(source)
+    dir_or_zip = read_source(source_path)
     if dir_or_zip is None:
         return None
     if survey_type is None:
@@ -129,15 +130,16 @@ def standardize(
         if not is_valid:
             return None
     if output_directory is not None:
+        output_path = Path(output_directory)
         if add_name_subdir:
-            output_directory = os.path.join(output_directory, survey_data.metadata["name"])
-        survey_data.save(output_directory)
+            output_path = output_path / survey_data.metadata["name"]
+        survey_data.save(output_path)
     return survey_data
 
 
 def bulk_standardize(
-    directory: str,
-    output_directory: str,
+    directory: str | Path,
+    output_directory: str | Path,
     survey_type: str | None = None,
     skip_spatial: bool = False,
     skip_insee: bool = False,
@@ -186,7 +188,13 @@ def bulk_standardize(
     >>> mobisurvstd.bulk_standardize("my_surveys", "standardized_surveys")
     """
     n = bulk_standardize_impl(
-        directory, output_directory, survey_type, skip_spatial, skip_insee, no_validation, n=0
+        Path(directory),
+        Path(output_directory),
+        survey_type,
+        skip_spatial,
+        skip_insee,
+        no_validation,
+        n=0,
     )
     if n > 0:
         logger.success(f"Successfully read {n} surveys from `{directory}`")
@@ -195,20 +203,19 @@ def bulk_standardize(
 
 
 def bulk_standardize_impl(
-    directory: str,
-    output_directory: str,
+    directory: Path,
+    output_directory: Path,
     survey_type: str | None = None,
     skip_spatial: bool = False,
     skip_insee: bool = False,
     no_validation: bool = False,
     n: int = 0,
 ):
-    if not os.path.isdir(directory):
+    if not directory.is_dir():
         logger.error(f"Not a valid directory: {directory}")
         return n
-    for inner in os.listdir(directory):
-        source = os.path.join(directory, inner)
-        if os.path.isdir(source):
+    for source in directory.iterdir():
+        if source.is_dir():
             maybe_type = guess_survey_type(source)
             if maybe_type is None:
                 # The directory does not seem to be a valid survey.
@@ -234,7 +241,7 @@ def bulk_standardize_impl(
                 )
                 if data is not None:
                     n += 1
-        if source.endswith(".zip"):
+        if source.suffix == ".zip":
             data = standardize(
                 source,
                 output_directory,

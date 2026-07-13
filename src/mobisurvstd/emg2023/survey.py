@@ -1,3 +1,4 @@
+from pathlib import Path
 from zipfile import ZipFile
 
 import polars as pl
@@ -11,7 +12,7 @@ from .menages import standardize_households
 from .personnes import standardize_persons
 
 
-def standardize(source: str | ZipFile, skip_spatial: bool = False, skip_insee: bool = False):
+def standardize(source: Path | ZipFile, skip_spatial: bool = False, skip_insee: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EMG2023 survey from `{source_name}`")
 
@@ -53,13 +54,13 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False, skip_insee: b
     )
 
 
-def persons_filename(source: str | ZipFile):
+def persons_filename(source: Path | ZipFile):
     return find_file(source, r"EMG_BD_Individus_.+\.xlsx")
 
 
-def trips_filename(source: str | ZipFile):
+def trips_filename(source: Path | ZipFile):
     return find_file(source, r"EMG_BD_Deplacements_.+\.xlsx")
 
 
-def distances_filename(source: str | ZipFile):
+def distances_filename(source: Path | ZipFile):
     return find_file(source, r"EMG_Distance.xlsx")

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import polars as pl
 
 from mobisurvstd.common.persons import clean
@@ -191,14 +193,14 @@ WORKED_MAP = {
 }
 
 
-def scan_persons(filename: str):
+def scan_persons(filename: Path):
     separator = detect_csv_delimiter(filename)
     lf = pl.scan_csv(filename, separator=separator, schema_overrides=SCHEMA)
     return lf
 
 
 def standardize_persons(
-    filename: str, households: pl.LazyFrame, detailed_zones: pl.DataFrame | None
+    filename: Path, households: pl.LazyFrame, detailed_zones: pl.DataFrame | None
 ):
     lf = scan_persons(filename)
     # Add household_id.

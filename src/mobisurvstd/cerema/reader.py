@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 from zipfile import ZipFile
 
 import geopandas as gpd
@@ -10,7 +11,7 @@ from .common import EMC2_MODE_MAP, MODE_MAP, NANTES_MODE_MAP
 
 class CeremaReader:
     SURVEY_TYPE = ""
-    source: str | ZipFile
+    source: Path | ZipFile
     households: pl.LazyFrame
     persons: pl.LazyFrame
     trips: pl.LazyFrame
@@ -23,7 +24,7 @@ class CeremaReader:
     special_locations_coords: pl.DataFrame | None
     detailed_zones_coords: pl.DataFrame | None
 
-    def __init__(self, source: str | ZipFile):
+    def __init__(self, source: Path | ZipFile):
         self.source = source
         self.special_locations = None
         self.detailed_zones = None
@@ -35,7 +36,7 @@ class CeremaReader:
         if isinstance(self.source, ZipFile):
             return self.source.filename or "unknown zipfile"
         else:
-            return self.source
+            return str(self.source)
 
     def households_filenames(self):
         raise NotImplementedError

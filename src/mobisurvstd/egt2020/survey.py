@@ -1,3 +1,4 @@
+from pathlib import Path
 from zipfile import ZipFile
 
 from loguru import logger
@@ -13,7 +14,7 @@ from .trajets import standardize_legs
 from .voitures import standardize_cars
 
 
-def standardize(source: str | ZipFile, skip_spatial: bool = False, skip_insee: bool = False):
+def standardize(source: Path | ZipFile, skip_spatial: bool = False, skip_insee: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EGT2020 survey from `{source_name}`")
     # Households.
@@ -65,37 +66,37 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False, skip_insee: b
     )
 
 
-def households_filename(source: str | ZipFile):
-    return find_file(source, "a_menage_egt1820.csv", subdir="Csv") or find_file(
+def households_filename(source: Path | ZipFile):
+    return find_file(source, "a_menage_egt1820.csv", subdir=Path("Csv")) or find_file(
         source, "01_menage_egt1820.csv"
     )
 
 
-def persons_filename(source: str | ZipFile):
-    return find_file(source, "b_individu_egt1820.csv", subdir="Csv") or find_file(
+def persons_filename(source: Path | ZipFile):
+    return find_file(source, "b_individu_egt1820.csv", subdir=Path("Csv")) or find_file(
         source, "02_individu_egt1820.csv"
     )
 
 
-def trips_filename(source: str | ZipFile):
-    return find_file(source, "c_deplacement_egt1820.csv", subdir="Csv") or find_file(
+def trips_filename(source: Path | ZipFile):
+    return find_file(source, "c_deplacement_egt1820.csv", subdir=Path("Csv")) or find_file(
         source, "03_deplacement_egt1820.csv"
     )
 
 
-def legs_filename(source: str | ZipFile):
-    return find_file(source, "d_trajet_egt1820.csv", subdir="Csv") or find_file(
+def legs_filename(source: Path | ZipFile):
+    return find_file(source, "d_trajet_egt1820.csv", subdir=Path("Csv")) or find_file(
         source, "04_trajet_egt1820.csv"
     )
 
 
-def cars_filename(source: str | ZipFile):
-    return find_file(source, "e_voiture_egt1820.csv", subdir="Csv") or find_file(
+def cars_filename(source: Path | ZipFile):
+    return find_file(source, "e_voiture_egt1820.csv", subdir=Path("Csv")) or find_file(
         source, "05_voiture_egt1820.csv"
     )
 
 
-def motorcycles_filename(source: str | ZipFile):
-    return find_file(source, "f_drm_egt1820.csv", subdir="Csv") or find_file(
+def motorcycles_filename(source: Path | ZipFile):
+    return find_file(source, "f_drm_egt1820.csv", subdir=Path("Csv")) or find_file(
         source, "06_drm_egt1820.csv"
     )

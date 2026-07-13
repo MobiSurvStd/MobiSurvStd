@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from zipfile import ZipFile
 
 from loguru import logger
@@ -14,7 +14,7 @@ from .trajets import standardize_legs
 from .zones import read_detailed_zones
 
 
-def standardize(source: str | ZipFile, skip_spatial: bool = False, skip_insee: bool = False):
+def standardize(source: Path | ZipFile, skip_spatial: bool = False, skip_insee: bool = False):
     source_name = source.filename if isinstance(source, ZipFile) else source
     logger.info(f"Standardizing EGT2010 survey from `{source_name}`")
     if skip_spatial:
@@ -70,31 +70,31 @@ def standardize(source: str | ZipFile, skip_spatial: bool = False, skip_insee: b
     )
 
 
-def households_filename(source: str | ZipFile):
-    return find_file(source, "menages_semaine.csv", subdir="Csv") or find_file(
-        source, "menages_semaine.csv", subdir="Format_csv"
+def households_filename(source: Path | ZipFile):
+    return find_file(source, "menages_semaine.csv", subdir=Path("Csv")) or find_file(
+        source, "menages_semaine.csv", subdir=Path("Format_csv")
     )
 
 
-def persons_filename(source: str | ZipFile):
-    return find_file(source, "personnes_semaine.csv", subdir="Csv") or find_file(
-        source, "personnes_semaine.csv", subdir="Format_csv"
+def persons_filename(source: Path | ZipFile):
+    return find_file(source, "personnes_semaine.csv", subdir=Path("Csv")) or find_file(
+        source, "personnes_semaine.csv", subdir=Path("Format_csv")
     )
 
 
-def trips_filename(source: str | ZipFile):
-    return find_file(source, "deplacements_semaine.csv", subdir="Csv") or find_file(
-        source, "deplacements_semaine.csv", subdir="Format_csv"
+def trips_filename(source: Path | ZipFile):
+    return find_file(source, "deplacements_semaine.csv", subdir=Path("Csv")) or find_file(
+        source, "deplacements_semaine.csv", subdir=Path("Format_csv")
     )
 
 
-def legs_filename(source: str | ZipFile):
-    return find_file(source, "trajets_semaine.csv", subdir="Csv") or find_file(
-        source, "trajets_semaine.csv", subdir="Format_csv"
+def legs_filename(source: Path | ZipFile):
+    return find_file(source, "trajets_semaine.csv", subdir=Path("Csv")) or find_file(
+        source, "trajets_semaine.csv", subdir=Path("Format_csv")
     )
 
 
-def detailed_zones_filename(source: str | ZipFile):
+def detailed_zones_filename(source: Path | ZipFile):
     return find_file_path(
-        source, "carr100m.shp", subdir=os.path.join("Doc", "Carreaux_shape_mifmid")
+        source, "carr100m.shp", subdir=Path("Doc", "Carreaux_shape_mifmid")
     ) or find_file_path(source, "carreaux_shape_mifmid.zip")

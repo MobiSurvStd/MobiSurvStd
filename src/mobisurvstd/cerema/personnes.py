@@ -1,4 +1,5 @@
 import io
+from pathlib import Path
 
 import polars as pl
 from polars.datatypes import DataTypeClass
@@ -233,7 +234,7 @@ WEEKDAY_MAP = {
 }
 
 
-def scan_persons_impl(source: str | io.BytesIO):
+def scan_persons_impl(source: Path | io.BytesIO):
     separator = detect_csv_delimiter(source)
     return pl.scan_csv(
         source, separator=separator, schema_overrides=SCHEMA, null_values=["a", "aa"]

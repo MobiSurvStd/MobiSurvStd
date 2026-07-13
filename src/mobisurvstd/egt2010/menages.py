@@ -1,4 +1,5 @@
 from datetime import timedelta
+from pathlib import Path
 
 import polars as pl
 
@@ -259,14 +260,14 @@ MOTORCYCLE_CM3_UB_MAP = {
 }
 
 
-def scan_households(filename: str):
+def scan_households(filename: Path):
     separator = detect_csv_delimiter(filename)
     lf = pl.scan_csv(filename, separator=separator, schema_overrides=SCHEMA)
     return lf
 
 
 def standardize_households(
-    filename: str, detailed_zones: pl.DataFrame | None, skip_insee: bool = False
+    filename: Path, detailed_zones: pl.DataFrame | None, skip_insee: bool = False
 ):
     lf = scan_households(filename)
     lf = lf.rename(
@@ -317,7 +318,7 @@ def standardize_households(
     return lf
 
 
-def standardize_cars(filename: str, households: pl.LazyFrame):
+def standardize_cars(filename: Path, households: pl.LazyFrame):
     lf = scan_households(filename)
     # Add household_id.
     lf = lf.with_columns(original_household_id=pl.struct("NQUEST")).join(
@@ -357,7 +358,7 @@ def standardize_cars(filename: str, households: pl.LazyFrame):
     return lf
 
 
-def standardize_motorcycles(filename: str, households: pl.LazyFrame):
+def standardize_motorcycles(filename: Path, households: pl.LazyFrame):
     lf = scan_households(filename)
     # Add household_id.
     lf = lf.with_columns(original_household_id=pl.struct("NQUEST")).join(

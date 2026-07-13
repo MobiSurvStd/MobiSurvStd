@@ -1,4 +1,5 @@
 import io
+from pathlib import Path
 
 import polars as pl
 from loguru import logger
@@ -114,7 +115,7 @@ TRIP_PERIMETER_MAP = {
 }
 
 
-def scan_trips_impl(source: str | io.BytesIO):
+def scan_trips_impl(source: Path | io.BytesIO):
     separator = detect_csv_delimiter(source)
     return pl.scan_csv(
         source, separator=separator, schema_overrides=SCHEMA, null_values=["aa", "aaaaa"]

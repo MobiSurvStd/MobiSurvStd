@@ -1,6 +1,7 @@
 import io
 import os
 import re
+from pathlib import Path
 
 import geopandas as gpd
 
@@ -13,31 +14,31 @@ from .zones import find_matching_column
 class EMC2Reader(CeremaStandardizer):
     SURVEY_TYPE = "EMC2"
 
-    def households_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
+    def households_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
         return [find_file(self.source, ".*_std_men.csv")]
 
-    def persons_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
+    def persons_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
         return [find_file(self.source, ".*_std_pers.csv")]
 
-    def trips_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
+    def trips_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
         return [find_file(self.source, ".*_std_depl.csv")]
 
-    def legs_filenames(self) -> list[str | io.BytesIO | MissingFileError]:
+    def legs_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
         return [find_file(self.source, ".*_std_traj.csv")]
 
     def detailed_zones_filenames(self):
-        return [find_file_path(self.source, r".*_ZF(_.*)?\.(TAB|shp)", subdir="SIG")]
+        return [find_file_path(self.source, r".*_ZF(_.*)?\.(TAB|shp)", subdir=Path("SIG"))]
 
     def special_locations_filenames(self):
-        base = find_file_path(self.source, r".*_GT(?!_ext)(_.*)?\.(TAB|shp)", subdir="SIG")
-        ext = find_file_path(self.source, r".*_GT_externes(_.*)?\.(TAB|shp)", subdir="SIG")
+        base = find_file_path(self.source, r".*_GT(?!_ext)(_.*)?\.(TAB|shp)", subdir=Path("SIG"))
+        ext = find_file_path(self.source, r".*_GT_externes(_.*)?\.(TAB|shp)", subdir=Path("SIG"))
         if base and ext:
             return [base, ext]
         else:
             return [base]
 
     def draw_zones_filenames(self):
-        return [find_file_path(self.source, r".*_DTIR(_.*)?\.(TAB|shp)", subdir="SIG")]
+        return [find_file_path(self.source, r".*_DTIR(_.*)?\.(TAB|shp)", subdir=Path("SIG"))]
 
     def survey_name(self):
         filename = find_file_path(self.source, ".*_std_men.csv")

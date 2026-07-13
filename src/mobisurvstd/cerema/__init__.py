@@ -1,3 +1,4 @@
+from pathlib import Path
 from zipfile import ZipFile
 
 from .edgt import EDGTReader
@@ -8,7 +9,7 @@ from .nantes_opendata import OpenDataReader
 
 
 def standardize(
-    source: str | ZipFile, survey_type: str, skip_spatial: bool = False, skip_insee: bool = False
+    source: Path | ZipFile, survey_type: str, skip_spatial: bool = False, skip_insee: bool = False
 ):
     if survey_type == "EMC2":
         reader = EMC2Reader(source)

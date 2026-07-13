@@ -1,4 +1,5 @@
 import io
+from pathlib import Path
 
 import polars as pl
 from polars.datatypes import DataTypeClass
@@ -207,7 +208,7 @@ MOTORCYCLE_KW_UPPERBOUND_MAP = {6: 4, 7: 11}
 MOTORCYCLE_THERMIC_ENGINE_TYPE_MAP = {1: "two_stroke", 2: "four_stroke"}
 
 
-def scan_households_impl(source: str | io.BytesIO):
+def scan_households_impl(source: Path | io.BytesIO):
     separator = detect_csv_delimiter(source)
     return pl.scan_csv(source, separator=separator, schema_overrides=SCHEMA, null_values=["a"])
 

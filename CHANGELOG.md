@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-07-13
+
 - Add `mobisurvstd` executable
 
 ## [1.2.2] - 2026-06-03
@@ -32,7 +34,8 @@
 - Update INSEE data for 2026.
 - Add ruff configuration to `pyproject.toml`.
 
-[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.2.2...HEAD
+[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.3.0...HEAD
+[1.3.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.3.0
 [1.2.2]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.2.2
 [1.2.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.2.1
 [1.2.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.2.0

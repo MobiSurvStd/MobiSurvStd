@@ -3,6 +3,8 @@ from typing import Optional
 import typer
 from typing_extensions import Annotated
 
+import mobisurvstd
+
 from .main import bulk_standardize, standardize
 from .resources import clear_cache
 

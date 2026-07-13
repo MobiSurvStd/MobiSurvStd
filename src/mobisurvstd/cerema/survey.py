@@ -85,12 +85,12 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
 
     def finish(self):
         # Collecting all LazyFrames at this point can speed up next computations.
-        self.households = self.households.collect().lazy()  # ty: ignore[possibly-missing-attribute]
-        self.persons = self.persons.collect().lazy()  # ty: ignore[possibly-missing-attribute]
-        self.trips = self.trips.collect().lazy()  # ty: ignore[possibly-missing-attribute]
-        self.legs = self.legs.collect().lazy()  # ty: ignore[possibly-missing-attribute]
-        self.cars = self.cars.collect().lazy()  # ty: ignore[possibly-missing-attribute]
-        self.motorcycles = self.motorcycles.collect().lazy()  # ty: ignore[possibly-missing-attribute]
+        self.households = self.households.collect().lazy()  # ty: ignore[unresolved-attribute]
+        self.persons = self.persons.collect().lazy()  # ty: ignore[unresolved-attribute]
+        self.trips = self.trips.collect().lazy()  # ty: ignore[unresolved-attribute]
+        self.legs = self.legs.collect().lazy()  # ty: ignore[unresolved-attribute]
+        self.cars = self.cars.collect().lazy()  # ty: ignore[unresolved-attribute]
+        self.motorcycles = self.motorcycles.collect().lazy()  # ty: ignore[unresolved-attribute]
         self.add_survey_dates()
         self.fix_main_mode()
         self.fix_detailed_zones()
@@ -126,7 +126,7 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
             .filter(pl.col("mode_group").eq(pl.col("main_mode_group")).any().over("trip_id").not_())
             .select("trip_id")
             .collect()
-            .to_series()  # ty: ignore[possibly-missing-attribute]
+            .to_series()  # ty: ignore[unresolved-attribute]
             .unique()
         )
         n = len(invalid_trips)
@@ -178,21 +178,21 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
             self.detailed_zones["detailed_zone_id"].str.len().max(),
             self.households.select(pl.col("home_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),  # ty: ignore[possibly-missing-attribute]
+            .item(),  # ty: ignore[unresolved-attribute]
             self.persons.select(pl.col("work_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),  # ty: ignore[possibly-missing-attribute]
+            .item(),  # ty: ignore[unresolved-attribute]
             self.persons.select(pl.col("study_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),  # ty: ignore[possibly-missing-attribute]
+            .item(),  # ty: ignore[unresolved-attribute]
             self.trips.select(pl.col("origin_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),  # ty: ignore[possibly-missing-attribute]
+            .item(),  # ty: ignore[unresolved-attribute]
             self.trips.select(pl.col("destination_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),  # ty: ignore[possibly-missing-attribute]
-            self.legs.select(pl.col("start_detailed_zone").str.len_chars().max()).collect().item(),  # ty: ignore[possibly-missing-attribute]
-            self.legs.select(pl.col("end_detailed_zone").str.len_chars().max()).collect().item(),  # ty: ignore[possibly-missing-attribute]
+            .item(),  # ty: ignore[unresolved-attribute]
+            self.legs.select(pl.col("start_detailed_zone").str.len_chars().max()).collect().item(),  # ty: ignore[unresolved-attribute]
+            self.legs.select(pl.col("end_detailed_zone").str.len_chars().max()).collect().item(),  # ty: ignore[unresolved-attribute]
         )
         self.detailed_zones["detailed_zone_id"] = self.detailed_zones["detailed_zone_id"].str.pad(
             width=max_len, fillchar="0"
@@ -268,7 +268,7 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
             lambda df, prefix: remove_external_zones(df, prefix, zf_ids, gt_ids)
         )
 
-    def apply_function_to_location_columns(self, func: Callable[[pl.DataFrame, str], pl.Expr]):
+    def apply_function_to_location_columns(self, func: Callable[[pl.DataFrame, str], pl.DataFrame]):
         """Applies the function `func` to all the location columns (households' `home_*`, persons'
         `work_*`, etc.
 

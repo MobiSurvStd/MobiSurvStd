@@ -18,7 +18,7 @@ def clean(
 ):
     existing_cols = lf.collect_schema().names()
     columns = [variable.name for variable in HOUSEHOLD_SCHEMA if variable.name in existing_cols]
-    lf = lf.select(columns).collect().lazy()  # ty: ignore[possibly-missing-attribute]
+    lf = lf.select(columns).collect().lazy()  # ty: ignore[unresolved-attribute]
     lf = indexing(lf)
     lf = add_bicycle_counts(lf, existing_cols)
     lf = add_lng_lat(lf, existing_cols, special_locations, detailed_zones)

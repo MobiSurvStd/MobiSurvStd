@@ -2,6 +2,7 @@ import io
 
 import polars as pl
 from loguru import logger
+from polars.datatypes import DataTypeClass
 
 from mobisurvstd.common.trips import clean
 from mobisurvstd.schema.common import CURRENT_YEAR
@@ -9,7 +10,7 @@ from mobisurvstd.utils import detect_csv_delimiter
 
 from .reader import CeremaReader
 
-SCHEMA = {
+SCHEMA: dict[str, DataTypeClass] = {
     "DP1": pl.UInt8,  # Code fichier = 3 (déplacement)
     "DMET": pl.UInt8,  # Méthode d'enquête du ménage (EMC2 only)
     "IDD3": pl.UInt16,  # Année de fin d'enquête

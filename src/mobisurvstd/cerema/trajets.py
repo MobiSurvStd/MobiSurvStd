@@ -2,13 +2,14 @@ import io
 
 import polars as pl
 from loguru import logger
+from polars.datatypes import DataTypeClass
 
 from mobisurvstd.common.legs import clean
 from mobisurvstd.utils import detect_csv_delimiter
 
 from .reader import CeremaReader
 
-SCHEMA = {
+SCHEMA: dict[str, DataTypeClass] = {
     "TP1": pl.UInt8,  # Code fichier = 4 (trajet)
     "TMET": pl.UInt8,  # Méthode d'enquête du ménage (EMC2 only)
     "IDT3": pl.UInt16,  # Année de fin d'enquête

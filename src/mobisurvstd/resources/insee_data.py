@@ -88,7 +88,7 @@ def get_insee_changes():
                 read_options={"header_row": 5},
                 columns=["CODGEO_INI", "CODGEO_2026"],
                 schema_overrides={"CODGEO_INI": pl.String, "CODGEO_2026": pl.String},
-            )  # ty: ignore[invalid-assignment]
+            )
     df = df.rename({"CODGEO_INI": "insee", "CODGEO_2026": "parent_insee"})
     # Construct the département from the INSEE code.
     # This is done so that former communes which switched to a new département during a merge are
@@ -112,7 +112,7 @@ def read_density_excel(source: bytes | str, year: int) -> pl.DataFrame:
         read_options={"header_row": 4},
         columns=["CODGEO", dens_col],
         schema_overrides={"CODGEO": pl.String, dens_col: pl.UInt8},
-    )  # ty: ignore[invalid-assignment]
+    )
     return df.rename({"CODGEO": "insee", dens_col: f"insee_density_{year}"})
 
 
@@ -152,7 +152,7 @@ def read_urban_excel(source: bytes | str, year: int, ref_year: int) -> pl.DataFr
             f"LIBUU{ref_year}": pl.String,
             statut_col: pl.String,
         },
-    )  # ty: ignore[invalid-assignment]
+    )
     df = df.with_columns(pl.col(statut_col).replace_strict(URBAN_TYPE_MAP))
     return df.rename(
         {

@@ -81,7 +81,7 @@ WEEKDAY_MAP = {
 
 
 def scan_trips(filename: str):
-    lf = pl.read_excel(filename, schema_overrides=SCHEMA).lazy()  # ty: ignore[possibly-missing-attribute]
+    lf = pl.read_excel(filename, schema_overrides=SCHEMA).lazy()
     return lf
 
 
@@ -188,7 +188,7 @@ DISTANCES_SCHEMA = {
 
 
 def scan_distances(filename: str):
-    lf = pl.read_excel(filename, schema_overrides=DISTANCES_SCHEMA).lazy()  # ty: ignore[possibly-missing-attribute]
+    lf = pl.read_excel(filename, schema_overrides=DISTANCES_SCHEMA).lazy()
     return lf
 
 

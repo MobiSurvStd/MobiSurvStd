@@ -1,13 +1,14 @@
 import io
 
 import polars as pl
+from polars.datatypes import DataTypeClass
 
 from mobisurvstd.common.persons import clean
 from mobisurvstd.utils import detect_csv_delimiter
 
 from .reader import CeremaReader
 
-SCHEMA = {
+SCHEMA: dict[str, DataTypeClass] = {
     "PP1": pl.UInt8,  # Code fichier = 2 (personne)
     "PMET": pl.UInt8,  # Méthode d'enquête du ménage (EMC2 only)
     "IDP3": pl.UInt16,  # Année de fin d'enquête

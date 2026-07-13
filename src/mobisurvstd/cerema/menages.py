@@ -1,6 +1,7 @@
 import io
 
 import polars as pl
+from polars.datatypes import DataTypeClass
 
 from mobisurvstd.common.cars import clean as clean_cars
 from mobisurvstd.common.households import clean as clean_households
@@ -10,7 +11,7 @@ from mobisurvstd.utils import detect_csv_delimiter
 
 from .reader import CeremaReader
 
-SCHEMA = {
+SCHEMA: dict[str, DataTypeClass] = {
     "MP1": pl.UInt8,  # Code fichier = 1
     "METH": pl.UInt8,  # Méthode d'enquête du ménage (for EMC2 only)
     "IDM1": pl.UInt8,  # Type Enquête
@@ -225,7 +226,7 @@ class HouseholdsReader(CeremaReader):
         return lf
 
     def main_insee(self):
-        return self.scan_households().select("IDM4").first().collect().item()  # ty: ignore[possibly-missing-attribute]
+        return self.scan_households().select("IDM4").first().collect().item()  # ty: ignore[unresolved-attribute]
 
     def standardize_households(self, skip_insee: bool = False):
         lf = self.scan_households()

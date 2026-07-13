@@ -20,7 +20,7 @@ def clean(
 ):
     existing_cols = lf.collect_schema().names()
     columns = [variable.name for variable in TRIP_SCHEMA if variable.name in existing_cols]
-    lf = lf.select(columns).collect().lazy()  # ty: ignore[possibly-missing-attribute]
+    lf = lf.select(columns).collect().lazy()  # ty: ignore[unresolved-attribute]
     lf = add_indexing(lf, existing_cols)
     lf = add_purpose_groups(lf, existing_cols)
     lf = add_home_sequence_index(lf)

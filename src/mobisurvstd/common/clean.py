@@ -442,7 +442,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )  # type: ignore[invalid-assignment]
+    )  # ty: ignore[invalid-assignment]
     gdf["nb_homes"] = gdf["nb_homes"].fillna(0).astype("UInt32")
     # Add nb_work_locations.
     gdf = gdf.merge(
@@ -452,7 +452,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )  # type: ignore[invalid-assignment]
+    )  # ty: ignore[invalid-assignment]
     gdf["nb_work_locations"] = gdf["nb_work_locations"].fillna(0).astype("UInt32")
     # Add nb_study_locations.
     gdf = gdf.merge(
@@ -462,7 +462,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )  # type: ignore[invalid-assignment]
+    )  # ty: ignore[invalid-assignment]
     gdf["nb_study_locations"] = gdf["nb_study_locations"].fillna(0).astype("UInt32")
     # Add nb_trip_origins.
     gdf = gdf.merge(
@@ -472,7 +472,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )  # type: ignore[invalid-assignment]
+    )  # ty: ignore[invalid-assignment]
     gdf["nb_trip_origins"] = gdf["nb_trip_origins"].fillna(0).astype("UInt32")
     # Add nb_trip_destinations.
     gdf = gdf.merge(
@@ -482,7 +482,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )  # type: ignore[invalid-assignment]
+    )  # ty: ignore[invalid-assignment]
     gdf["nb_trip_destinations"] = gdf["nb_trip_destinations"].fillna(0).astype("UInt32")
     # Add nb_leg_starts.
     gdf = gdf.merge(
@@ -492,7 +492,7 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )  # type: ignore[invalid-assignment]
+    )  # ty: ignore[invalid-assignment]
     gdf["nb_leg_starts"] = gdf["nb_leg_starts"].fillna(0).astype("UInt32")
     # Add nb_leg_stops.
     gdf = gdf.merge(
@@ -502,6 +502,6 @@ def add_zone_counts(gdf: gpd.GeoDataFrame, prefix: str, data: dict):
         .to_pandas(),
         on=f"{prefix}_id",
         how="left",
-    )  # type: ignore[invalid-assignment]
+    )  # ty: ignore[invalid-assignment]
     gdf["nb_leg_ends"] = gdf["nb_leg_ends"].fillna(0).astype("UInt32")
     return gdf

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add `--version` command-line option
+
 ## [1.3.0] - 2026-07-13
 
 - Add `mobisurvstd` executable

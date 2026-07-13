@@ -13,6 +13,12 @@ def clear_cache_callback(value: bool):
         raise typer.Exit()
 
 
+def version_callback(value: bool):
+    if value:
+        print(mobisurvstd.__version__)
+        raise typer.Exit()
+
+
 def standardizer(
     source: Annotated[
         str,
@@ -46,6 +52,15 @@ def standardizer(
         Optional[bool],
         typer.Option(
             "--clear-cache", callback=clear_cache_callback, help="Clear the cache data and exit"
+        ),
+    ] = None,
+    version: Annotated[
+        bool | None,
+        typer.Option(
+            "--version",
+            help="Show MobiSurvStd version and exit",
+            callback=version_callback,
+            is_eager=True,
         ),
     ] = None,
 ):

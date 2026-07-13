@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Add `--version` command-line option
+- Fix bug with escape characters when importing zipfiles from Windows
 
 ## [1.3.0] - 2026-07-13
 

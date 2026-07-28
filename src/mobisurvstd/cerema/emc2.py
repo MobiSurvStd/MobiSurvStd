@@ -27,18 +27,18 @@ class EMC2Reader(CeremaStandardizer):
         return [find_file(self.source, ".*_std_traj.csv")]
 
     def detailed_zones_filenames(self):
-        return [find_file_path(self.source, r".*_ZF(_.*)?\.(TAB|shp)", subdir=Path("SIG"))]
+        return [find_file_path(self.source, r".*_ZF(_.*)?\.(TAB|shp)")]
 
     def special_locations_filenames(self):
-        base = find_file_path(self.source, r".*_GT(?!_ext)(_.*)?\.(TAB|shp)", subdir=Path("SIG"))
-        ext = find_file_path(self.source, r".*_GT_externes(_.*)?\.(TAB|shp)", subdir=Path("SIG"))
+        base = find_file_path(self.source, r".*_GT(?!_ext)(_.*)?\.(TAB|shp)")
+        ext = find_file_path(self.source, r".*_GT_externes(_.*)?\.(TAB|shp)")
         if base and ext:
             return [base, ext]
         else:
             return [base]
 
     def draw_zones_filenames(self):
-        return [find_file_path(self.source, r".*_DTIR(_.*)?\.(TAB|shp)", subdir=Path("SIG"))]
+        return [find_file_path(self.source, r".*_DTIR(_.*)?\.(TAB|shp)")]
 
     def survey_name(self):
         filename = find_file_path(self.source, ".*_std_men.csv")

@@ -212,33 +212,30 @@ def guess_survey_type(source: Path | ZipFile) -> str | None:
     """
     if find_file_path(source, "k_individu_public_V3.csv"):
         return "emp2019"
-    if find_file_path(source, "a_menage_egt1820.csv", subdir=Path("Csv")):
+    if find_file_path(source, "a_menage_egt1820.csv"):
         return "egt2020"
     if find_file_path(source, "01_menage_egt1820.csv"):
         return "egt2020"
-    if find_file_path(source, "menages_semaine.csv", subdir=Path("Csv")):
+    if find_file_path(source, "menages_semaine.csv"):
         return "egt2010"
-    if find_file_path(source, "menages_semaine.csv", subdir=Path("Format_csv")):
-        # Old EGT format
-        return "egt2010"
-    if find_file_path(source, ".*_std_faf_men.csv", subdir=Path("Csv")):
+    if find_file_path(source, ".*_std_faf_men.csv"):
         return "edgt"
-    if find_file_path(source, ".*evreux_2018_std_men.csv", subdir=Path("Csv")):
+    if find_file_path(source, ".*evreux_2018_std_men.csv"):
         # Special case for Evreux 2018 which is an EMC2 survey but is defined as an EDVM survey in
         # the IDM1 variable.
         return "emc2"
-    if find_file_path(source, ".*gap_2018_std_men.csv", subdir=Path("Csv")):
+    if find_file_path(source, ".*gap_2018_std_men.csv"):
         # Special case for Gap 2018 which is an EMC2 survey but is defined as an EDVM survey in
         # the IDM1 variable.
         return "emc2"
-    if find_file_path(source, ".*poitiers_2018_std_men.csv", subdir=Path("Csv")):
+    if find_file_path(source, ".*poitiers_2018_std_men.csv"):
         # Special case for Poitiers 2018 which is an EMC2 survey but is defined as an EDVM survey in
         # the IDM1 variable.
         return "emc2"
     if find_file_path(source, ".*_EDGT_44_MENAGE_FAF_TEL_.*.txt"):
         # Nantes 2015 open data format.
         return "edgt-opendata"
-    f = find_file(source, ".*_std_men.csv", subdir=Path("Csv"))
+    f = find_file(source, ".*_std_men.csv")
     if not isinstance(f, MissingFileError):
         separator = detect_csv_delimiter(f)
         survey_type = (

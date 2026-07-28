@@ -29,49 +29,26 @@ class EDGTReader(CeremaStandardizer):
 
     def special_locations_and_detailed_zones_filenames(self):
         # This should match the Amiens 2010, Clermont-Ferrand 2012, and Lyon 2015 surveys.
-        subdir = Path("Doc", "SIG")
-        faf_filename = find_file_path(
-            self.source, ".*_faf_d.?coupagefin[.](tab|shp|mif)", subdir=subdir
-        )
-        tel_filename = find_file_path(
-            self.source, ".*_tel_d.?coupagefin[.](tab|shp|mif)", subdir=subdir
-        )
+        faf_filename = find_file_path(self.source, ".*_faf_d.?coupagefin[.](tab|shp|mif)")
+        tel_filename = find_file_path(self.source, ".*_tel_d.?coupagefin[.](tab|shp|mif)")
         if faf_filename and tel_filename:
             # Amiens 2010 has two files.
             return [faf_filename, tel_filename]
         else:
-            return [
-                find_file_path(
-                    self.source, ".*(_zf_gt|zinterne_gen_.*)[.](tab|shp|mif)", subdir=subdir
-                )
-            ]
+            return [find_file_path(self.source, ".*(_zf_gt|zinterne_gen_.*)[.](tab|shp|mif)")]
 
     def special_locations_filenames(self):
-        subdir = Path("Doc", "SIG")
-        faf_filename = find_file_path(
-            self.source, ".*_faf_.*g.?n.?rateur.*[.](tab|shp|mif)", subdir=subdir
-        )
-        tel_filename = find_file_path(
-            self.source, ".*_tel_.*g.?n.?rateur.*[.](tab|shp|mif)", subdir=subdir
-        )
+        faf_filename = find_file_path(self.source, ".*_faf_.*g.?n.?rateur.*[.](tab|shp|mif)")
+        tel_filename = find_file_path(self.source, ".*_tel_.*g.?n.?rateur.*[.](tab|shp|mif)")
         if faf_filename and tel_filename:
             # Saint-Quentin-en-Yvelines has two files, for phone and face-to-face surveys.
             return [faf_filename, tel_filename]
         else:
-            return [
-                find_file_path(
-                    self.source, ".*(_gt_.*|_gt|g.?n.?rateur.*)[.](tab|shp|mif)", subdir=subdir
-                )
-            ]
+            return [find_file_path(self.source, ".*(_gt_.*|_gt|g.?n.?rateur.*)[.](tab|shp|mif)")]
 
     def detailed_zones_filenames(self):
-        subdir = Path("Doc", "SIG")
-        faf_filename = find_file_path(
-            self.source, ".*_faf_zones_fines[.](tab|shp|mif)", subdir=subdir
-        )
-        tel_filename = find_file_path(
-            self.source, ".*_tel_zones_fines[.](tab|shp|mif)", subdir=subdir
-        )
+        faf_filename = find_file_path(self.source, ".*_faf_zones_fines[.](tab|shp|mif)")
+        tel_filename = find_file_path(self.source, ".*_tel_zones_fines[.](tab|shp|mif)")
         if faf_filename and tel_filename:
             # Nice 2009 and Saint-Quentin-en-Yvelines have two files, for phone and face-to-face
             # surveys.
@@ -79,21 +56,15 @@ class EDGTReader(CeremaStandardizer):
         else:
             return [
                 find_file_path(
-                    self.source,
-                    ".*(_zf|_zf_.*|zf08_.*|(?<!tel_)zones[_ ]fines)[.](tab|shp|mif)",
-                    subdir=subdir,
+                    self.source, ".*(_zf|_zf_.*|zf08_.*|(?<!tel_)zones[_ ]fines)[.](tab|shp|mif)"
                 )
             ]
 
     def draw_zones_filenames(self):
-        return [
-            find_file_path(
-                self.source, ".*(_dtir|_secteurstirage)[.](tab|shp|mif)", subdir=Path("Doc", "SIG")
-            )
-        ]
+        return [find_file_path(self.source, ".*(_dtir|_secteurstirage)[.](tab|shp|mif)")]
 
     def survey_name(self):
-        filename = find_file_path(self.source, ".*_std_faf_men.csv", subdir=Path("Csv"))
+        filename = find_file_path(self.source, ".*_std_faf_men.csv")
         fn_match = re.match("(.*)_std_faf_men.csv", os.path.basename(filename))
         if fn_match is not None:
             return fn_match.group(1)
@@ -277,6 +248,6 @@ def get_files(source: Path | ZipFile, name: str) -> list[Path | io.BytesIO | Mis
     # "[SURVEY_NAME]_std_faf_[NAME].csv" and "[SURVEY_NAME]_std_tel_[NAME].csv" where NAME is either
     # "men", "pers", "depl", or "traj".
     return [
-        find_file(source, f".*_std_faf_{name}.csv", subdir=Path("Csv")),
-        find_file(source, f".*_std_tel_{name}.csv", subdir=Path("Csv")),
+        find_file(source, f".*_std_faf_{name}.csv"),
+        find_file(source, f".*_std_tel_{name}.csv"),
     ]

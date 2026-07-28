@@ -71,30 +71,22 @@ def standardize(source: Path | ZipFile, skip_spatial: bool = False, skip_insee: 
 
 
 def households_filename(source: Path | ZipFile):
-    return find_file(source, "menages_semaine.csv", subdir=Path("Csv")) or find_file(
-        source, "menages_semaine.csv", subdir=Path("Format_csv")
-    )
+    return find_file(source, "menages_semaine.csv")
 
 
 def persons_filename(source: Path | ZipFile):
-    return find_file(source, "personnes_semaine.csv", subdir=Path("Csv")) or find_file(
-        source, "personnes_semaine.csv", subdir=Path("Format_csv")
-    )
+    return find_file(source, "personnes_semaine.csv")
 
 
 def trips_filename(source: Path | ZipFile):
-    return find_file(source, "deplacements_semaine.csv", subdir=Path("Csv")) or find_file(
-        source, "deplacements_semaine.csv", subdir=Path("Format_csv")
-    )
+    return find_file(source, "deplacements_semaine.csv")
 
 
 def legs_filename(source: Path | ZipFile):
-    return find_file(source, "trajets_semaine.csv", subdir=Path("Csv")) or find_file(
-        source, "trajets_semaine.csv", subdir=Path("Format_csv")
-    )
+    return find_file(source, "trajets_semaine.csv")
 
 
 def detailed_zones_filename(source: Path | ZipFile):
-    return find_file_path(
-        source, "carr100m.shp", subdir=Path("Doc", "Carreaux_shape_mifmid")
-    ) or find_file_path(source, "carreaux_shape_mifmid.zip")
+    return find_file_path(source, "carr100m.shp") or find_file_path(
+        source, "carreaux_shape_mifmid.zip"
+    )

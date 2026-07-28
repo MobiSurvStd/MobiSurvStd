@@ -18,48 +18,32 @@ class EMDReader(CeremaStandardizer):
         # The filenames are usually stored in "Csv/Fichiers_Standard/[SURVEY_NAME]_std_[NAME].csv"
         # but in some cases (e.g., Strasbourg 2009, Rouen 2017) the directory "Fichiers_Standard" is
         # named based on the survey name (e.g., Rouen_2017_Standard).
-        return [find_file(self.source, ".*_std_men.csv", subdir=Path("CSV"))]
+        return [find_file(self.source, ".*_std_men.csv")]
 
     def persons_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
-        return [find_file(self.source, ".*_std_pers.csv", subdir=Path("CSV"))]
+        return [find_file(self.source, ".*_std_pers.csv")]
 
     def trips_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
-        return [find_file(self.source, ".*_std_depl.csv", subdir=Path("CSV"))]
+        return [find_file(self.source, ".*_std_depl.csv")]
 
     def legs_filenames(self) -> list[Path | io.BytesIO | MissingFileError]:
-        return [find_file(self.source, ".*_std_traj.csv", subdir=Path("CSV"))]
+        return [find_file(self.source, ".*_std_traj.csv")]
 
     def special_locations_and_detailed_zones_filenames(self):
         # This should match the Valenciennes 2011 and Grenoble 2010 surveys.
-        return [
-            find_file_path(
-                self.source, ".*(grenobloise10_zones_fines|zf_gt)[.]mif", subdir=Path("Doc", "SIG")
-            )
-        ]
+        return [find_file_path(self.source, ".*(grenobloise10_zones_fines|zf_gt)[.]mif")]
 
     def detailed_zones_filenames(self):
-        return [
-            find_file_path(
-                self.source, ".*(_zf|zones?[_ ]?fines?.*)[.](tab|mif)", subdir=Path("Doc", "SIG")
-            )
-        ]
+        return [find_file_path(self.source, ".*(_zf|zones?[_ ]?fines?.*)[.](tab|mif)")]
 
     def special_locations_filenames(self):
-        return [
-            find_file_path(
-                self.source, ".*(_gt|g.?n.?rateur.*)[.](tab|mif)", subdir=Path("Doc", "SIG")
-            )
-        ]
+        return [find_file_path(self.source, ".*(_gt|g.?n.?rateur.*)[.](tab|mif)")]
 
     def draw_zones_filenames(self):
-        return [
-            find_file_path(
-                self.source, ".*(_DTIR|secteur_.*)[.](tab|shp|mif)", subdir=Path("Doc", "SIG")
-            )
-        ]
+        return [find_file_path(self.source, ".*(_DTIR|secteur_.*)[.](tab|shp|mif)")]
 
     def survey_name(self):
-        filename = find_file_path(self.source, ".*_std_men.csv", subdir=Path("Csv"))
+        filename = find_file_path(self.source, ".*_std_men.csv")
         fn_match = re.match("(.*)_std_men.csv", os.path.basename(filename))
         if fn_match is not None:
             return fn_match.group(1)

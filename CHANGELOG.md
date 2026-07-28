@@ -4,6 +4,7 @@
 
 - Add `--version` command-line option
 - Fix bug with escape characters when importing zipfiles from Windows
+- Fix survey type not being detected when standardizing directories
 
 ## [1.3.0] - 2026-07-13
 

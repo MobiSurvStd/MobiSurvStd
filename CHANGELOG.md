@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-07-28
+
 - Add `--version` command-line option
 - Fix bug with escape characters when importing zipfiles from Windows
 - Fix survey type not being detected when standardizing directories
@@ -38,7 +40,8 @@
 - Update INSEE data for 2026.
 - Add ruff configuration to `pyproject.toml`.
 
-[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.3.0...HEAD
+[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.3.1...HEAD
+[1.3.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.3.1
 [1.3.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.3.0
 [1.2.2]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.2.2
 [1.2.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.2.1

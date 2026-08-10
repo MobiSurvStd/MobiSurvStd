@@ -123,7 +123,11 @@ def add_purpose_groups(lf: pl.LazyFrame, existing_cols: list[str]):
 def add_home_sequence_index(lf: pl.LazyFrame):
     """Add `home_sequence_index` column."""
     return lf.with_columns(
-        home_sequence_index=pl.col("origin_purpose_group").eq("home").cum_sum().over("person_id")
+        home_sequence_index=pl.col("origin_purpose_group")
+        .eq("home")
+        .fill_null(False)
+        .cum_sum()
+        .over("person_id")
     )
 
 

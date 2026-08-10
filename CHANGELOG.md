@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Prevent null values for `home_sequence_index`
+
 ## [1.4.0] - 2026-08-10
 
 - Function `bulk_standardize` returns the standardizes survey as a list of `SurveyData`

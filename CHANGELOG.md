@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-08-10
+
 - Function `bulk_standardize` returns the standardizes survey as a list of `SurveyData`
 - Function `bulk_standardize` accepts `None` as `output_directory` (standardized surveys are not
   saved)
@@ -44,7 +46,8 @@
 - Update INSEE data for 2026.
 - Add ruff configuration to `pyproject.toml`.
 
-[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.3.1...HEAD
+[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.4.0...HEAD
+[1.4.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.0
 [1.3.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.3.1
 [1.3.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.3.0
 [1.2.2]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.2.2

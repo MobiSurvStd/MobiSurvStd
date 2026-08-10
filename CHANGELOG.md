@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Function `bulk_standardize` returns the standardizes survey as a list of `SurveyData`
+- Function `bulk_standardize` accepts `None` as `output_directory` (standardized surveys are not
+  saved)
+
 ## [1.3.1] - 2026-07-28
 
 - Add `--version` command-line option

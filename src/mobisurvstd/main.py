@@ -139,12 +139,12 @@ def standardize(
 
 def bulk_standardize(
     directory: str | Path,
-    output_directory: str | Path,
+    output_directory: str | Path | None = None,
     survey_type: str | None = None,
     skip_spatial: bool = False,
     skip_insee: bool = False,
     no_validation: bool = False,
-):
+) -> list[SurveyData] | None:
     """Standardizes mobility surveys in bulk from a given directory.
 
     MobiSurvStd will explore all directories and zipfiles within `directory`, try to standardize
@@ -159,6 +159,7 @@ def bulk_standardize(
         Path to the directory where the standardized surveys should be stored.
         If the directory does not exist, MobiSurvStd will create it (recursively).
         Each survey read is stored in a subdirectory whose name is the survey's name.
+        If None, the standardized surveys will not be saved.
     survey_type
         String indicating the type of the surveys to be converted.
         If the directory contains surveys of different types, leave this value to None and
@@ -187,47 +188,45 @@ def bulk_standardize(
     >>> import mobisurvstd
     >>> mobisurvstd.bulk_standardize("my_surveys", "standardized_surveys")
     """
-    n = bulk_standardize_impl(
-        Path(directory),
-        Path(output_directory),
-        survey_type,
-        skip_spatial,
-        skip_insee,
-        no_validation,
-        n=0,
+    if output_directory is not None:
+        output_directory = Path(output_directory)
+    results = bulk_standardize_impl(
+        Path(directory), output_directory, survey_type, skip_spatial, skip_insee, no_validation
     )
+    n = len(results)
     if n > 0:
         logger.success(f"Successfully read {n} surveys from `{directory}`")
     if n == 0:
         logger.error(f"No survey could be read from `{directory}`")
+    return results
 
 
 def bulk_standardize_impl(
     directory: Path,
-    output_directory: Path,
+    output_directory: Path | None,
     survey_type: str | None = None,
     skip_spatial: bool = False,
     skip_insee: bool = False,
     no_validation: bool = False,
-    n: int = 0,
-):
+    results: list[SurveyData] = [],
+) -> list[SurveyData]:
     if not directory.is_dir():
         logger.error(f"Not a valid directory: {directory}")
-        return n
+        return results
     for source in directory.iterdir():
         if source.is_dir():
             maybe_type = guess_survey_type(source)
             if maybe_type is None:
                 # The directory does not seem to be a valid survey.
                 # We try to iteratively read that directory.
-                n = bulk_standardize_impl(
+                bulk_standardize_impl(
                     source,
                     output_directory,
                     survey_type,
                     skip_spatial,
                     skip_insee,
                     no_validation,
-                    n,
+                    results,
                 )
             else:
                 data = standardize(
@@ -240,7 +239,7 @@ def bulk_standardize_impl(
                     no_validation=no_validation,
                 )
                 if data is not None:
-                    n += 1
+                    results.append(data)
         if source.suffix == ".zip":
             data = standardize(
                 source,
@@ -252,5 +251,5 @@ def bulk_standardize_impl(
                 no_validation=no_validation,
             )
             if data is not None:
-                n += 1
-    return n
+                results.append(data)
+    return results

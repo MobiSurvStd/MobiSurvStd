@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-08-18
+
 - Prevent null values for `home_sequence_index`
 
 ## [1.4.0] - 2026-08-10
@@ -48,7 +50,8 @@
 - Update INSEE data for 2026.
 - Add ruff configuration to `pyproject.toml`.
 
-[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.4.0...HEAD
+[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.4.1...HEAD
+[1.4.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.1
 [1.4.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.0
 [1.3.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.3.1
 [1.3.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.3.0

@@ -190,8 +190,8 @@ class EDVMReader(CeremaStandardizer):
         )
         for sec_col, gt_num_col in pairs:
             if sec_col in gdf.columns and gt_num_col in gdf.columns:
-                # The `gt_num_col` is cast to int then str to handle the Angoulème 2012 survey where the
-                # column is of dtype float.
+                # The `gt_num_col` is cast to int then str to handle the Angoulème 2012 survey where
+                # the column is of dtype float.
                 gdf["special_location_id"] = gdf[sec_col] + gdf[gt_num_col].astype(int).astype(str)
                 break
         # Normal case. Find the GT id column by name.

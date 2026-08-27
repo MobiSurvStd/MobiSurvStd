@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import polars as pl
 
 from mobisurvstd.common.persons import clean
@@ -59,7 +60,7 @@ DETAILED_EDUCATION_LEVEL_MAP = {
 }
 
 PCS_GROUP_CODE_MAP = {
-    1: 2,  # EMG: Artisan, commerçant et chef d’entreprise
+    1: 2,  # EMG: Artisan, commerçant et chef d'entreprise
     2: 3,  # EMG: Cadre et profession intellectuelle supérieure
     3: 4,  # EMG: Professions Intermédiaires
     4: 5,  # EMG: Employés
@@ -70,7 +71,7 @@ PCS_GROUP_CODE_MAP = {
 }
 
 DETAILED_PROFESSIONAL_OCCUPATION_MAP = {
-    1: "worker:unspecified",  # EMG: Artisan, commerçant et chef d’entreprise
+    1: "worker:unspecified",  # EMG: Artisan, commerçant et chef d'entreprise
     2: "worker:unspecified",  # EMG: Cadre et profession intellectuelle supérieure
     3: "worker:unspecified",  # EMG: Professions Intermédiaires
     4: "worker:unspecified",  # EMG: Employés

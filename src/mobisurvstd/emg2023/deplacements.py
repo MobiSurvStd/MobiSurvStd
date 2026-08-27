@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import polars as pl
 
 from mobisurvstd.common.legs import clean as clean_legs
@@ -37,14 +38,14 @@ SCHEMA = {
 }
 
 PURPOSE_GROUP_MAP = {
-    "ACCOM": "escort",  # Accompagner, déposer ou aller chercher quelqu’un (à l’école, à la garderie, à la gare, au sport, au travail …)
+    "ACCOM": "escort",  # Accompagner, déposer ou aller chercher quelqu'un (à l'école, à la garderie, à la gare, au sport, au travail …)
     "ACHAT": "shopping",  # Achats ou courses : boulangerie, commerce, hypermarché ...
     "AFF PRO": "work",  # Affaires professionnelles, autre lieu de travail (réunion, tournée, colloque ...)
-    "AUTRE": "other",  # Visite à la famille ou à des amis, démarche administrative ou personnelle (recherche d’emploi, agence bancaire, avocat, garagiste …), aller déjeuner à midi à l’extérieur
+    "AUTRE": "other",  # Visite à la famille ou à des amis, démarche administrative ou personnelle (recherche d'emploi, agence bancaire, avocat, garagiste …), aller déjeuner à midi à l'extérieur
     "DOMICILE": "home",  # Retour au domicile
     "ETUDES": "education",  # Se rendre à son lieu d'enseignement habituel
     "LOISIRS": "leisure",  # Activité de loisirs (cinéma, restaurant, sports, promenade …), voyage de tourisme
-    "SANTE": "other",  # Se rendre à l'hôpital, au cabinet médical ou infirmier, au laboratoire d’analyse, dentiste, kiné, pharmacie
+    "SANTE": "other",  # Se rendre à l'hôpital, au cabinet médical ou infirmier, au laboratoire d'analyse, dentiste, kiné, pharmacie
     "TRAVAIL": "work",  # Se rendre à son lieu de travail habituel
 }
 

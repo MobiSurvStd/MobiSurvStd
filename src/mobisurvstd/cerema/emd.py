@@ -119,8 +119,8 @@ class EMDReader(CeremaStandardizer):
 
     def preprocess_detailed_zones(self, gdf: gpd.GeoDataFrame):
         if "Famille" in gdf.columns and "ZFIN2016F" in gdf.columns:
-            # Special case for Lille 2015: 110 ZFs are also GTs (they have the same id, the GT Points
-            # are within the ZF Polygons).
+            # Special case for Lille 2015: 110 ZFs are also GTs (they have the same id, the GT
+            # Points are within the ZF Polygons).
             # We don't want to drop these "duplicate" ZFs (because other GTs are within these ZFs).
             # So we create fake ID for them (by adding 50 to their ID).
             mask = gdf["Famille"] != ""

@@ -18,7 +18,7 @@ SCHEMA = {
     "ANKM": pl.UInt8,  # Kilomètres annuels
     "STAT": pl.UInt8,  # Stationnement au domicile
     "STAT_txt": pl.String,  # Stationnement au domicile
-    "STAT_G": pl.UInt8,  # Le stationnement est-il payant (Garage ou stationnement sur la voie publique et payant en journée (STAT = 2 et STAT_VT = 31 ou 32) ou si parking public ou centre commercial (STAT = 3 ou 4) ou Autre) ?
+    "STAT_G": pl.UInt8,  # Le stationnement est-il payant (Garage ou stationnement sur la voie publique et payant en journée (STAT = 2 et STAT_VT = 31 ou 32) ou si parking public ou centre commercial (STAT = 3 ou 4) ou Autre) ?  # noqa: E501
     "STAT_GT": pl.Float64,  # Tarif garage
     "STAT_VT": pl.UInt8,  # Type de stationnement sur voirie
 }

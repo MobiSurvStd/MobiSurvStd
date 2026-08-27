@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import polars as pl
 
 from mobisurvstd.common.persons import clean
@@ -136,7 +137,7 @@ SCHEMA2 = {
     "DDIPL": pl.UInt8,  # diplôme le plus élevé
     "MER1E": pl.UInt8,  # Présence de la mère dans le logement
     "MER2E": pl.UInt8,  # Numéro d'ordre de la mère dans le logement
-    "PER1E": pl.UInt8,  # Présence du père dans le logement
+    "PER1E": pl.UInt8,  # Présence du père dans le logement
     "PER2E": pl.UInt8,  # Numéro d'ordre du père dans le logement
     "APART": pl.UInt8,  # Existence de budgets séparés
     "TYPFAM": pl.UInt8,  # Type de famille avec enfant
@@ -331,10 +332,10 @@ SCHEMA3 = {
     # NOTE. These variables should probably not be used for `work_commute_euclidean_distance_km` and
     # `study_commute_euclidean_distance_km` because they are based on an observed trip (not on the
     # usual work / study location).
-    "dist_ign_trav": pl.Float64,  # Distance routière domicile – travail (si au moins un déplacement recensé vers lieu de travail)
-    "dist_vo_trav": pl.Float64,  # Distance VO domicile – travail (si au moins un déplacement recensé vers lieu de travail)
-    "dist_ign_etude": pl.Float64,  # Distance routière domicile – étude (si au moins un déplacement recensé vers lieu d'étude)
-    "dist_vo_etude": pl.Float64,  # Distance VO domicile – étude (si au moins un déplacement recensé vers lieu d'étude)
+    "dist_ign_trav": pl.Float64,  # Distance routière domicile - travail (si au moins un déplacement recensé vers lieu de travail)
+    "dist_vo_trav": pl.Float64,  # Distance VO domicile - travail (si au moins un déplacement recensé vers lieu de travail)
+    "dist_ign_etude": pl.Float64,  # Distance routière domicile - étude (si au moins un déplacement recensé vers lieu d'étude)
+    "dist_vo_etude": pl.Float64,  # Distance VO domicile - étude (si au moins un déplacement recensé vers lieu d'étude)
 }
 
 AGE_CLASS_MAP = {

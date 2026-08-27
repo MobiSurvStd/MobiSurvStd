@@ -94,7 +94,7 @@ def find_file_inner(
         else:
             res = None
         if res is None:
-            return MissingFileError("`{}` in `{}`".format(regex, directory))
+            return MissingFileError(f"`{regex}` in `{directory}`")
     elif isinstance(source, ZipFile):
         if as_url:
             res = find_url_in_zipfile(source, subdir, regex)
@@ -131,7 +131,7 @@ def find_in_zipfile(z: ZipFile, subdir: Path | None, regex: str) -> ZipInfo | No
     Returns `None` if there is no file that matches the regex.
     """
     if subdir:
-        subdir_pattern = "{}/".format(re.escape(subdir.as_posix()))
+        subdir_pattern = f"{re.escape(subdir.as_posix())}/"
     else:
         subdir_pattern = ""
     pattern = re.compile(f".*{subdir_pattern}{regex}", flags=re.IGNORECASE)
@@ -195,7 +195,7 @@ def tmp_download(url):
 
 def detect_csv_delimiter(source: Path | io.BytesIO) -> str:
     if isinstance(source, Path):
-        with open(source, "r") as f:
+        with open(source) as f:
             first_line = f.readline()
     else:
         assert isinstance(source, io.BytesIO)

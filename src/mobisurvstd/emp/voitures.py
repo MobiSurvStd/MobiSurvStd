@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import polars as pl
 
 from mobisurvstd.common.cars import clean

@@ -113,14 +113,14 @@ class CeremaReader:
         """
         cols = ["ECH", "STM", "ZFM"]
         if self.SURVEY_TYPE == "EMC2":
-            return ["METH"] + cols
+            return ["METH", *cols]
         else:
             return cols
 
     def get_person_index_cols(self):
         cols = ["ECH", "STP", "ZFP", "PER"]
         if self.SURVEY_TYPE == "EMC2":
-            return ["PMET"] + cols
+            return ["PMET", *cols]
         else:
             return cols
 
@@ -134,7 +134,7 @@ class CeremaReader:
     def get_trip_index_cols(self):
         cols = ["ECH", "STD", "ZFD", "PER", "NDEP"]
         if self.SURVEY_TYPE == "EMC2":
-            return ["DMET"] + cols
+            return ["DMET", *cols]
         else:
             return cols
 
@@ -148,7 +148,7 @@ class CeremaReader:
     def get_leg_index_cols(self):
         cols = ["ECH", "STT", "ZFT", "PER", "NDEP"]
         if self.SURVEY_TYPE == "EMC2":
-            return ["TMET"] + cols
+            return ["TMET", cols]
         else:
             return cols
 

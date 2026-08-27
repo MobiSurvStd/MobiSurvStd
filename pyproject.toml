@@ -52,11 +52,23 @@ dev = [
     "ipython>=8.37.0",
     "matplotlib>=3.10.1",
     "pytest>=9.0.2",
+    "ruff>=0.16.4",
     "seaborn>=0.13.2",
     "ty>=0.0.15",
 ]
 
 [tool.ruff]
 line-length = 100
+
 [tool.ruff.format]
 skip-magic-trailing-comma = true
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "RUF", "PLW"]
+ignore = [
+    "C408",  # C408: allow list() and dict() calls
+]
+preview = false
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false

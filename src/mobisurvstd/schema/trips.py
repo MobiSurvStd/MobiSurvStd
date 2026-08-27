@@ -412,7 +412,10 @@ TRIP_SCHEMA = [
                 & pl.col("destination_purpose")
                 .is_in(("work:professional_tour", "shopping:tour_no_purchase"))
                 .not_(),
-                when_alias='origin / destination purpose is not "work:professional_tour" or "shopping:tour_no_purchase"',
+                when_alias=(
+                    'origin / destination purpose is not "work:professional_tour" or '
+                    '"shopping:tour_no_purchase"'
+                ),
             )
         ],
     ),

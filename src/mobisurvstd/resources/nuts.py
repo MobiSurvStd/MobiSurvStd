@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import polars as pl
 
 # Hand-made dataframe with the relations between départements, NUTS2, and NUTS1.

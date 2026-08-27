@@ -93,7 +93,7 @@ def select_columns(gdf: gpd.GeoDataFrame, cols: tuple[str, ...]):
     """Given a tuple of column names, return the list of columns which are present in the
     GeoDataFrame.
     """
-    return ["geometry"] + list(filter(lambda c: c in gdf.columns, cols))
+    return ["geometry", *filter(lambda c: c in gdf.columns, cols)]
 
 
 class ZonesReader(CeremaReader):

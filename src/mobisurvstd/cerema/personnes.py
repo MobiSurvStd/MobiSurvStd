@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import io
 from pathlib import Path
 
@@ -15,14 +16,14 @@ SCHEMA: dict[str, DataTypeClass] = {
     "IDP3": pl.UInt16,  # Année de fin d'enquête
     "IDP4": pl.String,  # Code Insee ville centre
     "ZFP": pl.String,  # Zone fine de résidence
-    "ECH": pl.UInt32,  # Numéro d’échantillon
+    "ECH": pl.UInt32,  # Numéro d'échantillon
     "PER": pl.UInt8,  # Numéro de personne
     "GP1": pl.String,  # Insee Zone fine du lieu de résidence de la personne
-    "STP": pl.String,  # Secteur de tirage dans l’enquête d’origine (résidence)
-    "AN": pl.UInt16,  # Année du jour d’enquête (EMC2)
-    "ANNEE": pl.UInt16,  # Année du jour d’enquête (EDGT, EDVM, EMD)
-    "MOIS": pl.UInt8,  # Mois du jour d’enquête
-    "DATE": pl.UInt8,  # Jour d’enquête
+    "STP": pl.String,  # Secteur de tirage dans l'enquête d'origine (résidence)
+    "AN": pl.UInt16,  # Année du jour d'enquête (EMC2)
+    "ANNEE": pl.UInt16,  # Année du jour d'enquête (EDGT, EDVM, EMD)
+    "MOIS": pl.UInt8,  # Mois du jour d'enquête
+    "DATE": pl.UInt8,  # Jour d'enquête
     "JOUR": pl.UInt8,  # Jour des déplacements
     "PENQ": pl.UInt8,  # Personne enquêtée ?
     "P2": pl.UInt8,  # Sexe de la personne
@@ -31,29 +32,29 @@ SCHEMA: dict[str, DataTypeClass] = {
     "P5": pl.UInt8,  # Possession d'un téléphone portable
     "P6": pl.UInt8,  # Possession d'une adresse de messagerie électronique
     "P7": pl.UInt8,  # Possession du permis de conduire voiture
-    "P8": pl.UInt8,  # Niveau d’études
+    "P8": pl.UInt8,  # Niveau d'études
     "P9": pl.UInt8,  # Occupation principale de la personne
     "P10": pl.UInt8,  # Occupation secondaire
     "PCSC": pl.UInt8,  # PCS courte
     "PCSD": pl.UInt8,  # PCS détaillée
     "P12": pl.UInt8,  # Possession d'un abonnement TC valide hier
     "P14": pl.UInt8,  # Travail, études à domicile
-    "P15": pl.String,  # Zone fine du lieu de travail ou d’études
+    "P15": pl.String,  # Zone fine du lieu de travail ou d'études
     "DP15": pl.Float64,  # Distance domicile - travail / études à vol d'oiseau
     "GP5": pl.String,  # Insee Zone fine du lieu de travail / études
-    "STW": pl.String,  # Secteur de tirage dans l’enquête d’origine (lieu de travail / études)
+    "STW": pl.String,  # Secteur de tirage dans l'enquête d'origine (lieu de travail / études)
     "P16": pl.UInt8,  # Disposition d'une VP pour se rendre sur le lieu de travail ou d'études
     "P13B": pl.UInt8,  # Pratique du télétravail (EMC2 only)
     "P17": pl.UInt8,  # Problèmes de stationnement sur le lieu de travail ou d'études (EDGT, EDVM, EMD)
     "P18": pl.UInt8,  # Difficultés de stationnement sur le lieu de travail ou d'études
     "P18A": pl.UInt8,  # Stationnement du vélo sur le lieu de travail / études
     "P19": pl.UInt8,  # Fréquence de déplacement à pied
-    "P20": pl.UInt8,  # Fréquence d’utilisation d'un vélo
-    "P21": pl.UInt8,  # Fréquence d’utilisation d'un deux-roues motorisé
-    "P22": pl.UInt8,  # Fréquence d’utilisation de la VP en tant que conducteur
-    "P23": pl.UInt8,  # Fréquence d’utilisation de la VP en tant que passager
-    "P24": pl.UInt8,  # Fréquence d’utilisation du réseau urbain
-    "P25": pl.UInt8,  # Situation la veille du jour d’enquête
+    "P20": pl.UInt8,  # Fréquence d'utilisation d'un vélo
+    "P21": pl.UInt8,  # Fréquence d'utilisation d'un deux-roues motorisé
+    "P22": pl.UInt8,  # Fréquence d'utilisation de la VP en tant que conducteur
+    "P23": pl.UInt8,  # Fréquence d'utilisation de la VP en tant que passager
+    "P24": pl.UInt8,  # Fréquence d'utilisation du réseau urbain
+    "P25": pl.UInt8,  # Situation la veille du jour d'enquête
     "P26": pl.UInt8,  # Travail la veille
     "COE1": pl.Float64,  # Coefficient de redressement -Toutes Personnes
     "COEP": pl.Float64,  # Coefficient de redressement - Personnes Enquêtées
@@ -81,13 +82,13 @@ EDUCATION_LEVEL_MAP = {
     2: "secondary:no_bac",  # Secondaire (de la 6e à la 3e, CAP)
     3: "secondary:no_bac",  # Secondaire (de la seconde à la terminale, BEP), non titulaire du bac
     4: "secondary:bac",  # Secondaire, titulaire du bac
-    5: "higher:at_most_bac+2",  # Supérieur jusqu’à bac + 2
+    5: "higher:at_most_bac+2",  # Supérieur jusqu'à bac + 2
     6: "higher:at_least_bac+3",  # Supérieur, bac + 3 et plus
     # Apprentissage is usually something like CAP so we put secondary:no_bac
     7: "secondary:no_bac",  # Apprentissage (école primaire ou secondaire uniquement)
     # Apprentissage (études supérieurs) should rarely be higher than BAC+2
     8: "higher:at_most_bac+2",  # Apprentissage (études supérieures)
-    9: "no_studies_or_no_diploma",  # Pas d’études
+    9: "no_studies_or_no_diploma",  # Pas d'études
     # For the two modalities below we have to make an assumption.
     93: "secondary:no_bac",  # Secondaire (sans distinction titulaire du bac ou non)
     97: "secondary:no_bac",  #  Apprentissage (sans distinction)
@@ -102,11 +103,11 @@ DETAILED_EDUCATION_LEVEL_MAP = {
     2: "secondary:no_bac:college",  # Secondaire (de la 6e à la 3e, CAP)
     3: "secondary:no_bac:CAP/BEP",  # Secondaire (de la seconde à la terminale, BEP), non titulaire du bac
     4: "secondary:bac:unspecified",  # Secondaire, titulaire du bac
-    5: "higher:at_most_bac+2:unspecified",  # Supérieur jusqu’à bac + 2
+    5: "higher:at_most_bac+2:unspecified",  # Supérieur jusqu'à bac + 2
     6: "higher:at_least_bac+3:unspecified",  # Supérieur, bac + 3 et plus
     7: "secondary:no_bac:CAP/BEP",  # Apprentissage (école primaire ou secondaire uniquement)
     8: "higher:at_most_bac+2:unspecified",  # Apprentissage (études supérieures)
-    9: "no_studies",  # Pas d’études
+    9: "no_studies",  # Pas d'études
     93: None,  # Secondaire (sans distinction titulaire du bac ou non)
     97: None,  #  Apprentissage (sans distinction)
     90: None,  # autre (egt)
@@ -167,12 +168,12 @@ PUBLIC_TRANSIT_SUBSCRIPTION_MAP = {
 }
 
 HAS_CAR_TO_COMMUTE_MAP = {
-    1: "yes:full_commute",  # Oui et je l’utilise jusqu'à mon lieu de travail ou d'études
-    2: "yes:partial_commute",  # Oui mais je ne l’utilise que sur une partie du déplacement
-    3: "yes:not_used",  # Oui, mais je ne l’utilise pas
+    1: "yes:full_commute",  # Oui et je l'utilise jusqu'à mon lieu de travail ou d'études
+    2: "yes:partial_commute",  # Oui mais je ne l'utilise que sur une partie du déplacement
+    3: "yes:not_used",  # Oui, mais je ne l'utilise pas
     4: "no",  # Non
     5: "yes:partial_or_not_used",  # Oui, mais je ne l'utilise qu'en partie ou pas du tout (2+3 sans distinction)
-    6: "yes:full_or_partial",  # Oui et je l’utilise pour tout ou partie du déplacement (1+2 sans distinction)
+    6: "yes:full_or_partial",  # Oui et je l'utilise pour tout ou partie du déplacement (1+2 sans distinction)
 }
 
 TELEWORK_MAP = {
@@ -184,7 +185,7 @@ TELEWORK_MAP = {
 
 WORK_STUDY_CAR_PARKING_MAP = {
     1: "no",  # Non
-    2: "yes:reserved",  # Oui , car j’ai (ou pourrai avoir) une place réservée
+    2: "yes:reserved",  # Oui , car j'ai (ou pourrai avoir) une place réservée
     3: "yes:many_spots",  # Oui, offre importante à proximité
     4: "yes:compatible_schedule",  # Oui, compte tenu de mes horaires
     5: "dont_know",  # Ne sait pas (EMC2 only)
@@ -206,7 +207,7 @@ TRAVELED_DAY_BEFORE_MAP = {
     2: "no",  # Non
     3: "away",  # Absent (vieille enquête)
     4: None,  # déplacements non relevés
-    5: "away",  # absent - longue durée-
+    5: "away",  # absent - longue durée-
     9: None,
 }
 
@@ -214,7 +215,7 @@ WORKED_DAY_BEFORE_MAP = {
     0: None,  # Note. Used in some surveys but undefined.
     1: "yes:outside",  # Oui, hors du domicile.
     2: "yes:home:usual",  # Oui mais à domicile (travail toujours au domicile).
-    3: "yes:home:telework",  # Oui mais à domicile – télétravail.
+    3: "yes:home:telework",  # Oui mais à domicile - télétravail.
     4: "yes:home:other",  # Oui mais à domicile - autre
     5: "no:weekday",  # Non, ne travaille jamais ce jour-là.
     6: "no:reason",  # Non en raison de congés, grève ou maladie.

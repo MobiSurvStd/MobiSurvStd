@@ -587,7 +587,10 @@ class AtLeastOneOf(Guarantee):
             )
             n = len(invalid_groups)
             first_invalids = invalid_groups[:5].to_list()
-            return f"Value {self.value} never appears over {n:,} {self.over_alias} groups ({first_invalids})"
+            return (
+                f"Value {self.value} never appears over {n:,} {self.over_alias} groups "
+                f"({first_invalids})"
+            )
 
     def _auto_fix(self, col: str) -> pl.Expr:
         if self.over is None:
@@ -634,7 +637,10 @@ class AtMostOneOf(Guarantee):
             )
             n = len(invalid_groups)
             first_invalids = invalid_groups[:5].to_list()
-            return f"Value {self.value} appears more than once for {n:,} {self.over_alias} ({first_invalids})"
+            return (
+                f"Value {self.value} appears more than once for {n:,} {self.over_alias} "
+                f"({first_invalids})"
+            )
 
     def _auto_fix(self, col: str) -> pl.Expr:
         if self.over is None:

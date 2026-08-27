@@ -16,21 +16,21 @@ SCHEMA: dict[str, DataTypeClass] = {
     "IDT3": pl.UInt16,  # Année de fin d'enquête
     "IDT4": pl.String,  # Code Insee ville centre
     "ZFT": pl.String,  # Zone fine de résidence
-    "ECH": pl.UInt32,  # Numéro d’échantillon
+    "ECH": pl.UInt32,  # Numéro d'échantillon
     "PER": pl.UInt8,  # Numéro de personne
     "NDEP": pl.UInt8,  # Numéro de déplacement
     "T1": pl.UInt8,  # Numéro de trajet
     "GT1": pl.String,  # Insee Zone fine du lieu de résidence de la personne concernée par le trajet
-    "STT": pl.String,  # Secteur de tirage dans l’enquête d’origine (résidence)
+    "STT": pl.String,  # Secteur de tirage dans l'enquête d'origine (résidence)
     "T2": pl.Int32,  # Temps de marche à pied au départ
     "T3": pl.UInt8,  # Mode utilisé
     "T4": pl.String,  # Zone fine de départ du mode mécanisé
     "GTO1": pl.String,  # Insee Zone fine Origine du trajet
-    "STTO": pl.String,  # Secteur de tirage dans l’enquête d’origine (origine du trajet)
+    "STTO": pl.String,  # Secteur de tirage dans l'enquête d'origine (origine du trajet)
     "T5": pl.String,  # Zone fine d'arrivée du mode mécanisé
     "GTD1": pl.String,  # Insee Zone fine Destination du trajet
-    "STTD": pl.String,  # Secteur de tirage dans l’enquête d’origine (destination du trajet)
-    "T6": pl.Int32,  # Temps de marche à pied à l’arrivée
+    "STTD": pl.String,  # Secteur de tirage dans l'enquête d'origine (destination du trajet)
+    "T6": pl.Int32,  # Temps de marche à pied à l'arrivée
     "T7": pl.UInt8,  # Numéro du véhicule
     "T3A": pl.UInt8,  # Voiture sans permis (EMC2 only)
     "T8": pl.UInt8,  # Nombre de personnes total
@@ -39,7 +39,7 @@ SCHEMA: dict[str, DataTypeClass] = {
     "T9": pl.UInt8,  # Lieu de stationnement
     "T10": pl.UInt8,  # Nature du stationnement
     "T11": pl.UInt16,  # Durée de recherche du stationnement
-    "T12": pl.Float64,  # Longueur à vol d’oiseau
+    "T12": pl.Float64,  # Longueur à vol d'oiseau
     "T13": pl.Float64,  # Distance parcourue
 }
 
@@ -147,9 +147,10 @@ class LegsReader(CeremaReader):
         # We create actual walking legs from these walking times.
 
         # Part 1: walking leg from origin
-        # The walking leg from origin is read from the start walking time of the first leg of each trip.
-        # The origin is set to the origin of the trip. The destination is set to the start point of the
-        # first leg.
+        # The walking leg from origin is read from the start walking time of the first leg of each
+        # trip.
+        # The origin is set to the origin of the trip. The destination is set to the start point of
+        # the first leg.
         # The trip index is set to 1.
         lf1 = (
             lf.filter(pl.col("T1") == 1, pl.col("T2") > 0)
@@ -166,7 +167,7 @@ class LegsReader(CeremaReader):
             )
             .with_columns(
                 original_leg_id=pl.struct(
-                    self.get_leg_index_cols() + [pl.lit(None, dtype=pl.UInt8).alias("T1")]
+                    [*self.get_leg_index_cols(), pl.lit(None, dtype=pl.UInt8).alias("T1")]
                 ),
                 tmp_leg_index=pl.lit(1, dtype=pl.UInt8),
                 mode=pl.lit("walking"),
@@ -188,7 +189,7 @@ class LegsReader(CeremaReader):
                 "T11": "parking_search_time",
             }
         ).with_columns(
-            original_leg_id=pl.struct(self.get_leg_index_cols() + ["T1"]),
+            original_leg_id=pl.struct([*self.get_leg_index_cols(), "T1"]),
             tmp_leg_index=2 * pl.col("T1"),
             mode=pl.col("T3").replace_strict(self.get_mode_map()),
             nolicense_car=pl.col("T3A") == 1,
@@ -199,12 +200,12 @@ class LegsReader(CeremaReader):
         )
         # Part 3: walking legs after actual legs
         # The remaining walking leg are read from the end walking time of each leg.
-        # The origin is set to the end point of the leg. The destination is set to the start point of
-        # the next leg (or to the trip's destination if there is no leg after).
+        # The origin is set to the end point of the leg. The destination is set to the start point
+        # of the next leg (or to the trip's destination if there is no leg after).
         # The trip index is set to twice the original trip index + 1, i.e., 3, 5, 7, etc.
-        # NOTE. The end walking time of the leg is supposed to be equal to the start walking time of the
-        # next leg. In practise, this rule is not respected in some rare cases. Here, we do not check
-        # that rule and we use directly the end walking time.
+        # NOTE. The end walking time of the leg is supposed to be equal to the start walking time of
+        # the next leg. In practise, this rule is not respected in some rare cases. Here, we do not
+        # check that rule and we use directly the end walking time.
         lf3 = (
             lf.filter(pl.col("T6") > 0)
             .rename(
@@ -217,7 +218,7 @@ class LegsReader(CeremaReader):
             )
             .with_columns(
                 original_leg_id=pl.struct(
-                    self.get_leg_index_cols() + [pl.lit(None, dtype=pl.UInt8).alias("T1")]
+                    [*self.get_leg_index_cols(), pl.lit(None, dtype=pl.UInt8).alias("T1")]
                 ),
                 tmp_leg_index=2 * pl.col("T1") + 1,
                 mode=pl.lit("walking"),

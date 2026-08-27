@@ -7,16 +7,16 @@ from mobisurvstd.common.households import clean
 SCHEMA = {
     "IDCEREMA": pl.String,  # Identifiant du ménage
     "TYPE_QUEST": pl.String,  # Type de questionnaire
-    "NBP_CATI": pl.UInt8,  # Nombre d’occupants du logement recueilli par téléphone
+    "NBP_CATI": pl.UInt8,  # Nombre d'occupants du logement recueilli par téléphone
     "RESCOMM": pl.String,  # Commune de résidence
     "RESINSEE": pl.String,  # Commune de résidence (for v3)
     "RESDEP": pl.String,  # Département de résidence
     "RESCOUR": pl.UInt8,  # Couronne de résidence
     "RESLNG": pl.Float64,  # Longitude du lieu de résidence
     "RESLAT": pl.Float64,  # Latitude du lieu de résidence
-    "JOUR": pl.UInt8,  # Jour de l’enquête (JJ)
-    "MOIS": pl.UInt8,  # Mois de l’enquête (MM)
-    "ANNEE": pl.UInt16,  # Année de l’enquête (AAAA)
+    "JOUR": pl.UInt8,  # Jour de l'enquête (JJ)
+    "MOIS": pl.UInt8,  # Mois de l'enquête (MM)
+    "ANNEE": pl.UInt16,  # Année de l'enquête (AAAA)
     "JOURSEM": pl.String,  # Jour de la semaine de la date schéma des déplacements
     "MNP": pl.UInt8,  # Nombre de personnes du ménage
     "MNP5": pl.UInt8,  # Nombre de personnes du ménage de 5 ans et plus
@@ -33,7 +33,7 @@ SCHEMA = {
     "NB_VD": pl.UInt8,  # Nombre de voitures à disposition
     "NB_2RM": pl.UInt8,  # Nombre de deux-roues motorisés à disposition
     "NB_VEH": pl.UInt8,  # Nombre de véhicules motorisés à disposition
-    "NB_VELO": pl.UInt8,  # Nombre de vélos (en état de marche pour les personnes âgées d'au moins 10 ans))
+    "NB_VELO": pl.UInt8,  # Nombre de vélos (en état de marche pour les personnes âgées d'au moins 10 ans))  # noqa: E501
     "NB_VAE": pl.UInt8,  # Nombre de vélo à assistance électrique
     "VP_ENT": pl.UInt8,  # Dépense Voiture entretien
     "VP_ASS": pl.UInt8,  # Dépense Voiture assurance

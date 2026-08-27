@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 MODE_MAP = {
     1: "walking",  # Marche à pied.
     10: "bicycle:driver:traditional:shared",  # Conducteur VLS

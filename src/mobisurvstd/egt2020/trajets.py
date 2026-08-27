@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import polars as pl
 
 from mobisurvstd.common.legs import clean
@@ -33,7 +34,7 @@ SCHEMA = {
     "VP_COVOIT": pl.UInt8,  # Mise en relation du conducteur et/ou des passagers avec une application dans le cas d'un covoiturage
     "VP_COVOIT_APP": pl.UInt8,  # Type d'application de voiture en autopartage ou libre-service utilisée au cours du dernier mois
     "VP_COVOIT_APP_txt": pl.String,  # Type d'application de covoiturage utilisée
-    "VPASS_COVOIT": pl.UInt8,  # Si le trajet s’est fait en covoiturage en tant que passager et en dehors du ménage, avez-vous été mis en relation avec le conducteur à l’aide d’une application ?
+    "VPASS_COVOIT": pl.UInt8,  # Si le trajet s'est fait en covoiturage en tant que passager et en dehors du ménage, avez-vous été mis en relation avec le conducteur à l'aide d'une application ?
     "TSTAT_VP": pl.String,  # Stationnement du véhicule au terme du trajet
     "TSTAT_VP_txt": pl.String,  # Stationnement du véhicule au terme du trajet
     "PSTAT_CVP": pl.Float64,  # Prix du stationnement si payant
@@ -116,9 +117,9 @@ UVP_MAP = {
     "80": "company",  # Une voiture mise à disposition par mon employeur+ non réponse
     "81": "company",  # Une voiture mise à disposition par mon employeur+ Une voiture
     "82": "company",  # Une voiture mise à disposition par mon employeur+ Un utilitaire, une camionnette ou un camion
-    "100": "other",  # Une voiture qui m’a été prêtée + non réponse
-    "101": "other",  # Une voiture qui m’a été prêtée + Une voiture
-    "102": "other",  # Une voiture qui m’a été prêtée + Un utilitaire, une camionnette ou un camion
+    "100": "other",  # Une voiture qui m'a été prêtée + non réponse
+    "101": "other",  # Une voiture qui m'a été prêtée + Une voiture
+    "102": "other",  # Une voiture qui m'a été prêtée + Un utilitaire, une camionnette ou un camion
     "90": "other",  # Autre - Veuillez préciser. (Champ textuel saisissable) + non réponse
     "91": "other",  # Autre - Veuillez préciser. (Champ textuel saisissable) + Une voiture
     "92": "other",  # Autre - Veuillez préciser. (Champ textuel saisissable) + Un utilitaire, une camionnette ou un camion
@@ -152,7 +153,7 @@ PARKING_LOCATION_MAP = {
     "4": "parking_lot",  # Dans le parking d'un centre commercial ou dans le parking de mon entreprise
     "9": "other",  # Autre - Veuillez préciser. (Champ textuel saisissable)
     # Ailleurs
-    "11": "garage",  # Chez quelqu’un (garage, box, un autre emplacement réservé )
+    "11": "garage",  # Chez quelqu'un (garage, box, un autre emplacement réservé )
     "20": "street",  # Sur la voie publique + non réponse
     "21": "street",  # Sur la voie publique + gratuit + non réponse
     "211": "street",  # Sur la voie publique + gratuit + autorisé
@@ -163,9 +164,9 @@ PARKING_LOCATION_MAP = {
     "30": "parking_lot",  # Dans un parking public + non réponse
     "31": "parking_lot",  # Dans un parking public + payant
     "32": "parking_lot",  # Dans un parking public + gratuit
-    "40": "parking_lot",  # Dans un parking de centre commercial ou réservé au personnel d’une entreprise + non réponse
-    "41": "parking_lot",  # Dans un parking de centre commercial ou réservé au personnel d’une entreprise + payant
-    "42": "parking_lot",  # Dans un parking de centre commercial ou réservé au personnel d’une entreprise + gratuit
+    "40": "parking_lot",  # Dans un parking de centre commercial ou réservé au personnel d'une entreprise + non réponse
+    "41": "parking_lot",  # Dans un parking de centre commercial ou réservé au personnel d'une entreprise + payant
+    "42": "parking_lot",  # Dans un parking de centre commercial ou réservé au personnel d'une entreprise + gratuit
     "90": "other",  # Autre - Veuillez préciser. (Champ textuel saisissable)
 }
 
@@ -178,7 +179,7 @@ PARKING_TYPE_MAP = {
     "9": None,  # Autre - Veuillez préciser. (Champ textuel saisissable)
     "-1": None,  # pas de réponse
     # Ailleurs
-    "11": "free",  # Chez quelqu’un (garage, box, un autre emplacement réservé )
+    "11": "free",  # Chez quelqu'un (garage, box, un autre emplacement réservé )
     "20": None,  # Sur la voie publique + non réponse
     "21": "free",  # Sur la voie publique + gratuit + non réponse
     "211": "free",  # Sur la voie publique + gratuit + autorisé
@@ -189,9 +190,9 @@ PARKING_TYPE_MAP = {
     "30": None,  # Dans un parking public + non réponse
     "31": "paid",  # Dans un parking public + payant
     "32": "free",  # Dans un parking public + gratuit
-    "40": None,  # Dans un parking de centre commercial ou réservé au personnel d’une entreprise + non réponse
-    "41": "paid",  # Dans un parking de centre commercial ou réservé au personnel d’une entreprise + payant
-    "42": "free",  # Dans un parking de centre commercial ou réservé au personnel d’une entreprise + gratuit
+    "40": None,  # Dans un parking de centre commercial ou réservé au personnel d'une entreprise + non réponse
+    "41": "paid",  # Dans un parking de centre commercial ou réservé au personnel d'une entreprise + payant
+    "42": "free",  # Dans un parking de centre commercial ou réservé au personnel d'une entreprise + gratuit
     "90": None,  # Autre - Veuillez préciser. (Champ textuel saisissable)
 }
 

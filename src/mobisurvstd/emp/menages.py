@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import polars as pl
 
 from mobisurvstd.common.households import clean
@@ -26,7 +27,7 @@ SCHEMA1 = {
     "AGPR": pl.UInt8,  # Age de la PR au 31 décembre de l'année de l'enquête
     "NAIS7PR": pl.UInt8,  # Lieu de naissance de la PR (code regroupé)
     "COUPLEPR": pl.UInt8,  # Vie en couple de la PR
-    "SITUAPR": pl.UInt8,  # Situation de la PR vis-Ã -vis du travail
+    "SITUAPR": pl.UInt8,  # Situation de la PR vis-à-vis du travail
     "CS42PR": pl.UInt8,  # Catégorie socioprofessionnelle détaillée de la PR
     "CS24PR": pl.UInt8,  # Catégorie socioprofessionnelle regroupée de la PR
     "CODCSPR": pl.UInt8,  # Catégorie socio-professionnelle (CS) de la PR en activité

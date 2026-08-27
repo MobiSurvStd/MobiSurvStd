@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 from pathlib import Path
 
 import polars as pl
@@ -92,12 +93,12 @@ EDUCATION_LEVEL_MAP = {
     3: "secondary:no_bac",  # Secondaire (de la 6ème à la 3ème)
     4: "secondary:no_bac",  # Secondaire (de la seconde à la terminale, BEP, CAP) et non titulaire du bac
     5: "secondary:bac",  # Secondaire et titulaire du bac
-    6: "higher:at_most_bac+2",  # Supérieur jusqu’à BAC + 2 (y compris BTS – DUT)
+    6: "higher:at_most_bac+2",  # Supérieur jusqu'à BAC + 2 (y compris BTS - DUT)
     7: "higher:at_least_bac+3",  # Supérieur BAC + 3 et plus
     # 8 represents only 54 observations
     8: None,  # Apprentissage
     9: "higher:at_most_bac+2",  # Autre formation postsecondaire (sanitaire et social ou artistique, …)
-    0: "no_studies_or_no_diploma",  # La personne n’est jamais allée à l’école même en primaire
+    0: "no_studies_or_no_diploma",  # La personne n'est jamais allée à l'école même en primaire
 }
 
 DETAILED_EDUCATION_LEVEL_MAP = {
@@ -106,22 +107,22 @@ DETAILED_EDUCATION_LEVEL_MAP = {
     3: "secondary:no_bac:college",  # Secondaire (de la 6ème à la 3ème)
     4: "secondary:no_bac:CAP/BEP",  # Secondaire (de la seconde à la terminale, BEP, CAP) et non titulaire du bac
     5: "secondary:bac:unspecified",  # Secondaire et titulaire du bac
-    6: "higher:at_most_bac+2:unspecified",  # Supérieur jusqu’à BAC + 2 (y compris BTS – DUT)
+    6: "higher:at_most_bac+2:unspecified",  # Supérieur jusqu'à BAC + 2 (y compris BTS - DUT)
     7: "higher:at_least_bac+3:unspecified",  # Supérieur BAC + 3 et plus
     8: None,  # Apprentissage
     9: "higher:at_most_bac+2:paramedical_social",  # Autre formation postsecondaire (sanitaire et social ou artistique, …)
-    0: "no_studies",  # La personne n’est jamais allée à l’école même en primaire
+    0: "no_studies",  # La personne n'est jamais allée à l'école même en primaire
 }
 
 DETAILED_PROFESSIONAL_OCCUPATION_MAP = {
     1: "worker:full_time",  # Exerce un métier, a un emploi, aide un membre de sa famille (emploi rémunéré) à plein temps (actif à  plein temps)
     2: "worker:part_time",  # Exerce un métier, a un emploi, aide un membre de sa famille (emploi rémunéré) à temps partiel (actif à temps partiel)
     3: "student:higher",  # Etudiant
-    4: "student:apprenticeship",  # Elève d’un centre d’apprentissage avec contrat de qualification
+    4: "student:apprenticeship",  # Elève d'un centre d'apprentissage avec contrat de qualification
     5: "student:primary_or_secondary",  # Elève du primaire ou du secondaire
     6: "other:unemployed",  # Chômeur ayant déjà travaillé
     7: "other:retired",  # Retraité, ancien salarié, retiré des affaires
-    8: "other:unemployed",  # Chômeur n’ayant jamais travaillé
+    8: "other:unemployed",  # Chômeur n'ayant jamais travaillé
     9: "other:homemaker",  # Reste au foyer, personne sans profession
     0: "other:unspecified",  # Inactif, pensionné
 }
@@ -169,7 +170,7 @@ TRAVELED_MAP = {
     4: "no",  # Non, car incapacité temporaire liée à des problèmes de santé (membre cassé …)
     5: "no",  # Non, car pas de moyen de locomotion motorisé à disposition ce jour là
     6: "no",  # Non, car intempéries
-    7: "no",  # Non, n’est pas sorti de son domicile pour une autre raison
+    7: "no",  # Non, n'est pas sorti de son domicile pour une autre raison
     8: "away",  # Non, car se trouvait hier hors région Ile de France
 }
 

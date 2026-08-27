@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import io
 from pathlib import Path
 
@@ -20,14 +21,14 @@ SCHEMA: dict[str, DataTypeClass] = {
     "IDM3": pl.UInt16,  # Année fin enquête
     "IDM4": pl.String,  # Code Insee ville centre
     "ZFM": pl.String,  # zone fine
-    "ECH": pl.UInt32,  # Numéro d’échantillon
+    "ECH": pl.UInt32,  # Numéro d'échantillon
     "GM1": pl.String,  # Insee Zone fine
-    "STM": pl.String,  # Secteur de tirage dans l’enquête d’origine
+    "STM": pl.String,  # Secteur de tirage dans l'enquête d'origine
     "M1": pl.UInt8,  # TYPE D'HABITAT
     "M2": pl.UInt8,  # TYPE D'OCCUPATION
     "M3": pl.UInt8,  # POSSESSION DU TELEPHONE
     "M4": pl.UInt8,  # Annuaire
-    "M5": pl.UInt8,  # Disposition d’une connexion internet
+    "M5": pl.UInt8,  # Disposition d'une connexion internet
     "M6": pl.UInt8,  # Nombre de VP du ménage
     "M7A": pl.UInt8,  # GENRE DU VEHICULE n°1
     "M8A": pl.UInt8,  # TYPE D'ENERGIE DU VEHICULE n°1
@@ -370,8 +371,8 @@ class HouseholdsReader(CeremaReader):
                         MOTORCYCLE_THERMIC_ENGINE_TYPE_MAP, default=None
                     ),
                     parking_location=pl.col(f"M19{a}").replace_strict(PARKING_LOCATION_MAP),
-                    # `default=None` is required because in some surveys (Rennes 2018), other values are
-                    # used without being documented
+                    # `default=None` is required because in some surveys (Rennes 2018), other values
+                    # are used without being documented
                     parking_type=pl.col(f"M20{a}").replace_strict(PARKING_TYPE_MAP, default=None),
                 )
                 for i, a in enumerate(("A", "B", "C", "D"))

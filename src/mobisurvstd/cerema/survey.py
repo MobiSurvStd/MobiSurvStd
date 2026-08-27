@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from datetime import timedelta
-from typing import Callable
 
 import geopandas as gpd
 import pandas as pd
@@ -394,11 +394,8 @@ def identify_zf_gt_system(
         zf_values = set(detailed_zones["detailed_zone_id"].str.slice(-n, m).value_counts().index)
         if not gt_values.intersection(zf_values):
             # ZF / GT can be identified through the n-th character before end.
-            return (
-                lambda prefix: pl.col(f"{prefix}_detailed_zone")
-                .str.slice(-n, 1)
-                .is_in(gt_values)
-                .not_()
+            return lambda prefix: (
+                pl.col(f"{prefix}_detailed_zone").str.slice(-n, 1).is_in(gt_values).not_()
             )
     # For some surveys, all detailed zone ids end with "000", while all special location ids do
     # not end with "000".
@@ -410,8 +407,8 @@ def identify_zf_gt_system(
             and (special_locations["special_location_id"].str.slice(-3) == "000").sum() == 1
         ):
             # Special case for Niort 2016: there is a special location with id "00000000".
-            return (
-                lambda prefix: pl.col(f"{prefix}_detailed_zone").str.slice(-3).eq("000")
+            return lambda prefix: (
+                pl.col(f"{prefix}_detailed_zone").str.slice(-3).eq("000")
                 & pl.col(f"{prefix}_detailed_zone").str.contains("^0+$").not_()
             )
     # For Quimper 2013 (and maybe others), the detailed zone ids ends with "00x" or "01x" but

@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import polars as pl
 
 from mobisurvstd.common.persons import clean
@@ -49,7 +50,7 @@ SCHEMA = {
     "SUPPTC_txt": pl.String,  # Support de l'abonnement TC
     "NV_MOIS": pl.UInt8,  # Nombre de forfaits Mois
     "NV_SEM": pl.UInt8,  # Nombre de forfaits Semaine
-    "REMBTC": pl.UInt8,  # Prise en charge de l’abonnement TC par l’employeur
+    "REMBTC": pl.UInt8,  # Prise en charge de l'abonnement TC par l'employeur
     "ABONVLS": pl.UInt8,  # Abonnement de Vélib ou VLS
     "LIEU_TRAV": pl.UInt8,  # Habitude de travail
     "LIEU_TRAV_txt": pl.String,
@@ -58,7 +59,7 @@ SCHEMA = {
     "TRAVLAT": pl.Float64,  # Latitude du lieu de travail
     "PKVPTRAV": pl.UInt8,  # Disponibilité d'un  parking au lieu de travail
     "PKVLTRAV": pl.UInt8,  # Disponibilité d'un  parking vélo au lieu de travail
-    "DDOMTRAV": pl.Float64,  # Distance à vol d’oiseau entre le domicile et le lieu de travail ou d’étude (en km avec une décimale)
+    "DDOMTRAV": pl.Float64,  # Distance à vol d'oiseau entre le domicile et le lieu de travail ou d'étude (en km avec une décimale)
     "HIER_TRAV": pl.UInt8,  # Avez-vous travaillé hier ?
     "HIER_TRAV_txt": pl.String,  # 	Avez-vous travaillé hier ?
     "HIER_NON_TRAV": pl.String,  # Raison pour laquelle la personne n'a pas travaillé
@@ -82,10 +83,10 @@ SCHEMA = {
     "NBDEPLVELO": pl.UInt8,  # Nombre de déplacements réalisés à vélo
     "NBDEPL2RM": pl.UInt8,  # Nombre de déplacements réalisés en deux roues-motorisé
     "NBDEPLMAP": pl.UInt8,  # Nombre de déplacements réalisés à pied
-    "NONDEPL_T": pl.UInt8,  # Si la personne ne s’est pas déplacée pour aller au travail, quelle en était la raison ?
-    "NONDEPL_T_txt": pl.String,  # 	Si la personne ne s’est pas déplacée pour aller au travail, quelle en était la raison ?
-    "NONDEPL": pl.UInt8,  # Si la personne ne s’est pas déplacée du tout, quelle en était la raison ?
-    "NONDEPL_txt": pl.String,  # 	Si la personne ne s’est pas déplacée du tout, quelle en était la raison
+    "NONDEPL_T": pl.UInt8,  # Si la personne ne s'est pas déplacée pour aller au travail, quelle en était la raison ?
+    "NONDEPL_T_txt": pl.String,  # 	Si la personne ne s'est pas déplacée pour aller au travail, quelle en était la raison ?
+    "NONDEPL": pl.UInt8,  # Si la personne ne s'est pas déplacée du tout, quelle en était la raison ?
+    "NONDEPL_txt": pl.String,  # 	Si la personne ne s'est pas déplacée du tout, quelle en était la raison
     "DERDEPL": pl.UInt32,  # Date du dernier déplacement
     "DERJOUR": pl.UInt16,  # Nombre de jours depuis le dernier déplacement
     "DER_CL": pl.UInt8,  # Classe du dernier déplacement

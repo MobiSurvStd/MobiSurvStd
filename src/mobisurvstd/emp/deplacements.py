@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import polars as pl
 
 from mobisurvstd.common.legs import clean as clean_legs
@@ -122,23 +123,23 @@ SCHEMA = {
 PURPOSE_MAP = {
     "1.1": "home:main",  # Aller au domicile
     "1.2": "home:secondary",  # Retour à la résidence occasionnelle
-    "1.3": "home:secondary",  # Retour au domicile de parents (hors ménage) ou d’amis
+    "1.3": "home:secondary",  # Retour au domicile de parents (hors ménage) ou d'amis
     "1.4": "education:other",  # Étudier (école, lycée, université)
     "1.5": "education:childcare",  # Faire garder un enfant en bas âge (nourrice, crèche, famille)
     "2.1": "shopping:unspecified",  # Se rendre dans une grande surface ou un centre commercial (y compris boutiques et services)
     "2.2": "shopping:unspecified",  # Se rendre dans un centre de proximité, petit commerce, supérette, boutique, services (banque, cordonnier...) commercial) (hors centre commercial)
     "3.1": "task:healthcare",  # Soins médicaux ou personnels (médecin, coiffeur…)
-    "4.1": "task:procedure",  # Démarche administrative, recherche d’informations
+    "4.1": "task:procedure",  # Démarche administrative, recherche d'informations
     "4.12": "task:other",  # Déchetterie
     "5.1": "leisure:visiting:parents",  # Visite à des parents
     "5.2": "leisure:visiting:friends",  # Visite à des amis
-    "6.1": "escort:transport:drop_off",  # Accompagner quelqu’un à la gare, à l’aéroport, à une station de métro, de bus, de car
-    "6.2": "escort:activity:drop_off",  # Accompagner quelqu’un à un autre endroit
-    "6.3": "escort:transport:pick_up",  # Aller chercher quelqu’un à la gare, à l’aéroport, à une station de métro, de bus, de car
-    "6.4": "escort:activity:pick_up",  # Aller chercher quelqu’un à un autre endroit
+    "6.1": "escort:transport:drop_off",  # Accompagner quelqu'un à la gare, à l'aéroport, à une station de métro, de bus, de car
+    "6.2": "escort:activity:drop_off",  # Accompagner quelqu'un à un autre endroit
+    "6.3": "escort:transport:pick_up",  # Aller chercher quelqu'un à la gare, à l'aéroport, à une station de métro, de bus, de car
+    "6.4": "escort:activity:pick_up",  # Aller chercher quelqu''n à un autre endroit
     "7.1": "leisure:other",  # Activité associative, cérémonie religieuse, réunion
-    "7.2": "leisure:sport_or_culture",  # Aller dans un centre de loisir, parc d’attraction, foire
-    "7.3": "leisure:restaurant",  # Manger ou boire à l’extérieur du domicile
+    "7.2": "leisure:sport_or_culture",  # Aller dans un centre de loisir, parc d''ttraction, foire
+    "7.3": "leisure:restaurant",  # Manger ou boire à l'extérieur du domicile
     "7.4": "leisure:sport_or_culture",  # Visiter un monument ou un site historique
     "7.5": "leisure:sport_or_culture",  # Voir un spectacle culturel ou sportif (cinéma, théâtre, concert, cirque, match), assister à une conférence
     "7.6": "leisure:sport_or_culture",  # Faire du sport
@@ -149,7 +150,7 @@ PURPOSE_MAP = {
     "8.3": "home:secondary",  # Se rendre dans une résidence occasionnelle
     "8.4": "task:other",  # Autres motifs personnels
     "9.1": "work:usual",  # Travailler dans son lieu fixe et habituel
-    "9.2": "work:secondary",  # Travailler en dehors d’un lieu fixe et habituel, sauf ients ou visite à des fournisseurs, repas d’affaires, etc.)
+    "9.2": "work:secondary",  # Travailler en dehors d'un lieu fixe et habituel, sauf ients ou visite à des fournisseurs, repas d'affaires, etc.)
     "9.3": "work:other",  # Stages, conférence, congrès, formations, exposition
     "9.4": "work:professional_tour",  # Tournées professionnelles (VRP) ou visites de patients
     "9.5": "work:other",  # Autres motifs professionnels
@@ -171,15 +172,15 @@ MODE_MAP = {
     # 2 : Deux roues
     "2.1": "bicycle:driver",  # Bicyclette, tricycle (y compris à assistance électrique) sauf vélo en libre-service
     "2.2": "bicycle:driver:shared",  # Vélo en libre-service
-    "2.3": "motorcycle:driver:moped",  # Cyclomoteur (2 roues de moins de 50 cm3) – Conducteur
-    "2.4": "motorcycle:passenger:moped",  # Cyclomoteur (2 roues de moins de 50 cm3) – Passager
-    "2.5": "motorcycle:driver:moto",  # Moto (plus de 50 cm3) – Conducteur (y compris avec side-car et scooter à trois roues)
-    "2.6": "motorcycle:passenger:moto",  # Moto (plus de 50 cm3) – Passager (y compris avec side-car et scooter à trois roues)
+    "2.3": "motorcycle:driver:moped",  # Cyclomoteur (2 roues de moins de 50 cm3) - Conducteur
+    "2.4": "motorcycle:passenger:moped",  # Cyclomoteur (2 roues de moins de 50 cm3) - Passager
+    "2.5": "motorcycle:driver:moto",  # Moto (plus de 50 cm3) - Conducteur (y compris avec side-car et scooter à trois roues)
+    "2.6": "motorcycle:passenger:moto",  # Moto (plus de 50 cm3) - Passager (y compris avec side-car et scooter à trois roues)
     "2.7": "motorcycle:driver",  # Motocycles sans précision (y compris quads)
     # 3 : Automobile
-    "3.1": "car:driver",  # Voiture, VUL, voiturette… – Conducteur
-    "3.2": "car:passenger",  # Voiture, VUL, voiturette… – Passager
-    "3.3": "car:driver",  # Voiture, VUL, voiturette… – Tantôt conducteur tantôt passager
+    "3.1": "car:driver",  # Voiture, VUL, voiturette… - Conducteur
+    "3.2": "car:passenger",  # Voiture, VUL, voiturette… - Passager
+    "3.3": "car:driver",  # Voiture, VUL, voiturette… - Tantôt conducteur tantôt passager
     "3.4": "car:driver",  # Trois ou quatre roues sans précision
     # 4 : Transport spécialisé, scolaire, taxi
     "4.1": "taxi_or_VTC",  # Taxi (individuel, collectif), VTC

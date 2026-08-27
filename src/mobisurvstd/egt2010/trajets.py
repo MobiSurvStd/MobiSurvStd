@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 from pathlib import Path
 
 import polars as pl
@@ -46,7 +47,7 @@ MODE_MAP = {
     17: "public_transit:urban:bus",  # Autobus de banlieue RATP  (Numéro de ligne supérieur à 100)
     18: "public_transit:urban:bus",  # Autre autobus de banlieue OPTILE (ex APTR,ADATRIF)
     19: "public_transit:urban:bus",  # Noctilien (bus de nuit ex Noctambus)
-    20: "water_transport",  # Bateau bus – Voguéo
+    20: "water_transport",  # Bateau bus - Voguéo
     30: "public_transit:urban:demand_responsive",  # Transport à la demande
     31: "employer_transport",  # Transports employeurs
     32: "public_transit:school",  # Ramassage scolaire
@@ -65,17 +66,17 @@ MODE_MAP = {
     54: "motorcycle:driver:moped",  # Conducteur véhicule à 2 (ou 3) roues à moteur non immatriculé
     55: "motorcycle:driver",  # Conducteur véhicule à 2 (ou 3) roues à moteur immatriculé
     # Vélo
-    60: "bicycle:driver:shared",  # Véli’b
+    60: "bicycle:driver:shared",  # Véli'b
     61: "bicycle:driver:shared",  # Autre vélo en libre service
     62: "bicycle:driver:traditional",  # Vélo personnel
     63: "bicycle:driver:electric",  # Vélo personnel à assistance électrique
     # Passager de véhicule ou 2/3 roues
-    70: "car:passenger",  # Passager d’une voiture particulière
+    70: "car:passenger",  # Passager d'une voiture particulière
     71: "car:passenger",  # Passager dans un système de covoiturage organisé
-    72: "car:passenger",  # Passager d’un véhicule utilitaire 800 à 1 000 kg
+    72: "car:passenger",  # Passager d'un véhicule utilitaire 800 à 1 000 kg
     73: "car:passenger",  # Passager  véhicule utilitaire de 1 000 kg ou plus
-    74: "motorcycle:passenger:moped",  # Passager d’un véhicule à 2 (ou 3) roues à moteur non immatriculé
-    75: "motorcycle:passenger",  # Passager d’un véhicule à 2 (ou 3) roues à moteur immatriculé
+    74: "motorcycle:passenger:moped",  # Passager d'un véhicule à 2 (ou 3) roues à moteur non immatriculé
+    75: "motorcycle:passenger",  # Passager d'un véhicule à 2 (ou 3) roues à moteur immatriculé
     # Autre moyen de transport
     80: "wheelchair",  # Fauteuil roulant avec ou sans moteur, voiturette  (handicapés)
     81: "personal_transporter:unspecified",  # Rollers, skate, trottinette
@@ -90,7 +91,7 @@ VEHICLE_TYPE_MAP = {
     5: "other_household",  # Autre véhicule du ménage
     6: "rental",  # Véhicule de location
     7: "shared",  # Véhicule en Autolib ou Autopartage
-    8: "company",  # Véhicule de l’entreprise
+    8: "company",  # Véhicule de l'entreprise
     9: "other",  # Autre véhicule
 }
 

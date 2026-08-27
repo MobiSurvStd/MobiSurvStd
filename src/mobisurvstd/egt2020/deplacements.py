@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 from datetime import timedelta
 
 import polars as pl
@@ -30,8 +31,8 @@ SCHEMA = {
     "ORHOR": pl.UInt16,  # Horaire de départ
     "DESTHOR": pl.UInt16,  # Horaire d'arrivée
     "DUREE": pl.UInt16,  # Durée du déplacement en minutes
-    "DUR_TC1": pl.UInt32,  # Si l’itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l’aide de ViaNavigo, cette variable indique la durée totale de l’itinéraire choisi. En secondes.
-    "DUR_TC2": pl.UInt32,  # Si l’itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l’aide de ViaNavigo, cette variable indique la durée totale de l’itinéraire le plus rapide (qui n’est pas forcément celui choisi par la personne). En secondes.
+    "DUR_TC1": pl.UInt32,  # Si l'itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l'aide de ViaNavigo, cette variable indique la durée totale de l'itinéraire choisi. En secondes.
+    "DUR_TC2": pl.UInt32,  # Si l'itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l'aide de ViaNavigo, cette variable indique la durée totale de l'itinéraire le plus rapide (qui n'est pas forcément celui choisi par la personne). En secondes.
     "ORMOT": pl.UInt16,  # Motif au départ
     "DESTMOT": pl.UInt16,  # Motif à l'arrivée
     "ORMOT_H9": pl.UInt8,  # Motif au départ (regroupé en 9 catégories)
@@ -53,7 +54,7 @@ SCHEMA = {
     "N_TAX": pl.UInt8,  # Nombre d'utilisation d'un taxi dans le déplacement
     "N_AUT": pl.UInt8,  # Nombre d'utilisation d'autres modes dans le déplacement
     "NBCO_1": pl.UInt8,  # Nombre de correspondances si déplacement effectué en transports collectifs
-    "NBCO_2": pl.UInt8,  # Si l’itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l’aide de ViaNavigo, cette variable indique le nombre minimal théorique de correspondances, basé sur les divers itinéraires possibles. Il est en effet possible que la personne ait un itinéraire préférentiel qui ne soit pas forcément celui considéré comme optimal par l’application.
+    "NBCO_2": pl.UInt8,  # Si l'itinéraire a inclus une utilisation des transports en commun ET que cet itinéraire a été renseigné à l'aide de ViaNavigo, cette variable indique le nombre minimal théorique de correspondances, basé sur les divers itinéraires possibles. Il est en effet possible que la personne ait un itinéraire préférentiel qui ne soit pas forcément celui considéré comme optimal par l'application.
     "POIDSI": pl.Float64,  # Poids de l'individu ayant réalisé le déplacement
 }
 
@@ -72,7 +73,7 @@ PURPOSE_MAP = {
     36: "work:professional_tour",  # Tournée professionnelle
     # Restauration
     611: "leisure:restaurant",  # Restaurant, cantine, cafétéria, bar, café…
-    37: "work:business_meal",  # Repas d’affaires, déjeuner professionnel
+    37: "work:business_meal",  # Repas d'affaires, déjeuner professionnel
     # Etudes ou crèche
     41: "education:childcare",  # Garde d'enfants
     42: "education:usual",  # Etudes
@@ -93,16 +94,16 @@ PURPOSE_MAP = {
     690: "leisure:other",  # Autres loisirs
     # Démarches
     71: "task:procedure",  # Démarches administratives
-    72: "task:job_search",  # Recherche d’emploi
+    72: "task:job_search",  # Recherche d'emploi
     73: "task:healthcare",  # Aide ou soins à des proches
     74: "task:healthcare",  # Santé
     75: "task:other",  # Affaires personnelles autres
     624: "leisure:walk_or_driving_lesson",  # Leçons de conduite
     # Accompagner quelqu'un
-    811: "escort:transport:drop_off",  # Accompagner quelqu’un à un mode de transport
-    821: "escort:transport:pick_up",  # Aller chercher quelqu’un à un mode de transport
-    812: "escort:activity:drop_off",  # Accompagner quelqu’un
-    822: "escort:activity:pick_up",  # Aller chercher quelqu’un
+    811: "escort:transport:drop_off",  # Accompagner quelqu'un à un mode de transport
+    821: "escort:transport:pick_up",  # Aller chercher quelqu'un à un mode de transport
+    812: "escort:activity:drop_off",  # Accompagner quelqu'un
+    822: "escort:activity:pick_up",  # Aller chercher quelqu'un
     # Autre
     90: "other",  # Autre lieu
 }

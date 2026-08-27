@@ -242,7 +242,7 @@ def guess_survey_type(source: Path | ZipFile) -> str | None:
             pl.scan_csv(f, separator=separator, schema_overrides={"IDM1": pl.UInt8})
             .select(pl.col("IDM1").first())
             .collect()
-            .item()  # ty: ignore[unresolved-attribute]
+            .item()
         )
         if survey_type == 1:
             # EMD.

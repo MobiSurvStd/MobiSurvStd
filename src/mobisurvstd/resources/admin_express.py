@@ -80,7 +80,7 @@ def find_insee(lf: pl.LazyFrame, prefix: str, id_col: str):
     lat_col = f"{prefix}_lat"
     gdf = load_insee_geometries()
     logger.debug(f'Assigning INSEE municipality from coordinates for "{prefix}"')
-    xy: pl.DataFrame = lf.select(id_col, lng_col, lat_col).collect()  # ty: ignore[invalid-assignment]
+    xy: pl.DataFrame = lf.select(id_col, lng_col, lat_col).collect()
     points = gpd.GeoDataFrame(
         data=xy[id_col].to_pandas(),
         geometry=gpd.GeoSeries.from_xy(xy[lng_col], xy[lat_col], crs="EPSG:4326"),

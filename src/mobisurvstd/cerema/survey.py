@@ -85,12 +85,12 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
 
     def finish(self):
         # Collecting all LazyFrames at this point can speed up next computations.
-        self.households = self.households.collect().lazy()  # ty: ignore[unresolved-attribute]
-        self.persons = self.persons.collect().lazy()  # ty: ignore[unresolved-attribute]
-        self.trips = self.trips.collect().lazy()  # ty: ignore[unresolved-attribute]
-        self.legs = self.legs.collect().lazy()  # ty: ignore[unresolved-attribute]
-        self.cars = self.cars.collect().lazy()  # ty: ignore[unresolved-attribute]
-        self.motorcycles = self.motorcycles.collect().lazy()  # ty: ignore[unresolved-attribute]
+        self.households = self.households.collect().lazy()
+        self.persons = self.persons.collect().lazy()
+        self.trips = self.trips.collect().lazy()
+        self.legs = self.legs.collect().lazy()
+        self.cars = self.cars.collect().lazy()
+        self.motorcycles = self.motorcycles.collect().lazy()
         self.add_survey_dates()
         self.fix_main_mode()
         self.fix_detailed_zones()
@@ -112,7 +112,7 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
                 is_valid_weekday=pl.col("trip_weekday").n_unique() == 1,
             )
             .collect()
-        )  # ty: ignore[invalid-assignment]
+        )
         self.households = self.households.join(
             household_dates.lazy(), on="household_id", how="left", coalesce=True
         ).with_columns(trips_weekday=pl.when("is_valid_weekday").then(pl.col("trips_weekday")))
@@ -126,7 +126,7 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
             .filter(pl.col("mode_group").eq(pl.col("main_mode_group")).any().over("trip_id").not_())
             .select("trip_id")
             .collect()
-            .to_series()  # ty: ignore[unresolved-attribute]
+            .to_series()
             .unique()
         )
         n = len(invalid_trips)
@@ -144,7 +144,7 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
                 .group_by("trip_id")
                 .agg(main_mode=pl.col("mode").last(), main_mode_group=pl.col("mode_group").last())
                 .collect()
-            )  # ty: ignore[invalid-assignment]
+            )
             logger.warning(
                 f"For {n} trips, `main_mode_group` value does not appear in any legs'`mode_group`. "
                 f"The `main_mode_group` value is automatically fixed."
@@ -178,21 +178,21 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
             self.detailed_zones["detailed_zone_id"].str.len().max(),
             self.households.select(pl.col("home_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),  # ty: ignore[unresolved-attribute]
+            .item(),
             self.persons.select(pl.col("work_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),  # ty: ignore[unresolved-attribute]
+            .item(),
             self.persons.select(pl.col("study_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),  # ty: ignore[unresolved-attribute]
+            .item(),
             self.trips.select(pl.col("origin_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),  # ty: ignore[unresolved-attribute]
+            .item(),
             self.trips.select(pl.col("destination_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),  # ty: ignore[unresolved-attribute]
-            self.legs.select(pl.col("start_detailed_zone").str.len_chars().max()).collect().item(),  # ty: ignore[unresolved-attribute]
-            self.legs.select(pl.col("end_detailed_zone").str.len_chars().max()).collect().item(),  # ty: ignore[unresolved-attribute]
+            .item(),
+            self.legs.select(pl.col("start_detailed_zone").str.len_chars().max()).collect().item(),
+            self.legs.select(pl.col("end_detailed_zone").str.len_chars().max()).collect().item(),
         )
         self.detailed_zones["detailed_zone_id"] = self.detailed_zones["detailed_zone_id"].str.pad(
             width=max_len, fillchar="0"
@@ -295,7 +295,7 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
                 cols.append(col)
         # Special locations that are not within any detailed zone will have NULL values for
         # `detailed_zone_id`.
-        self.special_locations = self.special_locations.sjoin(
+        self.special_locations: gpd.GeoDataFrame = self.special_locations.sjoin(
             self.detailed_zones[cols], how="left", predicate="within"
         )
         self.special_locations.drop(columns=["index_right"], inplace=True)

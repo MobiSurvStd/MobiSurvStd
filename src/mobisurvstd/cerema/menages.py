@@ -228,7 +228,7 @@ class HouseholdsReader(CeremaReader):
         return lf
 
     def main_insee(self):
-        return self.scan_households().select("IDM4").first().collect().item()  # ty: ignore[unresolved-attribute]
+        return self.scan_households().select("IDM4").first().collect().item()
 
     def standardize_households(self, skip_insee: bool = False):
         lf = self.scan_households()

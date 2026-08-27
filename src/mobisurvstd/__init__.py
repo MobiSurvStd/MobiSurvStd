@@ -7,6 +7,3 @@ from .main import bulk_standardize as bulk_standardize
 from .main import standardize as standardize
 
 __version__ = version("mobisurvstd")
-
-# Initialize logging.
-setup()

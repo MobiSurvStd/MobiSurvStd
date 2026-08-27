@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- MobiSurvStd only sets up loguru when using the command-line tool; call `mobisurvstd.setup()` to
+  set it up manually.
+
 ## [1.4.1] - 2026-08-18
 
 - Prevent null values for `home_sequence_index`

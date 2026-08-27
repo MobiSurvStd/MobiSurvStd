@@ -1,12 +1,15 @@
-from typing import Optional
+from typing import Annotated
 
 import typer
-from typing_extensions import Annotated
 
 import mobisurvstd
 
+from .logger import setup
 from .main import bulk_standardize, standardize
 from .resources import clear_cache
+
+# Initialize logging (only when MobiSurvStd is used as a command-line tool).
+setup()
 
 
 def clear_cache_callback(value: bool):
@@ -37,7 +40,10 @@ def standardizer(
     survey_type: Annotated[
         str | None,
         typer.Option(
-            help="Format of the original survey. Possible values: `emc2`, `emp2019`, `egt2010`, `egt2020`, `edgt`, `edvm`, `emd`, `emg2023`."
+            help=(
+                "Format of the original survey. Possible values: `emc2`, `emp2019`, `egt2010`, "
+                "`egt2020`, `edgt`, `edvm`, `emd`, `emg2023`."
+            )
         ),
     ] = None,
     bulk: bool = typer.Option(
@@ -51,7 +57,7 @@ def standardizer(
         help="Do not validate the standardized data (some guarantees might not be satisfied)",
     ),
     clear_cache: Annotated[
-        Optional[bool],
+        bool | None,
         typer.Option(
             "--clear-cache", callback=clear_cache_callback, help="Clear the cache data and exit"
         ),

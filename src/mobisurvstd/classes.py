@@ -233,8 +233,11 @@ class SurveyDataReader:
     def legs(self) -> pl.DataFrame:
         if self._legs is None:
             filename = os.path.join(self.directory, "legs.parquet")
-            logger.debug(f"Reading legs from `{filename}`")
-            self._legs = pl.read_parquet(filename)
+            if os.path.isfile(filename):
+                logger.debug(f"Reading legs from `{filename}`")
+                self._legs = pl.read_parquet(filename)
+            else:
+                self._legs = pl.DataFrame()
         return self._legs
 
     @property
@@ -332,13 +335,7 @@ def read_many(directory: str, read_fn: Callable, acc_fn: Callable):
 
 def is_valid_mobisurvstd_dir(directory: str) -> bool:
     """Checks if a directory contains all the mandatory MobiSurvStd files."""
-    for name in (
-        "metadata.json",
-        "households.parquet",
-        "persons.parquet",
-        "trips.parquet",
-        "legs.parquet",
-    ):
+    for name in ("metadata.json", "households.parquet", "persons.parquet", "trips.parquet"):
         if not os.path.isfile(os.path.join(directory, name)):
             return False
     return True

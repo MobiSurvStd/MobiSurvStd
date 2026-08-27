@@ -122,7 +122,10 @@ class MultipleGuarantees(Guarantee):
                 # No auto-fix needed.
                 continue
             df_or_none = g.auto_fix(df, col)
-            if df_or_none is not None:
+            if df_or_none is None:
+                # One guarantee is invalid and cannot be auto-fixed -> an error should be raised.
+                return None
+            else:
                 modified = True
                 df = df_or_none
         if modified:
@@ -468,7 +471,7 @@ class ValidDepCode(Guarantee):
         return df[col].is_in(NUTS_DF["dep_code"].to_list()).all()
 
     def _fail_msg(self, df: pl.DataFrame, col: str) -> str:
-        invalid_values = df.filter(pl.col(col).is_in(NUTS_DF["dep_code"]))[col][:5].to_list()
+        invalid_values = df.filter(pl.col(col).is_in(NUTS_DF["dep_code"]).not_())[col][:5].to_list()
         return f"Found invalid departement codes:\n{invalid_values}"
 
 

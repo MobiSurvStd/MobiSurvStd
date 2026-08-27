@@ -28,7 +28,9 @@ class Variable:
                 else:
                     # The DataFrame has been modified to fix the issue.
                     logger.warning(f"Guarantee auto-fixed for column `{self.name}`: {error}")
-                    res = AutoFixed(df_or_none)
+                    if not isinstance(res, Invalid):
+                        # Do not erase `Invalid` results.
+                        res = AutoFixed(df_or_none)
                     df = df_or_none
         return res
 

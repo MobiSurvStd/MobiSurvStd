@@ -4,6 +4,8 @@
 
 - MobiSurvStd only sets up loguru when using the command-line tool; call `mobisurvstd.setup()` to
   set it up manually.
+- Fixed several bugs, most notably validation checks that were silently skipped: surveys that
+  previously passed validation may now report errors
 
 ## [1.4.1] - 2026-08-18
 

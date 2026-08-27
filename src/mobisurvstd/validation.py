@@ -199,7 +199,7 @@ def validate_households(data):
                 pl.col("household_id").replace_strict(
                     nb_motorcycles["household_id"], nb_motorcycles["len"], default=0
                 ),
-            ).cast(data.households["nb_cars"].dtype)
+            ).cast(data.households["nb_motorcycles"].dtype)
         )
     # Guarantee that `nb_persons` matches the actual number of persons (if household is "complete").
     nb_persons = data.persons.group_by("household_id").len()
@@ -658,12 +658,12 @@ def validate_legs(data):
             .otherwise("motorcycle_type")
         )
     # Guarantee that `motorcycle_id` values are valid.
-    invalid_legs = set(
-        data.legs.select("leg_id", "household_id", "motorcycle_id").join(
-            data.motorcycles, on=["household_id", "motorcycle_id"], how="anti"
-        )["leg_id"]
+    invalid_legs = (
+        data.legs.filter(pl.col("motorcycle_id").is_not_null())
+        .select("leg_id", "household_id", "motorcycle_id")
+        .join(data.motorcycles, on=["household_id", "motorcycle_id"], how="anti")
     )
-    if not invalid_legs:
+    if not invalid_legs.is_empty():
         n = len(invalid_legs)
         logger.error(f"{n} legs have invalid `motorcycle_id`:\n{invalid_legs}")
         is_valid = False

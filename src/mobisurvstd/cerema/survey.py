@@ -174,26 +174,34 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
         # The detailed zone ids can have various numbers of leading zeros in the CSVs / spatial
         # files. We left-pad all values to the same number of characters to make matching values
         # easier.
+        # Note. The `or 0` ensure that if a *_detailed_zone is column is all-NULLs, the max_len will
+        # still be properly estimated.
         max_len = max(
-            self.detailed_zones["detailed_zone_id"].str.len().max(),
+            self.detailed_zones["detailed_zone_id"].str.len().max() or 0,
             self.households.select(pl.col("home_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),
-            self.persons.select(pl.col("work_detailed_zone").str.len_chars().max())
-            .collect()
-            .item(),
+            .item()
+            or 0,
+            self.persons.select(pl.col("work_detailed_zone").str.len_chars().max()).collect().item()
+            or 0,
             self.persons.select(pl.col("study_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),
-            self.trips.select(pl.col("origin_detailed_zone").str.len_chars().max())
-            .collect()
-            .item(),
+            .item()
+            or 0,
+            self.trips.select(pl.col("origin_detailed_zone").str.len_chars().max()).collect().item()
+            or 0,
             self.trips.select(pl.col("destination_detailed_zone").str.len_chars().max())
             .collect()
-            .item(),
-            self.legs.select(pl.col("start_detailed_zone").str.len_chars().max()).collect().item(),
-            self.legs.select(pl.col("end_detailed_zone").str.len_chars().max()).collect().item(),
+            .item()
+            or 0,
+            self.legs.select(pl.col("start_detailed_zone").str.len_chars().max()).collect().item()
+            or 0,
+            self.legs.select(pl.col("end_detailed_zone").str.len_chars().max()).collect().item()
+            or 0,
         )
+        if max_len == 0:
+            # Only null values for *_detailed_zone.
+            return
         self.detailed_zones["detailed_zone_id"] = self.detailed_zones["detailed_zone_id"].str.pad(
             width=max_len, fillchar="0"
         )
@@ -295,7 +303,7 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
                 cols.append(col)
         # Special locations that are not within any detailed zone will have NULL values for
         # `detailed_zone_id`.
-        self.special_locations: gpd.GeoDataFrame = self.special_locations.sjoin(
+        self.special_locations = self.special_locations.sjoin(
             self.detailed_zones[cols], how="left", predicate="within"
         )
         self.special_locations.drop(columns=["index_right"], inplace=True)

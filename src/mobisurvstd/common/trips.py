@@ -235,7 +235,7 @@ def add_trip_perimeter(
         assert perimeter_deps is None, (
             "Only one of `perimeter_insees` and `perimeter_deps` should be given"
         )
-        if "origin_insee" not in existing_cols and "destination_insee" not in existing_cols:
+        if "origin_insee" not in existing_cols or "destination_insee" not in existing_cols:
             # Cannot identify trip perimeters.
             return lf
         lf = lf.with_columns(
@@ -243,7 +243,7 @@ def add_trip_perimeter(
             destination_in_perimeter=pl.col("destination_insee").is_in(perimeter_insees),
         )
     else:
-        if "origin_dep" not in existing_cols and "destination_dep" not in existing_cols:
+        if "origin_dep" not in existing_cols or "destination_dep" not in existing_cols:
             # Cannot identify trip perimeters.
             return lf
         assert perimeter_deps is not None

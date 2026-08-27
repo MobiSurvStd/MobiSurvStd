@@ -83,8 +83,10 @@ def create_metadata(
     end_date: date | None = None,
 ):
     # Find survey method.
-    survey_methods = data["households"]["survey_method"].unique()
-    if len(survey_methods) == 1:
+    survey_methods = data["households"]["survey_method"].drop_nulls().unique()
+    if len(survey_methods) == 0:
+        survey_method = None
+    elif len(survey_methods) == 1:
         survey_method = survey_methods[0]
     else:
         assert len(survey_methods) == 2

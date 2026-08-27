@@ -103,6 +103,7 @@ def add_student_group(lf: pl.LazyFrame, existing_cols: list[str]):
         lf = lf.with_columns(
             student_group=pl.col("student_category").replace_strict(STUDENT_GROUP_MAP)
         )
+        existing_cols.append("student_group")
     return lf
 
 
@@ -123,6 +124,7 @@ def add_has_pt_subscription(lf: pl.LazyFrame, existing_cols: list[str]):
 def add_work_only_at_home(lf: pl.LazyFrame, existing_cols: list[str]):
     if "workplace_singularity" in existing_cols and "work_only_at_home" not in existing_cols:
         lf = lf.with_columns(work_only_at_home=pl.col("workplace_singularity").eq("unique:home"))
+        existing_cols.append("work_only_at_home")
     return lf
 
 

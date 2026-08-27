@@ -1,3 +1,4 @@
+import functools
 import os
 import re
 import tempfile
@@ -65,6 +66,7 @@ def read_admin_express():
     return gdf
 
 
+@functools.cache
 def load_insee_geometries():
     if not os.path.isfile(OUTPUT_FILE):
         logger.warning("ADMIN EXPRESS data not found")

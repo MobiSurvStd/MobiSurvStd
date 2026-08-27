@@ -208,8 +208,10 @@ def bulk_standardize_impl(
     skip_spatial: bool = False,
     skip_insee: bool = False,
     no_validation: bool = False,
-    results: list[SurveyData] = [],
+    results: list[SurveyData] | None = None,
 ) -> list[SurveyData]:
+    if results is None:
+        results = []
     if not directory.is_dir():
         logger.error(f"Not a valid directory: {directory}")
         return results

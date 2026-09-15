@@ -65,7 +65,7 @@ PCS_GROUP_CODE_MAP = {
     4: 5,  # EMG: Employés
     5: 6,  # EMG: Ouvriers
     6: 7,  # EMG: Retraité ou pré-retraité
-    7: None,  # EMG: Étudiant ou lycée
+    7: 8,  # EMG: Étudiant ou lycée
     8: 8,  # Au chômage ou en inactivité)
 }
 

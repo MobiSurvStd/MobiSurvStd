@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.4.2] - 2026-09-17
+
 - MobiSurvStd only sets up loguru when using the command-line tool; call `mobisurvstd.setup()` to
   set it up manually.
 - Fixed several bugs, most notably validation checks that were silently skipped: surveys that
@@ -55,7 +57,8 @@
 - Update INSEE data for 2026.
 - Add ruff configuration to `pyproject.toml`.
 
-[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.4.1...HEAD
+[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.4.2...HEAD
+[1.4.2]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.2
 [1.4.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.1
 [1.4.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.0
 [1.3.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.3.1

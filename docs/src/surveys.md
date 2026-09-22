@@ -101,29 +101,33 @@ Tested surveys:
 
 - Alençon 2018
 - Angers 2022
+- Angoulême 2023  **New**
 - Besançon 2018
 - Bordeaux 2021
 - Bouzonville 2019
 - Brest 2018
 - Chambéry 2022
-- Clermont-Ferrand 2023  **New**
+- Clermont-Ferrand 2023
 - Évreux 2018
 - Gap 2018
 - Grenoble 2020
 - Lannion 2022
 - Le Havre 2018
+- Lens / Artois 2023  **New**
 - Marseille 2020
-- Nice 2023  **New**
+- Nevers 2023  **New**
+- Nice 2023
 - Pointe-à-Pitre 2021
 - Poitiers 2018
 - Reims 2021
 - Rennes 2018
 - Sables d'Olonne 2021
 - Saint-Étienne 2021
-- Strasbourg 2024  **New**
-- Toulouse 2023  **New**
+- Strasbourg 2024
+- Toulouse 2023
 - Tours 2019
 - Valenciennes 2019
+- Vannes 2023  **New**
 - Vendée 2020
 
 Notes:

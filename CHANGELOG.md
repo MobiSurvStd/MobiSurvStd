@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Small fixes to support four new EMC² surveys (Angoulême 2023, Lens 2023, Nevers 2023, and Vannes
+  2023).
+
 ## [1.4.2] - 2026-09-17
 
 - MobiSurvStd only sets up loguru when using the command-line tool; call `mobisurvstd.setup()` to

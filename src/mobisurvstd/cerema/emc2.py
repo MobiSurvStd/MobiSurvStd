@@ -52,7 +52,7 @@ class EMC2Reader(CeremaStandardizer):
         return ["zf_160", "zf_fusion", "codegt", "zf", "num_gt"]
 
     def zf_id_from_gt_columns(self):
-        return ["zfrat_f", "num_zf_rat", "cd_zf", "num_zf_19", "zf_rattach", "zfrat"]
+        return ["zfrat_f", "num_zf_rat", "cd_zf", "num_zf_19", "zf_rattach", "zfrat", "zf_rat"]
 
     def gt_name_columns(self):
         return ["nom_gt", "nom_gen", "nom_genera", "libelle", "nom", "rem"]
@@ -66,7 +66,7 @@ class EMC2Reader(CeremaStandardizer):
         return ["zf_fusion", "zf_160", "zf", "num_zf"]
 
     def zf_name_columns(self):
-        return ["zf_nom", "nom_zf", "lib_zf", "libelle", "rem"]
+        return ["zf_nom", "nom_zf", "lib_zf", "libelle", "rem", "nom"]
 
     def dtir_id_columns(self):
         return ["dtir_160", "codsect", "ztir", "num_dtir_f", "num_dtir", "dtir"]
@@ -75,7 +75,15 @@ class EMC2Reader(CeremaStandardizer):
         return ["nomdtir", "nom_dtir"]
 
     def insee_id_columns(self):
-        return ["insee_com", "insee_commune", "insee_gen", "insee", "code_com", "num_com"]
+        return [
+            "insee_com",
+            "insee_commune",
+            "insee_comm",
+            "insee_gen",
+            "insee",
+            "code_com",
+            "num_com",
+        ]
 
     def select_dtir_column(self, gdf: gpd.GeoDataFrame):
         # This is the standard case.
@@ -123,3 +131,10 @@ class EMC2Reader(CeremaStandardizer):
                 gdf["detailed_zone_id"] = gdf["Pgt"].astype(int) // 10 * 10
         # Normal case. Find the ZF id column by name.
         super().select_zf_from_gt_column(gdf)
+
+    def preprocess_special_locations(self, gdf: gpd.GeoDataFrame):
+        # Special case for Vannes 2023: most special locations are invalid (no id or id of a
+        # detailed zone). We filter the valid special locations here.
+        if "ZF" in gdf.columns and "ZFRAT" in gdf.columns and (gdf["ZF"] != gdf["ZFRAT"]).any():
+            gdf = gdf.loc[(gdf["ZF"] != gdf["ZFRAT"]) & (~gdf["ZF"].isna())].copy()
+        return gdf

@@ -64,38 +64,38 @@ for row in persons.iter_rows(named=True):
         characs = "man"
     characs += f", {row['age']}"
     fg = folium.FeatureGroup(name=f"Person {person_id} ({characs})", show=True)
-    for row in legs.filter(person_id=person_id).iter_rows(named=True):
-        coords = [(row["start_lat"], row["start_lng"]), (row["end_lat"], row["end_lng"])]
-        color = MODE_COLOR.get(row["mode_group"], "gray")
+    for leg in legs.filter(person_id=person_id).iter_rows(named=True):
+        coords = [(leg["start_lat"], leg["start_lng"]), (leg["end_lat"], leg["end_lng"])]
+        color = MODE_COLOR.get(leg["mode_group"], "gray")
         folium.PolyLine(
             locations=coords,
             color=color,
             weight=8,
             opacity=0.8,
             tooltip=(
-                f"Person: {row['person_id']}<br>"
-                f"Trip: {row['trip_id']}<br>"
-                f"Trip index: {row['trip_index']}<br>"
-                f"Leg: {row['leg_index']}<br>"
-                f"Mode group: {row['mode_group']}<br>"
-                f"Mode: {row['mode']}"
+                f"Person: {leg['person_id']}<br>"
+                f"Trip: {leg['trip_id']}<br>"
+                f"Trip index: {leg['trip_index']}<br>"
+                f"Leg: {leg['leg_index']}<br>"
+                f"Mode group: {leg['mode_group']}<br>"
+                f"Mode: {leg['mode']}"
             ),
         ).add_to(fg)
 
     # Draw origins / destinations.
-    for row in trips.filter(person_id=person_id).iter_rows(named=True):
+    for trip in trips.filter(person_id=person_id).iter_rows(named=True):
         # Origin
-        tooltip = f"Trip {row['trip_index']} Origin<br>Purpose: {row['origin_purpose_group']}<br>"
-        if row["origin_activity_duration"]:
+        tooltip = f"Trip {trip['trip_index']} Origin<br>Purpose: {trip['origin_purpose_group']}<br>"
+        if trip["origin_activity_duration"]:
             tooltip += (
-                f"From: {fmt_time(row['departure_time'] - row['origin_activity_duration'])}<br>"
-                f"To: {fmt_time(row['departure_time'])}<br>"
-                f"Duration: {row['origin_activity_duration']}min"
+                f"From: {fmt_time(trip['departure_time'] - trip['origin_activity_duration'])}<br>"
+                f"To: {fmt_time(trip['departure_time'])}<br>"
+                f"Duration: {trip['origin_activity_duration']}min"
             )
         else:
-            tooltip += f"Left at: {fmt_time(row['departure_time'])}"
+            tooltip += f"Left at: {fmt_time(trip['departure_time'])}"
         folium.CircleMarker(
-            location=(row["origin_lat"], row["origin_lng"]),
+            location=(trip["origin_lat"], trip["origin_lng"]),
             radius=10,
             color="green",
             fill=True,
@@ -104,15 +104,15 @@ for row in persons.iter_rows(named=True):
         ).add_to(fg)
         # # Destination
         # folium.CircleMarker(
-        #     location=(row["destination_lat"], row["destination_lng"]),
+        #     location=(trip["destination_lat"], trip["destination_lng"]),
         #     radius=4,
         #     color="red",
         #     fill=True,
         #     fill_opacity=0.9,
         #     tooltip=(
-        #         f"Trip {row['trip_index']} Destination<br>"
-        #         f"Purpose: {row['destination_purpose_group']}<br>"
-        #         f"Arrival: {row['arrival_time']}"
+        #         f"Trip {trip['trip_index']} Destination<br>"
+        #         f"Purpose: {trip['destination_purpose_group']}<br>"
+        #         f"Arrival: {trip['arrival_time']}"
         #     ),
         # ).add_to(fg)
 
@@ -133,7 +133,8 @@ padding:10px;
 """
 
 for mg, color in MODE_COLOR.items():
-    legend_html += f'<i style="background:{color};width:10px;height:10px;float:left;margin-right:5px;"></i>{mg}<br>'
+    legend_html += f'<i style="background:{color};width:10px;height:10px;'
+    legend_html += f'float:left;margin-right:5px;"></i>{mg}<br>'
 
 legend_html += "</div>"
 

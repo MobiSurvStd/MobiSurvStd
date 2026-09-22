@@ -121,7 +121,8 @@ for name in GROUPS.keys():
             rgb = cmap(value)
             text_color = get_text_color(rgb)
             background_color = mcolors.rgb2hex(rgb)
-            html += f'<td style="background-color:{background_color};color:{text_color};text-align:center">\n'
+            html += f'<td style="background-color:{background_color}'
+            html += f';color:{text_color};text-align:center">\n'
             html += f"{value:.0%}\n"
             html += "</td>\n"
         html += "</tr>\n"

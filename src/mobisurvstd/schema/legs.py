@@ -141,11 +141,16 @@ LEG_SCHEMA = [
     Variable("leg_euclidean_distance_km", pl.Float64, [NonNegative()]),
     # Travel distance between start and stop points, in kilometers.
     Variable("leg_travel_distance_km", pl.Float64, [NonNegative()]),
-    # Type of car used for the leg.
+    # Type of car (or truck) used for the leg.
     Variable(
         "car_type",
         pl.Enum(["household", "other_household", "rental", "company", "shared", "other"]),
-        [Null(when=pl.col("mode_group").is_in(("car_driver", "car_passenger")).not_())],
+        [
+            Null(
+                when=pl.col("mode_group").is_in(("car_driver", "car_passenger")).not_()
+                & pl.col("mode").is_in(("truck:driver", "truck:passenger")).not_()
+            )
+        ],
     ),
     # Identifier of the car used to perform the leg.
     Variable("car_id", pl.UInt32, [DefinedIfAndOnlyIf(pl.col("car_type").eq("household"))]),

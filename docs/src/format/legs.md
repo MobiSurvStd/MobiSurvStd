@@ -375,6 +375,8 @@ The details regardings how this value is computed depends on the surveys.
 
 Type of car used for the leg.
 
+This variable is also defined for trucks (modes `truck:driver` and `truck:passenger`).
+
 - **Modalities:**
   - `"household"`: the car used for the leg is a car owned by the household, whose
     characteristics are reported in `cars.parquet`
@@ -385,7 +387,8 @@ Type of car used for the leg.
   - `"shared"`: the car used for the leg is a car from a car-sharing service
   - `"other"`: other cases
 - **Guarantees:**
-  - If `mode` is not `car:driver` or `car:passenger`, then the value is null.
+  - If `mode` is not `car:driver`, `car:passenger`, `truck:driver`, or `truck:passenger`, then the
+    value is null.
   - If the value is `"other_household"`, then the household must have at least one car whose
     characteristics are unknown (i.e., household variable `nb_cars` is larger than the number of
     cars with reported characteristics).
@@ -393,6 +396,9 @@ Type of car used for the leg.
 ### `car_id`
 
 Identifier of the car used to perform the leg.
+
+For legs with mode `truck:driver` or `truck:passenger`, this is the identifier of the household
+vehicle used, as reported in `cars.parquet`.
 
 - **Type:** UInt32
 - **Guarantees:**

@@ -193,8 +193,8 @@ def standardize_legs(
         parking_type=pl.col("TSTAT").replace_strict(PARKING_TYPE_MAP),
     )
     lf = lf.with_columns(
-        car_type=pl.when(pl.col("mode").str.starts_with("car:")).then("vehicle_type"),
-        car_index=pl.when(pl.col("mode").str.starts_with("car:")).then("vehicle_index"),
+        car_type=pl.when(pl.col("mode").str.contains("^(car|truck):")).then("vehicle_type"),
+        car_index=pl.when(pl.col("mode").str.contains("^(car|truck):")).then("vehicle_index"),
         motorcycle_type=pl.when(pl.col("mode").str.starts_with("motorcycle:")).then("vehicle_type"),
         motorcycle_index=pl.when(pl.col("mode").str.starts_with("motorcycle:")).then(
             "vehicle_index"

@@ -281,16 +281,16 @@ class LegsReader(CeremaReader):
         # Concatenate the 5 leg types.
         lf = pl.concat((lf1, lf2, lf3, lf4, lf5), how="diagonal")
         # Add car and motorcycle types.
+        # Trucks ("fourgon, camionnette, camion") are reported in the same way as cars.
+        is_car_or_truck = pl.col("mode").str.contains("^(car|truck):")
         lf = lf.with_columns(
-            car_type=pl.when(pl.col("mode").str.starts_with("car:")).then(
+            car_type=pl.when(is_car_or_truck).then(
                 pl.col("T7").replace_strict(CAR_MAP, default=None)
             ),
             motorcycle_type=pl.when(pl.col("mode").str.starts_with("motorcycle:")).then(
                 pl.col("T7").replace_strict(MOTORCYCLE_MAP, default=None)
             ),
-            original_car_index=pl.when(
-                pl.col("mode").str.starts_with("car:") & pl.col("T7").is_between(1, 4)
-            )
+            original_car_index=pl.when(is_car_or_truck & pl.col("T7").is_between(1, 4))
             .then("T7")
             .cast(pl.UInt8),
             # The `original_motorcycle_index` is either 1, 2, 3, 4 or 11, 12, 13, 14 depending on

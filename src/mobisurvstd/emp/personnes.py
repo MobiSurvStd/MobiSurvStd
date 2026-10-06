@@ -368,32 +368,33 @@ REFERENCE_PERSON_LINK_MAP = {
 
 DRIVING_LICENSE_MAP = {1: "yes", 2: "no"}
 
+# Diplôme le plus élevé agrégé (DIP11). Empty values (« Autre : Indéterminé ») are read as null.
 EDUCATION_LEVEL_MAP = {
-    10: "higher:at_least_bac+3",
-    11: "higher:at_least_bac+3",
-    30: "higher:at_most_bac+2",
-    31: "higher:at_most_bac+2",
-    33: "higher:at_most_bac+2",
-    41: "secondary:bac",
-    42: "secondary:bac",
-    50: "secondary:no_bac",
-    60: "secondary:no_bac",
-    70: "primary",
-    71: "no_studies_or_no_diploma",
+    10: "higher:at_least_bac+3",  # Doctorat, master, licence et équivalent
+    11: "higher:at_least_bac+3",  # École niveau licence et au-delà
+    30: "higher:at_most_bac+2",  # Deug
+    31: "higher:at_most_bac+2",  # DUT, BTS et équivalent
+    33: "higher:at_most_bac+2",  # Diplôme paramédical et social niveau bac+2
+    41: "secondary:bac",  # Bac général
+    42: "secondary:bac",  # Bac technologique, professionnel ou équivalent
+    50: "secondary:no_bac",  # CAP, BEP et équivalent
+    60: "secondary:no_bac",  # BEPC, DNB, brevet des collèges
+    70: "primary",  # Certificat d'études primaires
+    71: "no_studies_or_no_diploma",  # Aucun diplôme reconnu
 }
 
 DETAILED_EDUCATION_LEVEL_MAP = {
-    10: "higher:at_least_bac+3:universite",
-    11: "higher:at_least_bac+3:ecole",
-    30: "higher:at_most_bac+2:DEUG",
-    31: "higher:at_most_bac+2:BTS/DUT",
-    33: "higher:at_most_bac+2:paramedical_social",
-    41: "secondary:bac:general",
-    42: "secondary:bac:techno_or_pro",
-    50: "secondary:no_bac:CAP/BEP",
-    60: "secondary:no_bac:college",
-    70: "primary:CEP",
-    71: "no_diploma",
+    10: "higher:at_least_bac+3:universite",  # Doctorat, master, licence et équivalent
+    11: "higher:at_least_bac+3:ecole",  # École niveau licence et au-delà
+    30: "higher:at_most_bac+2:DEUG",  # Deug
+    31: "higher:at_most_bac+2:BTS/DUT",  # DUT, BTS et équivalent
+    33: "higher:at_most_bac+2:paramedical_social",  # Diplôme paramédical et social niveau bac+2
+    41: "secondary:bac:general",  # Bac général
+    42: "secondary:bac:techno_or_pro",  # Bac technologique, professionnel ou équivalent
+    50: "secondary:no_bac:CAP/BEP",  # CAP, BEP et équivalent
+    60: "secondary:no_bac:college",  # BEPC, DNB, brevet des collèges
+    70: "primary:CEP",  # Certificat d'études primaires
+    71: "no_diploma",  # Aucun diplôme reconnu
 }
 
 # Detailed professional occupation is read from SITUA * 10 and TEMPTRAV.

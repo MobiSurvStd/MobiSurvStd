@@ -115,6 +115,9 @@ Value 1 is for `"17-"`, 2 is for `"18-24"`, ..., 7 is for `"75+"`.
 
 Highest education level reached by the person, in detailed categories.
 
+See [Education level comparison](../education.md) for the original survey modalities mapped to each
+level.
+
 The modalities try to reproduce as best as possible the large diversity of the modalities observed
 in the surveys without having too many modalities and without losing too much information.
 

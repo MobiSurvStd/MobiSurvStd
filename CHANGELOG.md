@@ -4,6 +4,10 @@
 
 - Small fixes to support four new EMC² surveys (Angoulême 2023, Lens 2023, Nevers 2023, and Vannes
   2023).
+- New documentation page comparing the original mode modalities of each survey type with the
+  MobiSurvStd modes.
+- EGT2010: utility vehicles with 1000 kg or more of payload are now mode `truck:driver` /
+  `truck:passenger` instead of `car:driver` / `car:passenger`.
 
 ## [1.4.2] - 2026-09-17
 

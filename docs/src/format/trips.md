@@ -801,6 +801,8 @@ Main mode of transportation used for the trip.
 
 In case of intermodality, there is no clear rule how the main mode is defined.
 
+See [Mode comparison](../modes.md) for the original survey modalities mapped to each mode.
+
 - **Modalities:**
   - `"walking"`
   - `"bicycle:driver"`: driver of a bicycle (traditional or electric)

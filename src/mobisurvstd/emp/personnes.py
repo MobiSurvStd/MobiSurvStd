@@ -397,32 +397,34 @@ DETAILED_EDUCATION_LEVEL_MAP = {
     71: "no_diploma",  # Aucun diplôme reconnu
 }
 
-# Detailed professional occupation is read from SITUA * 10 and TEMPTRAV.
+# Detailed professional occupation is read from SITUA * 10 and TEMPTRAV (0 when null).
+# SITUA: Situation principale vis-à-vis du travail.
+# TEMPTRAV: Temps de travail (1. Temps complet, 2. Temps partiel).
 DETAILED_PROFESSIONAL_OCCUPATION_MAP = {
-    10: "worker:unspecified",
-    11: "worker:full_time",
-    12: "worker:part_time",
-    20: "student:apprenticeship",  # Apprenti sous contrat ou stagiaire rémunéré
-    21: "student:apprenticeship",
-    22: "student:apprenticeship",
-    30: "student:unspecified",  # Étudiant, élève, en formation ou stagiaire non rémunéré
-    31: "student:unspecified",
-    32: "student:unspecified",
-    40: "other:unemployed",
-    41: "other:unemployed",
-    42: "other:unemployed",
-    50: "other:retired",
-    51: "other:retired",
-    52: "other:retired",
-    60: "other:homemaker",
-    61: "other:homemaker",
-    62: "other:homemaker",
-    70: "other:unspecified",  # Inactif pour cause d'invalidité
-    71: "other:unspecified",
-    72: "other:unspecified",
-    80: "other:unspecified",  # Autre situation d'inactivité
-    81: "other:unspecified",
-    82: "other:unspecified",
+    10: "worker:unspecified",  # Occupe un emploi + temps de travail non renseigné
+    11: "worker:full_time",  # Occupe un emploi + Temps complet
+    12: "worker:part_time",  # Occupe un emploi + Temps partiel
+    20: "student:apprenticeship",  # Apprenti sous contrat ou stagiaire rémunéré + temps de travail non renseigné
+    21: "student:apprenticeship",  # Apprenti sous contrat ou stagiaire rémunéré + Temps complet
+    22: "student:apprenticeship",  # Apprenti sous contrat ou stagiaire rémunéré + Temps partiel
+    30: "student:unspecified",  # Étudiant, élève, en formation ou stagiaire non rémunéré + temps de travail non renseigné
+    31: "student:unspecified",  # Étudiant, élève, en formation ou stagiaire non rémunéré + Temps complet
+    32: "student:unspecified",  # Étudiant, élève, en formation ou stagiaire non rémunéré + Temps partiel
+    40: "other:unemployed",  # Chômeur + temps de travail non renseigné
+    41: "other:unemployed",  # Chômeur + Temps complet
+    42: "other:unemployed",  # Chômeur + Temps partiel
+    50: "other:retired",  # Retraité + temps de travail non renseigné
+    51: "other:retired",  # Retraité + Temps complet
+    52: "other:retired",  # Retraité + Temps partiel
+    60: "other:homemaker",  # Femme ou homme au foyer + temps de travail non renseigné
+    61: "other:homemaker",  # Femme ou homme au foyer + Temps complet
+    62: "other:homemaker",  # Femme ou homme au foyer + Temps partiel
+    70: "other:unspecified",  # Inactif pour cause d'invalidité + temps de travail non renseigné
+    71: "other:unspecified",  # Inactif pour cause d'invalidité + Temps complet
+    72: "other:unspecified",  # Inactif pour cause d'invalidité + Temps partiel
+    80: "other:unspecified",  # Autre situation d'inactivité + temps de travail non renseigné
+    81: "other:unspecified",  # Autre situation d'inactivité + Temps complet
+    82: "other:unspecified",  # Autre situation d'inactivité + Temps partiel
 }
 
 TELEWORK_MAP = {

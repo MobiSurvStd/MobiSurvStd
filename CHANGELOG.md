@@ -10,6 +10,8 @@
   MobiSurvStd purposes.
 - New documentation page comparing the original education-level modalities of each survey type
   with the MobiSurvStd education levels.
+- New documentation page comparing the original professional-occupation modalities of each survey
+  type with the MobiSurvStd professional occupations.
 - EGT2010: utility vehicles with 1000 kg or more of payload are now mode `truck:driver` /
   `truck:passenger` instead of `car:driver` / `car:passenger`.
 - Variables `car_type` and `car_id` of legs are now also defined for modes `truck:driver` and

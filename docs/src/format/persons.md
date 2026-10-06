@@ -187,6 +187,9 @@ Also see [`detailed_education_level`](#detailed_education_level).
 
 Detailed professional status of the person.
 
+See [Professional occupation comparison](../occupation.md) for the original survey modalities
+mapped to each occupation.
+
 - **Modalities:**
   - `"worker:full_time"`: the person has a full-time job
   - `"worker:part_time"`: the person has a part-time job

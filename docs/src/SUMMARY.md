@@ -9,6 +9,7 @@
 - [Mode comparison](./modes.md)
 - [Purpose comparison](./purposes.md)
 - [Education level comparison](./education.md)
+- [Professional occupation comparison](./occupation.md)
 - [Miscellaneous](./miscellaneous.md)
 - [Format specification](./format/README.md)
   - [Metadata](./format/metadata.md)

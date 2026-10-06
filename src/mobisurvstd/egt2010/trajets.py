@@ -62,7 +62,7 @@ MODE_MAP = {
     50: "car:driver",  # Conducteur voiture particulière
     51: "car:driver",  # Conducteur dans un système de covoiturage organisé
     52: "car:driver",  # Conducteur véhicule utilitaire 800 à 1 000 kg
-    53: "car:driver",  # Conducteur véhicule utilitaire de 1 000 kg ou plus
+    53: "truck:driver",  # Conducteur véhicule utilitaire de 1 000 kg ou plus
     54: "motorcycle:driver:moped",  # Conducteur véhicule à 2 (ou 3) roues à moteur non immatriculé
     55: "motorcycle:driver",  # Conducteur véhicule à 2 (ou 3) roues à moteur immatriculé
     # Vélo
@@ -74,7 +74,7 @@ MODE_MAP = {
     70: "car:passenger",  # Passager d'une voiture particulière
     71: "car:passenger",  # Passager dans un système de covoiturage organisé
     72: "car:passenger",  # Passager d'un véhicule utilitaire 800 à 1 000 kg
-    73: "car:passenger",  # Passager  véhicule utilitaire de 1 000 kg ou plus
+    73: "truck:passenger",  # Passager  véhicule utilitaire de 1 000 kg ou plus
     74: "motorcycle:passenger:moped",  # Passager d'un véhicule à 2 (ou 3) roues à moteur non immatriculé
     75: "motorcycle:passenger",  # Passager d'un véhicule à 2 (ou 3) roues à moteur immatriculé
     # Autre moyen de transport

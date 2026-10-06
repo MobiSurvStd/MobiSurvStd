@@ -11,9 +11,7 @@ The table below shows, for each MobiSurvStd purpose (variables
 [`origin_purpose`](format/trips.md#origin_purpose) and
 [`destination_purpose`](format/trips.md#destination_purpose) of trips), the original modalities that
 are mapped to it in each survey type.
-Original modalities are given as `code` followed by the label from the survey's documentation (in
-French).
-A dash (–) means that the survey type has no modality mapped to that purpose.
+See [how to read the comparison tables](comparison.md#how-to-read-the-comparison-tables).
 
 The EMC², EDGT, EDVM, and EMD surveys all share the same purpose definitions.
 The same codes are also used for the purpose of the escorted person

@@ -11,10 +11,8 @@ The table below shows, for each MobiSurvStd education level (variables
 [`education_level`](format/persons.md#education_level) and
 [`detailed_education_level`](format/persons.md#detailed_education_level) of persons), the original
 modalities that are mapped to it in each survey type.
-Original modalities are given as `code` followed by the label from the survey's documentation (in
-French).
 EMG2023 has no codes: the labels are the values found in the data.
-A dash (–) means that the survey type has no modality mapped to that education level.
+See [how to read the comparison tables](comparison.md#how-to-read-the-comparison-tables).
 
 Note that the surveys do not ask the same question:
 

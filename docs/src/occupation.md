@@ -11,9 +11,7 @@ The table below shows, for each MobiSurvStd professional occupation (variables
 [`professional_occupation`](format/persons.md#professional_occupation) and
 [`detailed_professional_occupation`](format/persons.md#detailed_professional_occupation) of
 persons), the original modalities that are mapped to it in each survey type.
-Original modalities are given as `code` followed by the label from the survey's documentation (in
-French).
-A dash (–) means that the survey type has no modality mapped to that professional occupation.
+See [how to read the comparison tables](comparison.md#how-to-read-the-comparison-tables).
 
 The EMC², EDGT, EDVM, and EMD surveys all share the same professional-occupation definitions.
 

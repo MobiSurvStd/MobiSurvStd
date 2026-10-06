@@ -10,9 +10,7 @@ Each survey uses its own list of transportation modes.
 The table below shows, for each MobiSurvStd mode (variables [`main_mode`](format/trips.md#main_mode)
 of trips and [`mode`](format/legs.md#mode) of legs), the original modalities that are mapped to it
 in each survey type.
-Original modalities are given as `code` followed by the label from the survey's documentation (in
-French).
-A dash (–) means that the survey type has no modality mapped to that mode.
+See [how to read the comparison tables](comparison.md#how-to-read-the-comparison-tables).
 
 The EDGT, EDVM, and EMD surveys share the same mode definitions.
 The EMC² surveys use the same definitions too, except for electric bicycles, motorcycles (unspecified

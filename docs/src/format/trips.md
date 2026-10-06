@@ -109,6 +109,8 @@ Identifier of the trip in the original data.
 
 Purpose of the activity performed at the trip's origin.
 
+See [Purpose comparison](../purposes.md) for the original survey modalities mapped to each purpose.
+
 - **Modalities:**
   - `"home:main"`: the person is at their usual home location
   - `"home:secondary"`: the person is at a secondary home

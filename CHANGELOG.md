@@ -6,6 +6,8 @@
   2023).
 - New documentation page comparing the original mode modalities of each survey type with the
   MobiSurvStd modes.
+- New documentation page comparing the original purpose modalities of each survey type with the
+  MobiSurvStd purposes.
 - EGT2010: utility vehicles with 1000 kg or more of payload are now mode `truck:driver` /
   `truck:passenger` instead of `car:driver` / `car:passenger`.
 - Variables `car_type` and `car_id` of legs are now also defined for modes `truck:driver` and

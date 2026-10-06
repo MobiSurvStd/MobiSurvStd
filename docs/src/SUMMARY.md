@@ -7,6 +7,7 @@
 - [Surveys](./surveys.md)
 - [Availability table](./table.md)
 - [Mode comparison](./modes.md)
+- [Purpose comparison](./purposes.md)
 - [Miscellaneous](./miscellaneous.md)
 - [Format specification](./format/README.md)
   - [Metadata](./format/metadata.md)

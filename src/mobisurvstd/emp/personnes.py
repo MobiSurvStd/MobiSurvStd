@@ -478,6 +478,7 @@ def scan_persons(filename1: str, filename2: str, filename3: str):
             pl.scan_csv(filename2, separator=";", encoding="utf8-lossy", schema_overrides=SCHEMA2),
             on="ident_ind",
             how="left",
+            maintain_order="left",
         )
         .join(
             pl.scan_csv(
@@ -491,6 +492,7 @@ def scan_persons(filename1: str, filename2: str, filename3: str):
             right_on="IDENT_IND",
             how="left",
             coalesce=False,
+            maintain_order="left",
         )
         .sort("ident_men", "ident_ind")
     )
@@ -505,6 +507,7 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         on="original_household_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     lf = lf.rename({"AGE": "age", "pond_indC": "sample_weight_surveyed"})
     lf = lf.with_columns(

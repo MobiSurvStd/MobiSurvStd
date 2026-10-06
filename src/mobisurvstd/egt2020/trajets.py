@@ -220,6 +220,7 @@ def standardize_legs(
         on="original_trip_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     lf = lf.rename(
         {
@@ -294,6 +295,7 @@ def standardize_legs(
         on=["household_id", "car_index"],
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     # Add motorcycle id.
     lf = lf.join(
@@ -301,6 +303,7 @@ def standardize_legs(
         on=["household_id", "motorcycle_index"],
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     # Add `in_vehicle_person_ids`.
     lf = (
@@ -311,6 +314,7 @@ def standardize_legs(
             on="household_id",
             how="left",
             coalesce=True,
+            maintain_order="left",
         )
         # Group by leg_id to end up again with one row per leg.
         .group_by("original_leg_id", maintain_order=True)

@@ -271,6 +271,7 @@ class PersonsReader(CeremaReader):
             on="original_household_id",
             how="left",
             coalesce=True,
+            maintain_order="left",
         )
         lf = lf.rename({"P4": "age", "COE1": "sample_weight_all", "COEP": "sample_weight_surveyed"})
         lf = fix_dates(lf, self.survey_name())
@@ -411,6 +412,7 @@ def fix_work_study_location(lf: pl.LazyFrame, households: pl.LazyFrame):
         households.select("household_id", *(f"home_{col}" for col in zone_cols)),
         on="household_id",
         how="left",
+        maintain_order="left",
     )
     lf = lf.with_columns(
         pl.when("work_only_at_home", pl.col(f"home_{col}") == pl.col(f"work_{col}"))

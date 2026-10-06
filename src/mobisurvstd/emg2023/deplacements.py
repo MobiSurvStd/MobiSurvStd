@@ -99,6 +99,7 @@ def standardize_trips(
         on="original_person_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
 
     lf = lf.with_columns(
@@ -147,6 +148,7 @@ def standardize_trips(
             on="original_trip_id",
             how="left",
             coalesce=True,
+            maintain_order="left",
         )
 
     lf = lf.with_columns(
@@ -225,6 +227,7 @@ def standardize_legs(filename: str, trips: pl.LazyFrame):
         on="original_trip_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     # Drop legs with NULL mode (there is by default 5 legs by trip).
     lf = lf.filter(pl.col("mode").is_not_null(), pl.col("mode").ne(""))

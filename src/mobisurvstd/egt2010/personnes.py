@@ -210,6 +210,7 @@ def standardize_persons(
         on="original_household_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     is_worker = pl.col("OCCP").is_in((1, 2))
     is_student = pl.col("OCCP").is_in((3, 4, 5))

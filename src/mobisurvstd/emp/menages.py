@@ -156,6 +156,7 @@ def scan_households(filename1: str, filename2: str):
         left_on="ident_men",
         right_on="IDENT_MEN",
         coalesce=False,
+        maintain_order="left",
     )
     return lf
 

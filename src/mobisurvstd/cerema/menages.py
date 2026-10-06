@@ -284,6 +284,7 @@ class HouseholdsReader(CeremaReader):
             on="original_household_id",
             how="left",
             coalesce=True,
+            maintain_order="left",
         )
         # Note: the `.lazy()` after the concat is useless (this is already a LazyFrame) but it helps
         # the syntax checker.
@@ -334,6 +335,7 @@ class HouseholdsReader(CeremaReader):
             on="original_household_id",
             how="left",
             coalesce=True,
+            maintain_order="left",
         )
         # Note: the `.lazy()` after the concat is useless (this is already a LazyFrame) but it helps
         # the syntax checker.

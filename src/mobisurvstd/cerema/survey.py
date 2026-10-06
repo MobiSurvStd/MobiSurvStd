@@ -114,7 +114,11 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
             .collect()
         )
         self.households = self.households.join(
-            household_dates.lazy(), on="household_id", how="left", coalesce=True
+            household_dates.lazy(),
+            on="household_id",
+            how="left",
+            coalesce=True,
+            maintain_order="left",
         ).with_columns(trips_weekday=pl.when("is_valid_weekday").then(pl.col("trips_weekday")))
 
     def fix_main_mode(self):
@@ -122,7 +126,9 @@ class CeremaStandardizer(HouseholdsReader, PersonsReader, TripsReader, LegsReade
         # have mode set to "motorcycle".
         invalid_trips = (
             self.legs.select("trip_id", "mode_group")
-            .join(self.trips.select("trip_id", "main_mode_group"), on="trip_id")
+            .join(
+                self.trips.select("trip_id", "main_mode_group"), on="trip_id", maintain_order="left"
+            )
             .filter(pl.col("mode_group").eq(pl.col("main_mode_group")).any().over("trip_id").not_())
             .select("trip_id")
             .collect()

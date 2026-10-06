@@ -244,6 +244,7 @@ def standardize_trips(filename: str, persons: pl.LazyFrame):
         on="original_person_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     lf = lf.rename(
         {
@@ -342,7 +343,13 @@ def standardize_trips(filename: str, persons: pl.LazyFrame):
         .lazy()
     )
     for prefix in ("origin", "destination"):
-        lf = lf.join(old_reg_df, left_on=f"{prefix}_nuts2", right_on="NUTS2", how="left").rename(
+        lf = lf.join(
+            old_reg_df,
+            left_on=f"{prefix}_nuts2",
+            right_on="NUTS2",
+            how="left",
+            maintain_order="left",
+        ).rename(
             {
                 "NUTS2_name": f"{prefix}_nuts2_name",
                 "NUTS1": f"{prefix}_nuts1",
@@ -370,6 +377,7 @@ def standardize_legs(filename: str, trips: pl.LazyFrame):
         on="original_trip_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     lf = lf.filter(
         # Drop legs with NULL mode (there is by default 4 legs by trip).

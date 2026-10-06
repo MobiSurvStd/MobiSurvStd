@@ -53,7 +53,9 @@ def standardize(source: Path | ZipFile, skip_spatial: bool = False):
         .agg(pl.col("trips_weekday").first())
     )
     households = (
-        households.join(household_weekdays, on="household_id", how="left", coalesce=True)
+        households.join(
+            household_weekdays, on="household_id", how="left", coalesce=True, maintain_order="left"
+        )
         .collect()
         .lazy()
     )

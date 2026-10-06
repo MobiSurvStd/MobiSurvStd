@@ -123,14 +123,14 @@ def get_insee_density():
         with zipfile.ZipFile(fn) as z:
             for year in range(2015, 2021):
                 tmp_df = read_density_excel(z.read(f"grille_densite_7_niveaux_{year}.xlsx"), year)
-                df = df.join(tmp_df, on="insee", how="full", coalesce=True)
+                df = df.join(tmp_df, on="insee", how="full", coalesce=True, maintain_order="left")
     for year, url in DENSITY_URL_DICT.items():
         if year == 2015:
             # Already handled above.
             continue
         with tmp_download(url) as fn:
             tmp_df = read_density_excel(fn, year)
-            df = df.join(tmp_df, on="insee", how="full", coalesce=True)
+            df = df.join(tmp_df, on="insee", how="full", coalesce=True, maintain_order="left")
     df = df.sort("insee")
     return df
 
@@ -177,7 +177,7 @@ def get_insee_urban():
                 else:
                     raise Exception("Invalid INSEE urban data url")
                 tmp_df = read_urban_excel(z.read(z.filelist[0].filename), year, ref_year)
-                df = df.join(tmp_df, on="insee", how="full", coalesce=True)
+                df = df.join(tmp_df, on="insee", how="full", coalesce=True, maintain_order="left")
     df = df.sort("insee")
     return df
 
@@ -275,7 +275,7 @@ def read_aav(source: zipfile.ZipExtFile | str, year: int):
                 pl.col(aav_name_col).cast(pl.String).alias(f"aav_name_{year}"),
                 pl.col(aav_category_col).alias(f"aav_category_{year}"),
             )
-            df = df_insee.join(df_aav, on=f"aav_{year}", how="left")
+            df = df_insee.join(df_aav, on=f"aav_{year}", how="left", maintain_order="left")
         # Set AAV name to NULL for municipalities outside any AAV.
         df = df.with_columns(
             pl.when(pl.col(f"aav_{year}").eq("000"))
@@ -293,7 +293,7 @@ def get_insee_aav():
     for year, url in AAV_URL_DICT.items():
         with tmp_download(url) as fn:
             tmp_df = read_aav(fn, year)
-            df = df.join(tmp_df, on="insee", how="full", coalesce=True)
+            df = df.join(tmp_df, on="insee", how="full", coalesce=True, maintain_order="left")
     df = df.sort("insee")
     return df
 
@@ -312,8 +312,12 @@ def download_insee_data():
     logger.debug("Retrieving INSEE AAV")
     df_aav = get_insee_aav()
     # Add INSEE codes missing from code géo.
-    missing = df_changes.join(df_codes, on="insee", how="anti").join(
-        df_codes.drop("dep", "parent_insee"), left_on="parent_insee", right_on="insee", how="left"
+    missing = df_changes.join(df_codes, on="insee", how="anti", maintain_order="left").join(
+        df_codes.drop("dep", "parent_insee"),
+        left_on="parent_insee",
+        right_on="insee",
+        how="left",
+        maintain_order="left",
     )
     df = pl.concat((df_codes, missing), how="diagonal")
     # Add density data.
@@ -415,7 +419,14 @@ def add_insee_data(lf: pl.LazyFrame, prefix: str, year: int | None = None, skip_
         )
     data = load_insee_data(columns)
     insee_col = f"{prefix}_insee"
-    lf = lf.join(data.lazy(), left_on=insee_col, right_on="insee", how="left", coalesce=True)
+    lf = lf.join(
+        data.lazy(),
+        left_on=insee_col,
+        right_on="insee",
+        how="left",
+        coalesce=True,
+        maintain_order="left",
+    )
     lf = lf.rename({"insee_name": f"{prefix}_insee_name"})
     if not skip_dep:
         lf = lf.rename({"dep": f"{prefix}_dep"})

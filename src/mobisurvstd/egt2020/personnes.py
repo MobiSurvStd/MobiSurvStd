@@ -257,6 +257,7 @@ def standardize_persons(filename: str, households: pl.LazyFrame):
         on="original_household_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     # For v3, POIDSTI does not exist but can be read from household's `sample_weight`.
     lf = lf.rename(

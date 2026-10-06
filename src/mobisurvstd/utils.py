@@ -199,7 +199,10 @@ def detect_csv_delimiter(source: Path | io.BytesIO) -> str:
             first_line = f.readline()
     else:
         assert isinstance(source, io.BytesIO)
+        pos = source.tell()
         first_line = source.readline().decode("utf-8")
+        # Rewind so that subsequent readers (e.g., `pl.scan_csv`) see the header line.
+        source.seek(pos)
     sniffer = csv.Sniffer()
     delimiter = sniffer.sniff(first_line).delimiter
     return delimiter

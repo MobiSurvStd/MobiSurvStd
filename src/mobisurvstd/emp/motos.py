@@ -83,6 +83,7 @@ def standardize_motorcycles(filename: str, households: pl.LazyFrame):
         on="original_household_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     lf = lf.rename({"ANNEE_1mec": "year"})
     lf = lf.with_columns(

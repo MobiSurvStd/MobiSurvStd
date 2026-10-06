@@ -145,6 +145,7 @@ def standardize_trips(
         on="original_person_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     # Add interview_date.
     lf = lf.join(
@@ -152,6 +153,7 @@ def standardize_trips(
         on="household_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     lf = lf.rename(
         {

@@ -134,6 +134,7 @@ class LegsReader(CeremaReader):
             on="original_trip_id",
             how="left",
             coalesce=True,
+            maintain_order="left",
         )
 
         lf = lf.with_columns(
@@ -260,7 +261,7 @@ class LegsReader(CeremaReader):
         # We create a single leg for them, with the data we have.
         lf5 = (
             self.trips.filter(pl.col("main_mode") != "walking")
-            .join(lf, on="original_trip_id", how="anti")
+            .join(lf, on="original_trip_id", how="anti", maintain_order="left")
             .select(
                 "household_id",
                 "person_id",
@@ -309,6 +310,7 @@ class LegsReader(CeremaReader):
             on=["household_id", "original_car_index"],
             how="left",
             coalesce=True,
+            maintain_order="left",
         )
         # For Angers 2012 (and maybe others), column T7 is sometimes set to 2 (for example) while
         # the household has no car with index 2.
@@ -324,6 +326,7 @@ class LegsReader(CeremaReader):
             on=["household_id", "original_motorcycle_index"],
             how="left",
             coalesce=True,
+            maintain_order="left",
         )
         # Same fix as for cars.
         lf = lf.with_columns(
@@ -341,6 +344,7 @@ class LegsReader(CeremaReader):
             self.persons.select("person_id", is_major=pl.col("age") >= 18),
             on="person_id",
             how="left",
+            maintain_order="left",
         )
         lf = lf.with_columns(
             nb_majors_in_vehicle=pl.when("is_major" | pl.col("mode").str.contains("passenger"))

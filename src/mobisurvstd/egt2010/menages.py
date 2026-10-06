@@ -326,6 +326,7 @@ def standardize_cars(filename: Path, households: pl.LazyFrame):
         on="original_household_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     lf = pl.concat(
         (
@@ -366,6 +367,7 @@ def standardize_motorcycles(filename: Path, households: pl.LazyFrame):
         on="original_household_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     lf = pl.concat(
         (

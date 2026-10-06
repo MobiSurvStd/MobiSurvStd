@@ -178,7 +178,11 @@ def count_nb_persons(households: pl.LazyFrame, persons: pl.LazyFrame):
     # Join on both "household_id" and "complete_household" so that counts are not added for
     # incomplete households.
     households = households.join(
-        person_counts, on=["household_id", "complete_household"], how="left", coalesce=True
+        person_counts,
+        on=["household_id", "complete_household"],
+        how="left",
+        coalesce=True,
+        maintain_order="left",
     )
     return households
 
@@ -211,6 +215,7 @@ def add_household_type(households: pl.LazyFrame, persons: pl.LazyFrame):
         on="household_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     households = households.with_columns(
         household_type=pl.when(nb_persons=1, nb_men=1)
@@ -233,7 +238,9 @@ def add_household_type(households: pl.LazyFrame, persons: pl.LazyFrame):
 
 def count_nb_trips(persons: pl.LazyFrame, trips: pl.LazyFrame):
     trip_counts = trips.group_by("person_id").agg(nb_trips=pl.len())
-    persons = persons.join(trip_counts, on="person_id", how="left", coalesce=True)
+    persons = persons.join(
+        trip_counts, on="person_id", how="left", coalesce=True, maintain_order="left"
+    )
     # Set nb_trips = 0 for surveyed persons.
     persons = persons.with_columns(
         nb_trips=pl.when("is_surveyed").then(pl.col("nb_trips").fill_null(0)).otherwise("nb_trips")
@@ -275,6 +282,7 @@ def add_worked_during_surveyed_day(persons: pl.LazyFrame, trips: pl.LazyFrame):
             on="person_id",
             how="left",
             coalesce=True,
+            maintain_order="left",
         )
         persons = persons.with_columns(
             worked_during_surveyed_day=pl.when("has_work_activity")
@@ -314,7 +322,7 @@ def count_nb_legs(trips: pl.LazyFrame, legs: pl.LazyFrame):
             ]
         )
     leg_counts = legs.group_by("trip_id").agg(agg_cols)
-    trips = trips.join(leg_counts, on="trip_id", how="left", coalesce=True)
+    trips = trips.join(leg_counts, on="trip_id", how="left", coalesce=True, maintain_order="left")
     if has_mode_group:
         trips = add_intermodality_column(trips)
     return trips
@@ -388,7 +396,7 @@ def add_main_mode(trips: pl.LazyFrame, legs: pl.LazyFrame):
         )
     )
     # Add the `main_mode_group` and `mode_group` columns to the trips.
-    trips = trips.join(main_modes, on="trip_id", how="left", coalesce=True)
+    trips = trips.join(main_modes, on="trip_id", how="left", coalesce=True, maintain_order="left")
     # Remove the `main_mode` column if the legs modes are unknown.
     if not has_modes:
         trips = trips.drop("main_mode")
@@ -418,7 +426,9 @@ def add_access_egress_modes(trips: pl.LazyFrame, legs: pl.LazyFrame):
     # Egress mode is the mode of the last leg if the trip's `main_mode_group` is "public_transit"
     # and the last leg's `mode_group` is not "public_transit", otherwise it is NULL.
     is_pt_trip = pl.col("main_mode_group") == "public_transit"
-    trips = trips.join(first_last_leg_modes, on="trip_id", how="left", coalesce=True).with_columns(
+    trips = trips.join(
+        first_last_leg_modes, on="trip_id", how="left", coalesce=True, maintain_order="left"
+    ).with_columns(
         public_transit_access_mode=pl.when(
             is_pt_trip & pl.col("first_mode_group").ne("public_transit")
         ).then("first_mode"),

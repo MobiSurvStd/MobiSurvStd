@@ -117,7 +117,9 @@ def add_nuts_data(lf: pl.LazyFrame, prefix: str):
     """
     dep_col = f"{prefix}_dep"
     # Add NUTS data.
-    lf = lf.join(NUTS_DF.lazy(), left_on=dep_col, right_on="dep_code", how="left")
+    lf = lf.join(
+        NUTS_DF.lazy(), left_on=dep_col, right_on="dep_code", how="left", maintain_order="left"
+    )
     lf = lf.rename(
         {
             "dep_name": f"{prefix}_dep_name",

@@ -92,5 +92,5 @@ def find_insee(lf: pl.LazyFrame, prefix: str, id_col: str):
     # INSEE.
     join = join.drop_duplicates(subset=[id_col], ignore_index=True)
     df = pl.from_pandas(join.loc[:, [id_col, "insee"]]).rename({"insee": insee_col})
-    lf = lf.join(df.lazy(), on=id_col, how="left")
+    lf = lf.join(df.lazy(), on=id_col, how="left", maintain_order="left")
     return lf

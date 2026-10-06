@@ -97,6 +97,7 @@ def standardize_cars(filename: str, households: pl.LazyFrame):
         on="original_household_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     lf = lf.rename({"PUISS": "tax_horsepower"})
     lf = lf.with_columns(

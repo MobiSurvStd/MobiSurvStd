@@ -171,6 +171,7 @@ def standardize_legs(
         on="original_trip_id",
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     lf = lf.rename(
         {
@@ -206,6 +207,7 @@ def standardize_legs(
         on=["household_id", "car_index"],
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     # Add motorcycle id.
     lf = lf.join(
@@ -213,6 +215,7 @@ def standardize_legs(
         on=["household_id", "motorcycle_index"],
         how="left",
         coalesce=True,
+        maintain_order="left",
     )
     # In 3 cases, the motorcycle index TYPV is not an existing motorcycle of the household so the
     # `motorcycle_type` is changed from "household" to "other_household".

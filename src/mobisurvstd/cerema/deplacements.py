@@ -142,6 +142,7 @@ class TripsReader(CeremaReader):
             on="original_person_id",
             how="left",
             coalesce=True,
+            maintain_order="left",
         )
         lf = lf.rename(
             {
@@ -158,11 +159,11 @@ class TripsReader(CeremaReader):
             original_trip_id=pl.struct(self.get_trip_index_cols()),
             origin_purpose=pl.col("D2A").replace_strict(PURPOSE_MAP),
             origin_escort_purpose=pl.col("D2B").replace_strict(PURPOSE_MAP),
-            origin_shop_type=pl.col("D2A").replace(SHOP_TYPE_MAP, default=None),
+            origin_shop_type=pl.col("D2A").replace_strict(SHOP_TYPE_MAP, default=None),
             departure_time=60 * (pl.col("D4") // 100) + pl.col("D4") % 100,
             destination_purpose=pl.col("D5A").replace_strict(PURPOSE_MAP),
             destination_escort_purpose=pl.col("D5B").replace_strict(PURPOSE_MAP),
-            destination_shop_type=pl.col("D5A").replace(SHOP_TYPE_MAP, default=None),
+            destination_shop_type=pl.col("D5A").replace_strict(SHOP_TYPE_MAP, default=None),
             arrival_time=60 * (pl.col("D8") // 100) + pl.col("D8") % 100,
             trip_euclidean_distance_km=pl.col("D11") / 1e3,
             trip_travel_distance_km=pl.col("D12") / 1e3,

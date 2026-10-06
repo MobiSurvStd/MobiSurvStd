@@ -2,7 +2,7 @@ import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import polars as pl
 
-from mobisurvstd import SurveyDataReader, read_many
+from mobisurvstd import SurveyDataReader, read_many, setup
 from mobisurvstd.schema import (
     CAR_SCHEMA,
     HOUSEHOLD_SCHEMA,
@@ -24,6 +24,9 @@ GROUPS = {
     "cars": CAR_SCHEMA,
     "motorcycles": MOTORCYCLE_SCHEMA,
 }
+
+# Initialize default logger.
+setup("INFO")
 
 
 def count_nulls(data: SurveyDataReader):

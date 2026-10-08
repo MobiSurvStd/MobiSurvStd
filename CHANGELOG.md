@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-08
+
 - Small fixes to support four new EMC² surveys (Angoulême 2023, Lens 2023, Nevers 2023, and Vannes
   2023).
 - New documentation page comparing the original mode modalities of each survey type with the
@@ -74,7 +76,8 @@
 - Update INSEE data for 2026.
 - Add ruff configuration to `pyproject.toml`.
 
-[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.4.2...HEAD
+[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.5.0...HEAD
+[1.5.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.5.0
 [1.4.2]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.2
 [1.4.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.1
 [1.4.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.0

@@ -98,6 +98,7 @@ class EMC2Reader(CeremaStandardizer):
                 for dtir_col in ("zfrat", "zf"):
                     if matching_col := find_matching_column(dtir_col, gdf):
                         gdf["draw_zone_id"] = gdf[matching_col].str.slice(0, 3)
+                        break
 
     def select_zf_column(self, gdf: gpd.GeoDataFrame):
         # For Angers 2022, three trailing zeros need to be added to the ZF id column.

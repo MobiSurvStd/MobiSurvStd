@@ -148,6 +148,7 @@ class EDGTReader(CeremaStandardizer):
             "num_tirage",
             "num_secteur",
             "num_secteurs",
+            "secteur",
             "dtir",
             "code",
         ]

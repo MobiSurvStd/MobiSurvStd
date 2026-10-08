@@ -36,6 +36,7 @@ class EDVMReader(CeremaStandardizer):
     def detailed_zones_filenames(self):
         return [
             find_file_path(self.source, ".*(_zf_.*|_zf|zones?[_ ]?fines?.*|_dfin)[.](tab|shp|mif)")
+            or find_file_path(self.source, "edvm_etb_mcg.mif")  # Saint-Louis 2011 filename.
         ]
 
     def special_locations_filenames(self):

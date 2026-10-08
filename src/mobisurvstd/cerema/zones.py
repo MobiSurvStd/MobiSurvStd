@@ -152,9 +152,6 @@ class ZonesReader(CeremaReader):
         for zf_col in self.zf_id_columns():
             if matching_col := find_matching_column(zf_col, gdf):
                 gdf["detailed_zone_id"] = gdf[matching_col]
-                # Drop the original column so that it will not be wrongly read when finding the
-                # matching ST id column.
-                gdf.drop(columns=[matching_col], inplace=True)
                 break
 
     def select_gt_column(self, gdf: gpd.GeoDataFrame):

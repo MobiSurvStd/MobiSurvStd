@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-12
+
 - New person variables `traveled_on_monday`, ..., `traveled_on_sunday`
 - New person variable `sample_weight_day`: sample weight of the person for the surveyed day.
 
@@ -79,7 +81,8 @@
 - Update INSEE data for 2026.
 - Add ruff configuration to `pyproject.toml`.
 
-[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.5.0...HEAD
+[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.6.0...HEAD
+[1.6.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.6.0
 [1.5.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.5.0
 [1.4.2]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.2
 [1.4.1]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.1

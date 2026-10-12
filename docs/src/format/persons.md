@@ -1003,14 +1003,10 @@ Seven variables (`traveled_on_monday`, `traveled_on_tuesday`, `traveled_on_wedne
 indicating whether the person performed at least one trip during the last given weekday before the
 interview.
 
-For most surveys, only one day is surveyed: the variable of the surveyed weekday (`trips_weekday`
+For the EMP 2019 and EMG 2023, most values are defined.
+For other surveys, only one day is surveyed: the variable of the surveyed weekday (`trips_weekday`
 of the household) is derived from `traveled_during_surveyed_day` (`"away"` gives a null value) and
 the six other variables are null.
-
-For the EMP 2019, the seven variables are defined because the persons are asked on which of the
-seven days before the interview they did not travel.
-These variables can be used, together with [`sample_weight_day`](#sample_weight_day), to build a
-representative weekday (see the [EMP 2019 notes](../surveys.md#enquête-mobilité-des-personnes-2019-emp)).
 
 - **Type:** Boolean
 - **Guarantees:**

@@ -222,6 +222,14 @@ Notes:
 - The survey is conducted **over a week** (seven days) for each person. The trip-level variable
   `trip_date` can be used to identify the day of the trips. The person might not have traveled each
   day of the surveyed week.
+- Variables `traveled_on_{weekday}` are defined from the recorded days of the surveyed week: they
+  are `true` if at least one trip was recorded and `false` if the day was explicitly recorded
+  without trip. They are null if the GPS trace was missing, if the person was outside
+  Île-de-France, if the weekday was not surveyed, or if the weekday was surveyed several times
+  with inconsistent results.
+  To build a representative weekday, select the persons with a non-null `traveled_on_{weekday}`
+  value, weighted by `sample_weight_surveyed` (rescaled to account for the null values), and the
+  trips with the corresponding `trip_weekday`.
 - Trips done before 4 a.m. are usually registered to the previous day, with a departure / arrival
   time value over 24h.
 - Origins and destinations are defined at the INSEE level.

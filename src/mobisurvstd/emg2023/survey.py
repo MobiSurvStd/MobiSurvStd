@@ -21,25 +21,25 @@ def standardize(source: Path | ZipFile, skip_spatial: bool = False, skip_insee: 
         logger.error(f"Missing persons file: {filename}")
         return None
 
+    trips_file = trips_filename(source)
+    if not trips_file:
+        logger.error(f"Missing trips file: {trips_file}")
+        return None
+
     # Households.
     households = standardize_households(filename, skip_insee)
 
     # Persons.
-    persons = standardize_persons(filename, households)
+    persons = standardize_persons(filename, trips_file, households)
 
     # Distances.
     filename = distances_filename(source)
     distances = standardize_distances(filename) if filename else None
 
     # Trips.
-    filename = trips_filename(source)
-    if not filename:
-        logger.error(f"Missing trips file: {filename}")
-        return None
+    trips = standardize_trips(trips_file, persons, skip_insee, distances=distances)
 
-    trips = standardize_trips(filename, persons, skip_insee, distances=distances)
-
-    legs = standardize_legs(filename, trips)
+    legs = standardize_legs(trips_file, trips)
 
     return clean(
         households=households,

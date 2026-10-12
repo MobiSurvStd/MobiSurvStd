@@ -2,6 +2,9 @@
 import polars as pl
 
 from mobisurvstd.common.persons import clean
+from mobisurvstd.schema import WEEKDAYS
+
+from .deplacements import WEEKDAY_MAP, scan_trips
 
 SCHEMA = {
     "ID": pl.String,  # Identifiant de l'individu
@@ -89,8 +92,48 @@ def scan_persons(filename: str):
     return lf
 
 
-def standardize_persons(filename: str, households: pl.LazyFrame):
+def scan_weekday_travel(trips_filename: str):
+    """Returns whether each person traveled on each weekday of the surveyed week.
+
+    A day is a travel day if at least one trip was recorded and a non-travel day if it is marked as
+    "PDD" (pas de déplacement). The travel status is unknown for days marked as "PDT" (pas de
+    trace) or "HORS IDF" (outside Île-de-France).
+    For some persons, a weekday is surveyed more than once: the travel status is unknown if the
+    days do not agree.
+    """
+    lf = scan_trips(trips_filename)
+    lf = lf.group_by("ID", "Date_EMG").agg(
+        weekday=pl.col("Jour_EMG").first().replace_strict(WEEKDAY_MAP),
+        traveled=pl.when(pl.col("Num_depl").is_in(["PDT", "PDD", "HORS IDF"]).not_().any())
+        .then(True)
+        .when(pl.col("Num_depl").eq("PDD").all())
+        .then(False),
+    )
+    lf = lf.group_by("ID", "weekday").agg(
+        traveled=pl.when(pl.col("traveled").drop_nulls().n_unique() == 1).then(
+            pl.col("traveled").drop_nulls().first()
+        )
+    )
+    lf = lf.group_by("ID").agg(
+        pl.col("traveled")
+        .filter(pl.col("weekday") == weekday)
+        .first()
+        .alias(f"traveled_on_{weekday}")
+        for weekday in WEEKDAYS
+    )
+    return lf
+
+
+def standardize_persons(filename: str, trips_filename: str, households: pl.LazyFrame):
     lf = scan_persons(filename)
+
+    lf = lf.join(
+        scan_weekday_travel(trips_filename),
+        on="ID",
+        how="left",
+        coalesce=True,
+        maintain_order="left",
+    )
 
     lf = lf.with_columns(original_household_id=pl.col("ID")).join(
         households.select("original_household_id", "household_id"),

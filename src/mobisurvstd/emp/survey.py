@@ -33,18 +33,20 @@ def standardize(source: Path | ZipFile, skip_spatial: bool = False):
     if filename is None:
         return None
     motorcycles = standardize_motorcycles(filename, households)
+    # Trips filename (needed to read the day weights of the persons).
+    trips_files = trips_filename(source)
+    if trips_files is None:
+        return None
+    trips_file = trips_files[0]
     # Persons.
     filenames = persons_filename(source)
     if filenames is None:
         return None
-    persons = standardize_persons(*filenames, households)
+    persons = standardize_persons(*filenames, trips_file, households)
     # Trips.
-    filename = trips_filename(source)
-    if filename is None:
-        return None
-    trips = standardize_trips(filename, persons)
+    trips = standardize_trips(trips_file, persons)
     # Legs.
-    legs = standardize_legs(filename, trips)
+    legs = standardize_legs(trips_file, trips)
     # Survey weekday is specified at the person-level, we create here the household-level
     # `trips_weekday`.
     household_weekdays = (

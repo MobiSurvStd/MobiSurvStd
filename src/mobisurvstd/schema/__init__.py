@@ -1,6 +1,7 @@
 from .cars import CAR_SCHEMA as CAR_SCHEMA
 from .common import MODE_GROUPS as MODE_GROUPS
 from .common import MODE_TO_GROUP as MODE_TO_GROUP
+from .common import WEEKDAYS as WEEKDAYS
 from .households import HOUSEHOLD_SCHEMA as HOUSEHOLD_SCHEMA
 from .legs import LEG_SCHEMA as LEG_SCHEMA
 from .motorcycles import MOTORCYCLE_SCHEMA as MOTORCYCLE_SCHEMA

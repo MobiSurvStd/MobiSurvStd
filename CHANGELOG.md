@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- New person variables `traveled_on_monday`, ..., `traveled_on_sunday`
+- New person variable `sample_weight_day`: sample weight of the person for the surveyed day.
+
 ## [1.5.0] - 2026-10-08
 
 - Small fixes to support four new EMC² surveys (Angoulême 2023, Lens 2023, Nevers 2023, and Vannes

@@ -53,6 +53,16 @@ Notes:
 - The survey includes data on 58 "voiturettes", 59 "quads", and 1 "tricycle" as a special vehicle
   category, which is not read by MobiSurvStd.
 - Walking legs are not specified in the survey data for trips combining walking with other modes.
+- The surveyed day is drawn among the days of the week before the interview *on which the person
+  traveled*.
+  Therefore, the persons with no trip (`nb_trips = 0`) are the persons who did not travel during the
+  whole week, not the persons who did not travel during an average day.
+  These persons have no surveyed day (`trips_weekday` is null).
+- A representative weekday (e.g., an average Monday) can be built from the union of:
+  - the persons surveyed for that weekday (`trips_weekday` of the household is `"monday"`), with
+    their trips, weighted by `sample_weight_day`;
+  - the persons who did not travel on that weekday (`traveled_on_monday` is false), with no trip,
+    weighted by `sample_weight_surveyed`.
 
 ## Enquêtes mobilité certifiés Cerema (EMC²)
 

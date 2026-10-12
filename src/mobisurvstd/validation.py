@@ -10,6 +10,7 @@ from .schema import (
     MOTORCYCLE_SCHEMA,
     PERSON_SCHEMA,
     TRIP_SCHEMA,
+    WEEKDAYS,
 )
 from .schema.guarantees import AutoFixed, Invalid, Valid
 
@@ -356,9 +357,40 @@ def validate_persons(data):
                     "worked_during_surveyed_day",
                     "nb_trips",
                     "sample_weight_surveyed",
+                    "sample_weight_day",
+                    *(f"traveled_on_{weekday}" for weekday in WEEKDAYS),
                 )
             ),
         )
+    # Guarantee that `traveled_on_{weekday}` is consistent with the trips of the surveyed day, for
+    # the weekday of the surveyed day.
+    persons_weekday = data.persons.join(
+        data.households.select("household_id", "trips_weekday"),
+        on="household_id",
+        how="left",
+        maintain_order="left",
+    )
+    for weekday in WEEKDAYS:
+        col = f"traveled_on_{weekday}"
+        invalid_persons = set(
+            persons_weekday.filter(
+                pl.col("trips_weekday").eq(weekday),
+                (pl.col("nb_trips").gt(0) & pl.col(col).eq(False))
+                | (pl.col("traveled_during_surveyed_day").eq("no") & pl.col(col).eq(True)),
+            )["person_id"]
+        )
+        if invalid_persons:
+            n = len(invalid_persons)
+            logger.warning(
+                f"{n} persons have a value of `{col}` that is inconsistent with their trips on the "
+                "surveyed day. The value is set to null."
+            )
+            data.persons = data.persons.with_columns(
+                pl.when(pl.col("person_id").is_in(invalid_persons))
+                .then(None)
+                .otherwise(col)
+                .alias(col)
+            )
     # Guarantee that there is no trip with work purpose when `worked_during_surveyed_day` is
     # "no:weekday".
     persons_with_work_trip = set(

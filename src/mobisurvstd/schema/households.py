@@ -1,6 +1,6 @@
 import polars as pl
 
-from .common import URBAN_TYPE_ENUM, Variable
+from .common import URBAN_TYPE_ENUM, WEEKDAYS, Variable
 from .guarantees import (
     AllDefinedOrAllNull,
     Bounded,
@@ -27,10 +27,7 @@ HOUSEHOLD_SCHEMA = [
     # Date at which the interview took place.
     Variable("interview_date", pl.Date),
     # Day of the week when the reported trips took place.
-    Variable(
-        "trips_weekday",
-        pl.Enum(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]),
-    ),
+    Variable("trips_weekday", pl.Enum(WEEKDAYS)),
     # Sample weight of the household.
     Variable("sample_weight", pl.Float64, [AllDefinedOrAllNull(), NonNegative()]),
     # Whether all the persons from the household are in the `persons` table.

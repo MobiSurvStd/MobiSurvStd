@@ -2,6 +2,9 @@
 import polars as pl
 
 from mobisurvstd.common.persons import clean
+from mobisurvstd.schema import WEEKDAYS
+
+from .deplacements import scan_trips
 
 SCHEMA1 = {
     "ident_ind": pl.String,  # Identifiant de l'individu dans le logement
@@ -470,6 +473,42 @@ WEEKDAY_MAP = {
 }
 
 
+# Weekday index (0 = monday) of the original weekday names.
+WEEKDAY_INDEX_MAP = {
+    "lundi": 0,
+    "mardi": 1,
+    "mercredi": 2,
+    "jeudi": 3,
+    "vendredi": 4,
+    "samedi": 5,
+    "dimanche": 6,
+}
+
+# IMMODEP_A to IMMODEP_G are the immobility of the days J-1 to J-7 before the interview.
+IMMODEP_DAYS_BEFORE = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7}
+
+
+def traveled_on_weekday_col(weekday_index: int, weekday: str):
+    """Returns an expression for the `traveled_on_{weekday}` variable."""
+    return (
+        # Persons immobile for the whole week (MIMMOSEM = 1) have no drawn day.
+        pl.when(pl.col("MIMMOSEM").eq(1))
+        .then(False)
+        .otherwise(
+            pl.coalesce(
+                pl.when((pl.col("interview_weekday") - days_before + 7) % 7 == weekday_index).then(
+                    pl.col(f"IMMODEP_{letter}").eq(0)
+                )
+                for letter, days_before in IMMODEP_DAYS_BEFORE.items()
+            )
+            # The drawn day is always a day when the person traveled (this fills the values for
+            # the persons who did not answer the IMMODEP questions).
+            .fill_null(pl.when(pl.col("trips_weekday") == weekday).then(True))
+        )
+        .alias(f"traveled_on_{weekday}")
+    )
+
+
 def scan_persons(filename1: str, filename2: str, filename3: str):
     lf = (
         pl.read_csv(filename1, separator=";", encoding="latin1", schema_overrides=SCHEMA1)
@@ -499,8 +538,24 @@ def scan_persons(filename1: str, filename2: str, filename3: str):
     return lf
 
 
-def standardize_persons(filename1: str, filename2: str, filename3: str, households: pl.LazyFrame):
+def standardize_persons(
+    filename1: str, filename2: str, filename3: str, trips_filename: str, households: pl.LazyFrame
+):
     lf = scan_persons(filename1, filename2, filename3)
+    # The day weight (POND_JOUR) is only specified in the trips file.
+    day_weights = (
+        scan_trips(trips_filename)
+        .select("IDENT_IND", "POND_JOUR")
+        .unique("IDENT_IND", keep="first", maintain_order=True)
+    )
+    lf = lf.join(
+        day_weights,
+        left_on="ident_ind",
+        right_on="IDENT_IND",
+        how="left",
+        coalesce=False,
+        maintain_order="left",
+    )
     # Add household_id.
     lf = lf.with_columns(original_household_id=pl.struct(IDENT_MEN="ident_men")).join(
         households.select("original_household_id", "household_id"),
@@ -509,7 +564,9 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         coalesce=True,
         maintain_order="left",
     )
-    lf = lf.rename({"AGE": "age", "pond_indC": "sample_weight_surveyed"})
+    lf = lf.rename(
+        {"AGE": "age", "pond_indC": "sample_weight_surveyed", "POND_JOUR": "sample_weight_day"}
+    )
     lf = lf.with_columns(
         original_person_id=pl.struct(IDENT_IND="ident_ind"),
         reference_person_link=pl.col("LIEN_01").replace_strict(REFERENCE_PERSON_LINK_MAP),
@@ -547,6 +604,17 @@ def standardize_persons(filename1: str, filename2: str, filename3: str, househol
         has_travel_inconvenience=pl.col("GAGENE").is_in((1, 2, 3)),
         is_surveyed=pl.col("NOIK").is_not_null(),
         trips_weekday=pl.col("MDATE_jour").replace_strict(WEEKDAY_MAP),
+        # Weekday of the interview, as an index (0 = monday). The drawn day (MDATE_jour) is
+        # MDATE_delai days before the interview.
+        interview_weekday=(
+            pl.col("MDATE_jour").replace_strict(WEEKDAY_INDEX_MAP, return_dtype=pl.Int8)
+            + pl.col("MDATE_delai").cast(pl.Int8)
+        )
+        % 7,
+    )
+    lf = lf.with_columns(
+        traveled_on_weekday_col(weekday_index, weekday)
+        for weekday_index, weekday in enumerate(WEEKDAYS)
     )
     lf = lf.with_columns(
         # Many persons have ETUDIE = 1 (they study) but SITUA is null.

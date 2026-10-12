@@ -15,6 +15,7 @@ from mobisurvstd.schema import (
     MOTORCYCLE_SCHEMA,
     PERSON_SCHEMA,
     TRIP_SCHEMA,
+    WEEKDAYS,
 )
 
 
@@ -38,6 +39,7 @@ def clean(
     households = add_household_type(households, persons)
     persons = count_nb_trips(persons, trips)
     persons = add_worked_during_surveyed_day(persons, trips)
+    persons = add_weekday_travel(persons, households)
     trips = count_nb_legs(trips, legs)
     trips = add_main_mode(trips, legs)
     trips = add_access_egress_modes(trips, legs)
@@ -303,6 +305,44 @@ def add_worked_during_surveyed_day(persons: pl.LazyFrame, trips: pl.LazyFrame):
             .then(pl.lit("yes:home:other"))
             .when("is_surveyed", pl.col("professional_occupation").eq("worker"))
             .then(pl.lit("no:unspecified"))
+        )
+    return persons
+
+
+def add_weekday_travel(persons: pl.LazyFrame, households: pl.LazyFrame):
+    """Add columns `traveled_on_{weekday}` and `sample_weight_day` to the persons, if needed.
+
+    For surveys where only one day is surveyed, `traveled_on_{weekday}` is only defined for the
+    weekday of the surveyed day and `sample_weight_day` is equal to `sample_weight_surveyed`.
+    """
+    persons_cols = persons.collect_schema().names()
+    if "traveled_on_monday" not in persons_cols:
+        if "trips_weekday" in households.collect_schema().names():
+            persons = persons.join(
+                households.select("household_id", household_trips_weekday="trips_weekday"),
+                on="household_id",
+                how="left",
+                coalesce=True,
+                maintain_order="left",
+            )
+            # The travel status is unknown for persons who were away.
+            traveled = pl.col("traveled_during_surveyed_day").replace_strict(
+                {"yes": True, "no": False, "away": None}, return_dtype=pl.Boolean
+            )
+            persons = persons.with_columns(
+                pl.when(pl.col("household_trips_weekday") == weekday)
+                .then(traveled)
+                .alias(f"traveled_on_{weekday}")
+                for weekday in WEEKDAYS
+            )
+        else:
+            persons = persons.with_columns(
+                pl.lit(None, dtype=pl.Boolean).alias(f"traveled_on_{weekday}")
+                for weekday in WEEKDAYS
+            )
+    if "sample_weight_day" not in persons_cols and "sample_weight_surveyed" in persons_cols:
+        persons = persons.with_columns(
+            sample_weight_day=pl.when("is_surveyed").then("sample_weight_surveyed")
         )
     return persons
 

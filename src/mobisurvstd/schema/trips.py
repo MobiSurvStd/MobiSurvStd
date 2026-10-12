@@ -1,6 +1,6 @@
 import polars as pl
 
-from .common import MODE_ENUM, MODE_GROUP_ENUM, MODE_TO_GROUP, URBAN_TYPE_ENUM, Variable
+from .common import MODE_ENUM, MODE_GROUP_ENUM, MODE_TO_GROUP, URBAN_TYPE_ENUM, WEEKDAYS, Variable
 from .guarantees import (
     AtMostOneOf,
     Bounded,
@@ -327,10 +327,7 @@ TRIP_SCHEMA = [
     # Date at which the trip took place.
     Variable("trip_date", pl.Date),
     # Day of the week when the trip took place.
-    Variable(
-        "trip_weekday",
-        pl.Enum(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]),
-    ),
+    Variable("trip_weekday", pl.Enum(WEEKDAYS)),
     # Main mode of transportation used for the trip.
     Variable("main_mode", MODE_ENUM),
     # Mode group of the main mode of transportation used for the trip.

@@ -996,6 +996,29 @@ Number of trips that the person performed.
   - If `traveled_during_surveyed_day` is `"no"` or `"away"`, then the value is zero.
   - If `traveled_during_surveyed_day` is `"yes"`, then the value is positive.
 
+### `traveled_on_{weekday}`
+
+Seven variables (`traveled_on_monday`, `traveled_on_tuesday`, `traveled_on_wednesday`,
+`traveled_on_thursday`, `traveled_on_friday`, `traveled_on_saturday`, `traveled_on_sunday`)
+indicating whether the person performed at least one trip during the last given weekday before the
+interview.
+
+For most surveys, only one day is surveyed: the variable of the surveyed weekday (`trips_weekday`
+of the household) is derived from `traveled_during_surveyed_day` (`"away"` gives a null value) and
+the six other variables are null.
+
+For the EMP 2019, the seven variables are defined because the persons are asked on which of the
+seven days before the interview they did not travel.
+These variables can be used, together with [`sample_weight_day`](#sample_weight_day), to build a
+representative weekday (see the [EMP 2019 notes](../surveys.md#enquête-mobilité-des-personnes-2019-emp)).
+
+- **Type:** Boolean
+- **Guarantees:**
+  - The value is null when `is_surveyed` is false.
+  - The value for the weekday of the surveyed day (`trips_weekday` of the household) is not
+    `false` if `nb_trips` is positive, and it is not `true` if `traveled_during_surveyed_day` is
+    `"no"`.
+
 ## Sample weights
 
 ### `sample_weight_all`
@@ -1017,6 +1040,25 @@ The sum of the values is supposed to be approximately equal to the number of per
 area.
 Note that the sum of `sample_weight_surveyed` might differ from the sum of `sample_weight_all`
 because the former usually excludes children below 5.
+
+- **Type:** Float64
+- **Guarantees:**
+  - The value is non-negative.
+  - If `is_surveyed` is false, then the value is null.
+
+### `sample_weight_day`
+
+Sample weight of the person for the surveyed day.
+
+For most surveys, the surveyed day does not depend on the person's travel behavior so the value is
+equal to `sample_weight_surveyed`.
+The weights then represent an average surveyed day (e.g., an average working day).
+
+For the EMP 2019, the surveyed day is always a day when the person traveled.
+For each weekday, the sum of `sample_weight_day` over the persons surveyed for that weekday is
+approximately equal to the number of persons who traveled on that weekday.
+The value is null for the persons who did not travel during the whole week (they have no surveyed
+day).
 
 - **Type:** Float64
 - **Guarantees:**

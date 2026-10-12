@@ -1,6 +1,6 @@
 import polars as pl
 
-from .common import Variable
+from .common import WEEKDAYS, Variable
 from .guarantees import (
     Defined,
     DefinedIfAndOnlyIf,
@@ -876,6 +876,12 @@ PERSON_SCHEMA = [
             ValueIsNot(0, when=pl.col("traveled_during_surveyed_day") == "yes"),
         ],
     ),
+    # Whether the person traveled on the last given weekday before the interview (one variable per
+    # weekday).
+    *(
+        Variable(f"traveled_on_{weekday}", pl.Boolean, [Null(when=pl.col("is_surveyed").eq(False))])
+        for weekday in WEEKDAYS
+    ),
     # Sample weight of the person among all the persons interviewed.
     Variable("sample_weight_all", pl.Float64, [NonNegative()]),
     # Sample weight of the person among all the persons whose trips were surveyed.
@@ -883,5 +889,9 @@ PERSON_SCHEMA = [
         "sample_weight_surveyed",
         pl.Float64,
         [NonNegative(), Null(when=pl.col("is_surveyed").eq(False))],
+    ),
+    # Sample weight of the person for the surveyed day.
+    Variable(
+        "sample_weight_day", pl.Float64, [NonNegative(), Null(when=pl.col("is_surveyed").eq(False))]
     ),
 ]

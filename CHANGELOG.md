@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Fix for `*_insee_density`: categories 3 (petite ville) and 4 (ceinture urbain) were reversed in
+  the documentation and the EMP import.
+
 ## [1.6.0] - 2026-10-12
 
 - New person variables `traveled_on_monday`, ..., `traveled_on_sunday`

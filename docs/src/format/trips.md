@@ -393,8 +393,8 @@ Density categories are defined by [INSEE](https://www.insee.fr/fr/information/85
 - **Modalities:**
   - `1`: "commune densément peuplée"
   - `2`: "centre urbain intermédiaire"
-  - `3`: "ceinture urbaine"
-  - `4`: "petite ville"
+  - `3`: "petite ville"
+  - `4`: "ceinture urbaine"
   - `5`: "bourg rural"
   - `6`: "rural à habitat dispersé"
   - `7`: "rural à habitat très dispersé"
@@ -606,8 +606,8 @@ Density categories are defined by [INSEE](https://www.insee.fr/fr/information/85
 - **Modalities:**
   - `1`: "commune densément peuplée"
   - `2`: "centre urbain intermédiaire"
-  - `3`: "ceinture urbaine"
-  - `4`: "petite ville"
+  - `3`: "petite ville"
+  - `4`: "ceinture urbaine"
   - `5`: "bourg rural"
   - `6`: "rural à habitat dispersé"
   - `7`: "rural à habitat très dispersé"

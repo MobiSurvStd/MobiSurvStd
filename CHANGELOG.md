@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-19
+
 ### Breaking changes
 
 - **The project is renamed from MobiSurvStd to Nemobi** (*Normalisation des enquêtes mobilités*).
@@ -98,7 +100,8 @@
 - Update INSEE data for 2026.
 - Add ruff configuration to `pyproject.toml`.
 
-[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/1.6.0...HEAD
+[unreleased]: https://github.com/Metropolis2/Metropolis-Core/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/2.0.0
 [1.6.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.6.0
 [1.5.0]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.5.0
 [1.4.2]: https://github.com/MobiSurvStd/MobiSurvStd/releases/tag/1.4.2

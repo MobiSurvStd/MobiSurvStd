@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-11-19
+
 - Fix for `*_insee_density`: categories 3 (petite ville) and 4 (ceinture urbain) were reversed in
   the documentation and the EMP import.
 

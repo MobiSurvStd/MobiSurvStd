@@ -199,7 +199,7 @@ Note that in most cases, the destination purpose should be equal to the origin p
 trip (if any).
 Rare exceptions can occur when someone is moving to a different location while the activity is
 performed (e.g., for bus drivers).
-MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
+Nemobi will show warning messages indicating how many trips does not match the constraint.
 
 - **Modalities:**
   - Same modalities as [`origin_purpose`](#origin_purpose).
@@ -272,7 +272,7 @@ Note that in most cases, the destination escort purpose should be equal to the o
 of the next trip (if any).
 Rare exceptions can occur when someone is moving to a different location while the activity is
 performed (e.g., for bus drivers).
-MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
+Nemobi will show warning messages indicating how many trips does not match the constraint.
 
 - **Modalities:**
   - Same modalities as [`origin_purpose`](#origin_purpose), excluding all the `"escort:*"`
@@ -549,7 +549,7 @@ Note that in most cases, the destination special location should be equal to the
 location of the next trip (if any).
 Rare exceptions can occur when someone is moving to a different location while the activity is
 performed (e.g., for bus drivers).
-MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
+Nemobi will show warning messages indicating how many trips does not match the constraint.
 
 - **Type:** String
 
@@ -561,7 +561,7 @@ Note that in most cases, the destination detailed zone should be equal to the or
 of the next trip (if any).
 Rare exceptions can occur when someone is moving to a different location while the activity is
 performed (e.g., for bus drivers).
-MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
+Nemobi will show warning messages indicating how many trips does not match the constraint.
 
 - **Type:** String
 
@@ -573,7 +573,7 @@ Note that in most cases, the destination draw zone should be equal to the origin
 next trip (if any).
 Rare exceptions can occur when someone is moving to a different location while the activity is
 performed (e.g., for bus drivers).
-MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
+Nemobi will show warning messages indicating how many trips does not match the constraint.
 
 - **Type:** String
 
@@ -585,7 +585,7 @@ Note that in most cases, the destination INSEE code should be equal to the origi
 next trip (if any).
 Rare exceptions can occur when someone is moving to a different location while the activity is
 performed (e.g., for bus drivers).
-MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
+Nemobi will show warning messages indicating how many trips does not match the constraint.
 
 - **Type:** String
 - **Guarantees:**

@@ -7,7 +7,7 @@
 # Purpose comparison
 
 Each survey uses its own list of trip purposes.
-The table below shows, for each MobiSurvStd purpose (variables
+The table below shows, for each Nemobi purpose (variables
 [`origin_purpose`](format/trips.md#origin_purpose) and
 [`destination_purpose`](format/trips.md#destination_purpose) of trips), the original modalities that
 are mapped to it in each survey type.
@@ -74,7 +74,7 @@ Notes:
 ## Purpose groups (EMG2023)
 
 The EMG2023 survey does not define detailed purposes, only purpose groups.
-The table below shows, for each MobiSurvStd purpose group (variables
+The table below shows, for each Nemobi purpose group (variables
 [`origin_purpose_group`](format/trips.md#origin_purpose_group) and
 [`destination_purpose_group`](format/trips.md#destination_purpose_group) of trips), the original
 EMG2023 modalities that are mapped to it.

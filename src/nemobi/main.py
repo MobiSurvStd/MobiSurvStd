@@ -1,0 +1,257 @@
+from pathlib import Path
+from zipfile import ZipFile
+
+from loguru import logger
+
+from . import cerema, egt2010, egt2020, emg2023, emp
+from .classes import SurveyData
+from .utils import guess_survey_type, read_source
+
+
+def standardize(
+    source: str | Path,
+    output_directory: str | Path | None = None,
+    survey_type: str | None = None,
+    add_name_subdir: bool = False,
+    skip_spatial: bool = False,
+    skip_insee: bool = False,
+    no_validation: bool = False,
+) -> SurveyData | None:
+    """Converts a mobility survey to a clean standardized format.
+
+    Parameters
+    ----------
+    source
+        Path to a directory or zipfile.
+        When a directory is given, it must be the top-level directory of the survey to be converted.
+        When a zipfile is given, the directories within the zipfile are read recursively so that the
+        survey's files can be found no matter how deeply nested the zipfile is.
+    output_directory
+        Path to the directory where the standardized survey should be stored.
+        If the directory does not exist, Nemobi will create it (recursively).
+        If None, the standardized survey will not be saved.
+    survey_type
+        String indicating the type of the survey to be converted.
+        If the value is omitted, Nemobi will do its best to guess the survey type.
+        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edgt-opendata", "edvm",
+        "emd", "emg2023".
+    add_name_subdir
+        Whether the standardized survey is stored directly in `output_directory` or within a
+        subdirectory of `output_directory`.
+        If True, the standardized survey is stored in a subdirectory within `output_directory`. The
+        subdirectory name is the survey name.
+        If False (default), the standardized survey is stored directly in `output_directory`.
+    skip_spatial
+        If True, Nemobi will not try to read spatial data from the survey.
+        This means that special locations, detailed zones, and draw zones will not be read and
+        proposed as an output.
+        Some variables (e.g., home_lng, home_lat) might also be missing as a result.
+    skip_insee
+        If True, Nemobi will not try to download and add INSEE data to the surveys.
+        This means that some variables, like municipality name, density level, urban type, etc.,
+        might be missing.
+    no_validation
+        If True, Nemobi will not validate the standardized data.
+        This means that guarantees for some variables might not be satisfied.
+
+    Returns
+    -------
+    SurveyData
+
+    Examples
+    --------
+
+    Read the EGT2020 survey from the `original_egt2020.zip` file and store the standardized version
+    in the `standardized_egt2020` directory.
+
+    >>> import nemobi
+    >>> nemobi.standardize(
+    >>>     "original_egt2020.zip",
+    >>>     "standardized_egt2020",
+    >>>     survey_type="egt2020",
+    >>> )
+    """
+    source_path = Path(source)
+    dir_or_zip = read_source(source_path)
+    if dir_or_zip is None:
+        return None
+    if survey_type is None:
+        survey_type = guess_survey_type(dir_or_zip)
+    if survey_type is None:
+        # Survey type could not be guessed correctly.
+        logger.error(f"Cannot guess survey type from source `{source}`")
+        return None
+    # Note that I actually define here some aliases for the `survey_type` argument that are not
+    # documented (because why not?).
+    if survey_type == "emc2":
+        survey_data = cerema.standardize(
+            dir_or_zip, "EMC2", skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
+    elif survey_type == "edgt":
+        survey_data = cerema.standardize(
+            dir_or_zip, "EDGT", skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
+    elif survey_type == "edgt-opendata":
+        survey_data = cerema.standardize(
+            dir_or_zip, "EDGT-opendata", skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
+    elif survey_type == "edvm":
+        survey_data = cerema.standardize(
+            dir_or_zip, "EDVM", skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
+    elif survey_type == "emd":
+        survey_data = cerema.standardize(
+            dir_or_zip, "EMD", skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
+    elif survey_type in ("emp", "emp2019"):
+        # There is no `skip_insee` argument for EMP since INSEE data never needs to be read.
+        survey_data = emp.standardize(dir_or_zip, skip_spatial=skip_spatial)
+    elif survey_type in ("egt2020", "egt20", "egt1820"):
+        survey_data = egt2020.standardize(
+            dir_or_zip, skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
+    elif survey_type in ("egt2010", "egt10"):
+        survey_data = egt2010.standardize(
+            dir_or_zip, skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
+    elif survey_type in ("emg", "emg2023", "emg23"):
+        survey_data = emg2023.standardize(
+            dir_or_zip, skip_spatial=skip_spatial, skip_insee=skip_insee
+        )
+    else:
+        logger.error(f"Unsupported survey type: {survey_type}")
+        return None
+    if survey_data is None:
+        source_name = source.filename if isinstance(source, ZipFile) else source
+        logger.error(f"Failed to read survey from `{source_name}`")
+        return None
+    if not no_validation:
+        is_valid = survey_data.validate()
+        if not is_valid:
+            return None
+    if output_directory is not None:
+        output_path = Path(output_directory)
+        if add_name_subdir:
+            output_path = output_path / survey_data.metadata["name"]
+        survey_data.save(output_path)
+    return survey_data
+
+
+def bulk_standardize(
+    directory: str | Path,
+    output_directory: str | Path | None = None,
+    survey_type: str | None = None,
+    skip_spatial: bool = False,
+    skip_insee: bool = False,
+    no_validation: bool = False,
+) -> list[SurveyData] | None:
+    """Standardizes mobility surveys in bulk from a given directory.
+
+    Nemobi will explore all directories and zipfiles within `directory`, try to standardize
+    them and store the standardized data in `output_directory`.
+
+    Parameters
+    ----------
+    directory
+        Path to a directory.
+        The directory must contain survey data, stored within directories or zipfiles.
+    output_directory
+        Path to the directory where the standardized surveys should be stored.
+        If the directory does not exist, Nemobi will create it (recursively).
+        Each survey read is stored in a subdirectory whose name is the survey's name.
+        If None, the standardized surveys will not be saved.
+    survey_type
+        String indicating the type of the surveys to be converted.
+        If the directory contains surveys of different types, leave this value to None and
+        Nemobi will try to guess the type of each survey.
+        Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edgt-opendata", "edvm",
+        "emd".
+    skip_spatial
+        If True, Nemobi will not try to read spatial data from the surveys.
+        This means that special locations, detailed zones, and draw zones will not be read and
+        proposed as an output.
+        Some variables (e.g., home_lng, home_lat) might also be missing as a result.
+    skip_insee
+        If True, Nemobi will not try to download and add INSEE data to the surveys.
+        This means that some variables, like municipality name, density level, urban type, etc.,
+        might be missing.
+    no_validation
+        If True, Nemobi will not validate the standardized data.
+        This means that guarantees for some variables might not be satisfied.
+
+    Examples
+    --------
+
+    Read all surveys in the `my_surveys` directory and store their standardized version in the
+    `standardized_surveys` directory.
+
+    >>> import nemobi
+    >>> nemobi.bulk_standardize("my_surveys", "standardized_surveys")
+    """
+    if output_directory is not None:
+        output_directory = Path(output_directory)
+    results = bulk_standardize_impl(
+        Path(directory), output_directory, survey_type, skip_spatial, skip_insee, no_validation
+    )
+    n = len(results)
+    if n > 0:
+        logger.success(f"Successfully read {n} surveys from `{directory}`")
+    if n == 0:
+        logger.error(f"No survey could be read from `{directory}`")
+    return results
+
+
+def bulk_standardize_impl(
+    directory: Path,
+    output_directory: Path | None,
+    survey_type: str | None = None,
+    skip_spatial: bool = False,
+    skip_insee: bool = False,
+    no_validation: bool = False,
+    results: list[SurveyData] | None = None,
+) -> list[SurveyData]:
+    if results is None:
+        results = []
+    if not directory.is_dir():
+        logger.error(f"Not a valid directory: {directory}")
+        return results
+    for source in directory.iterdir():
+        if source.is_dir():
+            maybe_type = guess_survey_type(source)
+            if maybe_type is None:
+                # The directory does not seem to be a valid survey.
+                # We try to iteratively read that directory.
+                bulk_standardize_impl(
+                    source,
+                    output_directory,
+                    survey_type,
+                    skip_spatial,
+                    skip_insee,
+                    no_validation,
+                    results,
+                )
+            else:
+                data = standardize(
+                    source,
+                    output_directory,
+                    survey_type,
+                    add_name_subdir=True,
+                    skip_spatial=skip_spatial,
+                    skip_insee=skip_insee,
+                    no_validation=no_validation,
+                )
+                if data is not None:
+                    results.append(data)
+        if source.suffix == ".zip":
+            data = standardize(
+                source,
+                output_directory,
+                survey_type,
+                add_name_subdir=True,
+                skip_spatial=skip_spatial,
+                skip_insee=skip_insee,
+                no_validation=no_validation,
+            )
+            if data is not None:
+                results.append(data)
+    return results

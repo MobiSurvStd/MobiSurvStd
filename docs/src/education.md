@@ -7,7 +7,7 @@
 # Education level comparison
 
 Each survey uses its own list of education levels.
-The table below shows, for each MobiSurvStd education level (variables
+The table below shows, for each Nemobi education level (variables
 [`education_level`](format/persons.md#education_level) and
 [`detailed_education_level`](format/persons.md#detailed_education_level) of persons), the original
 modalities that are mapped to it in each survey type.
@@ -54,7 +54,7 @@ Notes:
   - EGT2010: `1` Personne en cours de scolarité, `8` Apprentissage (54 observations only)
   - EMP2019: empty values (« Autre : Indéterminé »)
   - EMG2023: NR (no answer)
-- Some mappings are assumptions made by MobiSurvStd:
+- Some mappings are assumptions made by Nemobi:
   - EMC² / EDGT / EDVM / EMD: code `2` includes CAP but is mapped to `secondary:no_bac:college`.
   - EMC² / EDGT / EDVM / EMD: apprenticeship codes `7` and `8` are assumed to be at most CAP / BEP
     and at most BAC+2, respectively.

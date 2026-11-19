@@ -7,7 +7,7 @@
 # Mode comparison
 
 Each survey uses its own list of transportation modes.
-The table below shows, for each MobiSurvStd mode (variables [`main_mode`](format/trips.md#main_mode)
+The table below shows, for each Nemobi mode (variables [`main_mode`](format/trips.md#main_mode)
 of trips and [`mode`](format/legs.md#mode) of legs), the original modalities that are mapped to it
 in each survey type.
 See [how to read the comparison tables](comparison.md#how-to-read-the-comparison-tables).

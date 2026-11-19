@@ -1,4 +1,4 @@
-# Why MobiSurvStd?
+# Why Nemobi?
 
 Consider the following example: you want to compare the average travel time over a day, between men
 and women, for various territories / years.
@@ -111,14 +111,14 @@ shape: (2, 2)
 └──────┴───────────┘
 ```
 
-## MobiSurvStd
+## Nemobi
 
-Instead of having to write 2 (or more) different codes, MobiSurvStd allows you to write a single
+Instead of having to write 2 (or more) different codes, Nemobi allows you to write a single
 cleaner code that can run on many travel surveys.
-With MobiSurvStd, the code to compute average travel time by gender would be:
+With Nemobi, the code to compute average travel time by gender would be:
 
 ```python
-# === Read average travel time by gender with MobiSurvStd. ===
+# === Read average travel time by gender with Nemobi. ===
 import polars as pl
 # Read the persons parquet file.
 pers = pl.read_parquet("persons.parquet")

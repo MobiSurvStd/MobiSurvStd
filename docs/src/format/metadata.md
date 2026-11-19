@@ -1,6 +1,6 @@
 # Metadata
 
-Each survey standardized with MobiSurvStd includes a `metadata.json` JSON file with the following
+Each survey standardized with Nemobi includes a `metadata.json` JSON file with the following
 variables.
 
 ### `name`

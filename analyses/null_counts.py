@@ -2,8 +2,8 @@ import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import polars as pl
 
-from mobisurvstd import SurveyDataReader, read_many, setup
-from mobisurvstd.schema import (
+from nemobi import SurveyDataReader, read_many, setup
+from nemobi.schema import (
     CAR_SCHEMA,
     HOUSEHOLD_SCHEMA,
     LEG_SCHEMA,
@@ -11,8 +11,8 @@ from mobisurvstd.schema import (
     PERSON_SCHEMA,
     TRIP_SCHEMA,
 )
-from mobisurvstd.schema.common import Variable
-from mobisurvstd.schema.guarantees import Null
+from nemobi.schema.common import Variable
+from nemobi.schema.guarantees import Null
 
 SURVEY_TYPES = ["EMC2", "EMP2019", "EGT2020", "EMG2023", "EDGT", "EDVM", "EGT2010", "EMD"]
 

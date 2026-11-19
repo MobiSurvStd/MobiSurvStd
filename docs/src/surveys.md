@@ -1,24 +1,24 @@
 # Surveys
 
-This page lists all the survey types which are currently supported by MobiSurvStd.
+This page lists all the survey types which are currently supported by Nemobi.
 
 <div class="warning">
 For each type, the expected format (tree structure and filenames) is provided.
 If you have a survey with a different format (which can happen if you did not get your survey from
-Progedo), then MobiSurvStd will not be able to guess the survey type and to read it (even if you
+Progedo), then Nemobi will not be able to guess the survey type and to read it (even if you
 specify the survey type).
 In this case, you can try renaming or moving files to match the expected format.
-MobiSurvStd will then be able to properly guess the survey type and read it (assuming the files'
+Nemobi will then be able to properly guess the survey type and read it (assuming the files'
 content is the same).
 
-If you are not able to read your survey or if you want MobiSurvStd to support a new survey type /
-format, feel free to <a href="https://github.com/MobiSurvStd/MobiSurvStd/issues">open an issue on
+If you are not able to read your survey or if you want Nemobi to support a new survey type /
+format, feel free to <a href="https://github.com/LucasJavaudin/Nemobi/issues">open an issue on
 GitHub</a>.
 </div>
 
 All surveys can be processed *without spatial / zonal data* when running with the `--skip-spatial` flag.
 
-![Map of all local surveys tested with MobiSurvStd](images/survey_map.jpg)
+![Map of all local surveys tested with Nemobi](images/survey_map.jpg)
 
 ## Enquête mobilité des personnes 2019 (EMP)
 
@@ -51,7 +51,7 @@ Notes:
 - The car type is not specified. Cars can include passenger cars, utilitary cars and recreational
   cars.
 - The survey includes data on 58 "voiturettes", 59 "quads", and 1 "tricycle" as a special vehicle
-  category, which is not read by MobiSurvStd.
+  category, which is not read by Nemobi.
 - Walking legs are not specified in the survey data for trips combining walking with other modes.
 - The surveyed day is drawn among the days of the week before the interview *on which the person
   traveled*.
@@ -147,7 +147,7 @@ Notes:
 - For most surveys, there are special locations corresponding to "Générateurs de trafic" ("GT"),
   which represent e.g., train stations or hospitals.
 - Draw zones correspond to the survey's "zones de tirage".
-- For each trips, the non-walking legs are recorded. MobiSurvStd reconstruct the walking legs using
+- For each trips, the non-walking legs are recorded. Nemobi reconstruct the walking legs using
   the access / egress walking time variables. This means that the leg travel time is known only for
   the walking legs (as it is not a recorded variable for the other legs).
 
@@ -193,7 +193,7 @@ Notes:
   100 meters).
 - The car types are not specified but utilitary cars and recreational cars ar excluded.
 - Motorcycles' parking data is not read because the survey's documentation is incorrect.
-- Variable `main_mode_group` can differ from the original `MODP_H7` variable because MobiSurvStd
+- Variable `main_mode_group` can differ from the original `MODP_H7` variable because Nemobi
   uses a different definition of mode groups and a different methodology to identify the main mode.
 - The `start_insee` and `end_insee` values are derived from the leg's coordinates, using INSEE data
   from 2025.
@@ -234,7 +234,7 @@ Notes:
   time value over 24h.
 - Origins and destinations are defined at the INSEE level.
 
-_Implementation in MobiSurvStd by Sebastian Hörl_
+_Implementation in Nemobi by Sebastian Hörl_
 
 ## Enquêtes Déplacements Grands Territoires (EDGT)
 
@@ -295,7 +295,7 @@ Notes:
 - For most surveys, there are special locations corresponding to "Générateurs de trafic" ("GT"),
   which represent e.g., train stations or hospitals.
 - Draw zones correspond to the survey's "zones de tirage".
-- For each trips, the non-walking legs are recorded. MobiSurvStd reconstruct the walking legs using
+- For each trips, the non-walking legs are recorded. Nemobi reconstruct the walking legs using
   the access / egress walking time variables. This means that the leg travel time is known only for
   the walking legs (as it is not a recorded variable for the other legs).
 
@@ -361,7 +361,7 @@ Notes:
 - For most surveys, there are special locations corresponding to "Générateurs de trafic" ("GT"),
   which represent e.g., train stations or hospitals.
 - Draw zones correspond to the survey's "zones de tirage".
-- For each trips, the non-walking legs are recorded. MobiSurvStd reconstruct the walking legs using
+- For each trips, the non-walking legs are recorded. Nemobi reconstruct the walking legs using
   the access / egress walking time variables. This means that the leg travel time is known only for
   the walking legs (as it is not a recorded variable for the other legs).
 
@@ -410,7 +410,7 @@ Notes:
 - For most surveys, there are special locations corresponding to "Générateurs de trafic" ("GT"),
   which represent e.g., train stations or hospitals.
 - Draw zones correspond to the survey's "zones de tirage".
-- For each trips, the non-walking legs are recorded. MobiSurvStd reconstruct the walking legs using
+- For each trips, the non-walking legs are recorded. Nemobi reconstruct the walking legs using
   the access / egress walking time variables. This means that the leg travel time is known only for
   the walking legs (as it is not a recorded variable for the other legs).
 

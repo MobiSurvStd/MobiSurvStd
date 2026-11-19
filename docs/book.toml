@@ -2,12 +2,12 @@
 authors = ["Lucas Javaudin"]
 language = "en"
 src = "src"
-title = "MobiSurvStd"
+title = "Nemobi"
 
 [output.html]
 default-theme = "rust"
 preferred-dark-theme = "navy"
 smart-punctuation = true
 mathjax-support = false
-git-repository-url = "https://github.com/LucasJavaudin/MobiSurvStd"
+git-repository-url = "https://github.com/LucasJavaudin/Nemobi"
 git-repository-icon = "fab-github"

@@ -12,6 +12,6 @@ All scripts assume that the standardized surveys are stored in the `output/all/`
   all surveys; plot a map of the values.
 - `mode_shares.py`: Compute the mode shares for each survey; plot those shares as horizontal bars.
 - `null_counts.py`: Compute the share of null values for each variable and each survey; generate the
-  HTML tables used in the [documentation](https://mobisurvstd.github.io/MobiSurvStd/table.html).
+  HTML tables used in the [documentation](https://nemobi.lucasjavaudin.com/table.html).
 - `persons_in_vehicle.py`: Compute the shares of car commuting trips according to the number of
   persons in the car.

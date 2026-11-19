@@ -7,7 +7,7 @@
 # Professional occupation comparison
 
 Each survey uses its own list of professional occupations.
-The table below shows, for each MobiSurvStd professional occupation (variables
+The table below shows, for each Nemobi professional occupation (variables
 [`professional_occupation`](format/persons.md#professional_occupation) and
 [`detailed_professional_occupation`](format/persons.md#detailed_professional_occupation) of
 persons), the original modalities that are mapped to it in each survey type.

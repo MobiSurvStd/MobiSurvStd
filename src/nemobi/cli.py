@@ -1,0 +1,103 @@
+from typing import Annotated
+
+import typer
+
+import nemobi
+
+from .logger import setup
+from .main import bulk_standardize, standardize
+from .resources import clear_cache
+
+# Initialize logging (only when Nemobi is used as a command-line tool).
+setup()
+
+
+def clear_cache_callback(value: bool):
+    if value:
+        clear_cache()
+        raise typer.Exit()
+
+
+def version_callback(value: bool):
+    if value:
+        print(nemobi.__version__)
+        raise typer.Exit()
+
+
+def standardizer(
+    source: Annotated[
+        str,
+        typer.Argument(
+            help="Path to the directory or the zipfile where the survey data is located."
+        ),
+    ],
+    output_directory: Annotated[
+        str,
+        typer.Argument(
+            help="Path to the directory where the standardized survey should be stored."
+        ),
+    ],
+    survey_type: Annotated[
+        str | None,
+        typer.Option(
+            help=(
+                "Format of the original survey. Possible values: `emc2`, `emp2019`, `egt2010`, "
+                "`egt2020`, `edgt`, `edvm`, `emd`, `emg2023`."
+            )
+        ),
+    ] = None,
+    bulk: bool = typer.Option(
+        False, "--bulk", help="Import surveys in bulk from the given directory"
+    ),
+    skip_spatial: bool = typer.Option(False, "--skip-spatial", help="Do not read spatial data"),
+    skip_insee: bool = typer.Option(False, "--skip-insee", help="Do not add INSEE data"),
+    no_validation: bool = typer.Option(
+        False,
+        "--no-validation",
+        help="Do not validate the standardized data (some guarantees might not be satisfied)",
+    ),
+    clear_cache: Annotated[
+        bool | None,
+        typer.Option(
+            "--clear-cache", callback=clear_cache_callback, help="Clear the cache data and exit"
+        ),
+    ] = None,
+    version: Annotated[
+        bool | None,
+        typer.Option(
+            "--version",
+            help="Show Nemobi version and exit",
+            callback=version_callback,
+            is_eager=True,
+        ),
+    ] = None,
+):
+    """Nemobi (Normalisation des enquêtes mobilités): a Python command line tool to convert French
+    mobility surveys to a clean standardized format.
+    """
+    if bulk:
+        bulk_standardize(
+            source,
+            output_directory,
+            survey_type,
+            skip_spatial=skip_spatial,
+            skip_insee=skip_insee,
+            no_validation=no_validation,
+        )
+    else:
+        standardize(
+            source,
+            output_directory,
+            survey_type,
+            skip_spatial=skip_spatial,
+            skip_insee=skip_insee,
+            no_validation=no_validation,
+        )
+
+
+app = typer.Typer()
+app.command()(standardizer)
+
+
+if __name__ == "__main__":
+    app()

@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
 
-from mobisurvstd import SurveyDataReader, read_many
-from mobisurvstd.resources.admin_express import load_insee_geometries
+from nemobi import SurveyDataReader, read_many
+from nemobi.resources.admin_express import load_insee_geometries
 
 
 def get_trip_origins(data: SurveyDataReader):

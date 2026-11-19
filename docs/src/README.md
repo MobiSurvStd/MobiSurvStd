@@ -1,8 +1,15 @@
-# MobiSurvStd
+# Nemobi
+
+<div class="warning">
+
+**Nemobi was formerly called MobiSurvStd.** If you are upgrading from MobiSurvStd, see the
+[migration guide](./migration.md).
+
+</div>
 
 ## Introduction
 
-MobiSurvStd (Mobility Survey Standardizer) is an easy-to-use Python command line interface to convert many French mobility surveys
+Nemobi (*Normalisation des enquêtes mobilités*, i.e., standardization of mobility surveys) is an easy-to-use Python command line interface to convert many French mobility surveys
 (EMC², EGT, EMP, etc.) to a unique standardized and clean format.
 
 ---
@@ -37,7 +44,7 @@ Also surveys based on previous formats are still in use today:
 
 ---
 
-## Why MobiSurvStd?
+## Why Nemobi?
 
 The existing formats all have the same drawbacks:
 
@@ -52,10 +59,10 @@ The existing formats all have the same drawbacks:
 Additionally, when working with different territories / periods, it is often necessary to write a
 similar code multiple times due to the existence of different formats.
 
-MobiSurvStd solves all these issues by being able to convert all survey formats to a [well-defined
+Nemobi solves all these issues by being able to convert all survey formats to a [well-defined
 Parquet format](format/index.html).
 
-See [this example](problem-example.html) to understand how MobiSurvStd can simplify your workflow.
+See [this example](problem-example.html) to understand how Nemobi can simplify your workflow.
 
 ---
 
@@ -64,7 +71,7 @@ See [this example](problem-example.html) to understand how MobiSurvStd can simpl
 Install the library with
 
 ```bash
-pip install mobisurvstd
+pip install nemobi
 ```
 
 ---
@@ -76,7 +83,7 @@ Download the
 _(Données individuelles anonymisées (fichiers au format CSV))_, then run the following command:
 
 ```bash
-mobisurvstd emp_2019_donnees_individuelles_anonymisees_novembre2024.zip standardized_emp2019
+nemobi emp_2019_donnees_individuelles_anonymisees_novembre2024.zip standardized_emp2019
 ```
 
 It will standardize the EMP 2019 survey and save the resulting Parquet files in the
@@ -84,18 +91,18 @@ It will standardize the EMP 2019 survey and save the resulting Parquet files in 
 These Parquet files can then be analyzed using e.g., [polars](https://pola.rs/) or
 [pandas](https://pandas.pydata.org) in Python or [arrow](https://arrow.apache.org/docs/r/) in R.
 
-**Note:** During standardization, MobiSurvStd may issue warnings when certain variable guarantees
+**Note:** During standardization, Nemobi may issue warnings when certain variable guarantees
 are not initially satisfied but are automatically fixed.
 These warnings can usually be safely ignored, unless they pertain to a large number of observations.
 
-A detailed definition of the Parquet format used by MobiSurvStd is available
+A detailed definition of the Parquet format used by Nemobi is available
 [here](format/index.html).
 
 You can also standardize surveys programmatically in Python with the `standardize` function:
 
 ```python
-import mobisurvstd
-mobisurvstd.standardize(
+import nemobi
+nemobi.standardize(
     "emp_2019_donnees_individuelles_anonymisees_novembre2024.zip",
     "standardized_emp2019",
 )
@@ -103,13 +110,13 @@ mobisurvstd.standardize(
 
 For more, check the [User Guide](howto.html).
 
-**Citing MobiSurvStd**
+**Citing Nemobi**
 
-If you use MobiSurvStd in a publication or project, please include the following citation:
+If you use Nemobi in a publication or project, please include the following citation:
 ```
-Javaudin, L. (2025). MobiSurvStd. Zenodo. https://doi.org/10.5281/zenodo.17710203
+Javaudin, L. (2025). Nemobi. Zenodo. https://doi.org/10.5281/zenodo.17710203
 ```
-A [CITATION.bib](https://github.com/MobiSurvStd/MobiSurvStd/blob/main/CITATION.bib) is also
+A [CITATION.bib](https://github.com/LucasJavaudin/Nemobi/blob/main/CITATION.bib) is also
 available.
 
 ---
@@ -122,7 +129,7 @@ The circle colors represent the average number of bicycles in the surveyed house
 The circle sizes represent the expected number of trips in the surveyed area.
 
 The graph has been generated from the code in
-[analyses/bicycle_shares.py](https://github.com/MobiSurvStd/MobiSurvStd/blob/main/analyses/bicycle_shares.py).
+[analyses/bicycle_shares.py](https://github.com/LucasJavaudin/Nemobi/blob/main/analyses/bicycle_shares.py).
 
 ![Graph of bicycle share by survey](images/bicycle_shares.png)
 
@@ -130,7 +137,7 @@ The following map represents the share of bicycle trips within INSEE municipalit
 Only municipalities with more than 30 surveyed trips are shown.
 
 The map has been generated from the code in
-[analyses/bicycle_shares_by_insee.py](https://github.com/MobiSurvStd/MobiSurvStd/blob/main/analyses/bicycle_shares_by_insee.py).
+[analyses/bicycle_shares_by_insee.py](https://github.com/LucasJavaudin/Nemobi/blob/main/analyses/bicycle_shares_by_insee.py).
 
 ![Map of bicycle share by INSEE municipality](images/bicycle_shares_by_insee.png)
 
@@ -138,7 +145,7 @@ The map has been generated from the code in
 
 ## Supported Surveys
 
-Currently, MobiSurvStd supports the following survey types:
+Currently, Nemobi supports the following survey types:
 
 - `emp2019`
 - `emc2`
@@ -154,8 +161,8 @@ See [Survey Types](surveys.html) for more.
 Other survey types that are planned to be integrated are: `entd`.
 If you know another survey format that could be integrated, feel free to open an issue on GitHub.
 
-MobiSurvStd covers only French mobility survey formats.
-If other countries have similar survey formats, they might be easily integrated into MobiSurvStd (or
+Nemobi covers only French mobility survey formats.
+If other countries have similar survey formats, they might be easily integrated into Nemobi (or
 a variant of it).
 
 ---
@@ -163,7 +170,7 @@ a variant of it).
 ## Legal Notice
 
 <span style="color:red">
-⚠️ <strong>MobiSurvStd does not anonymize the data.</strong>
+⚠️ <strong>Nemobi does not anonymize the data.</strong>
 If you are working with confidential datasets (e.g., EMC² or EGT surveys), you must apply the same
 confidentiality rules to the standardized data as to the original data.
 In particular, <strong>you must not share the standardized data</strong> if your confidentiality

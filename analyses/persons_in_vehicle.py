@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
 
-from mobisurvstd import SurveyDataReader, read_many
+from nemobi import SurveyDataReader, read_many
 
 
 def get_legs(data: SurveyDataReader):

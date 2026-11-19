@@ -1,8 +1,8 @@
 import geopandas as gpd
 import polars as pl
 
-from mobisurvstd import SurveyDataReader, read_many
-from mobisurvstd.resources.admin_express import load_insee_geometries
+from nemobi import SurveyDataReader, read_many
+from nemobi.resources.admin_express import load_insee_geometries
 
 
 def get_survey_area(data: SurveyDataReader, gdf: gpd.GeoDataFrame):

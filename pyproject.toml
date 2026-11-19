@@ -5,9 +5,9 @@ requires = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mobisurvstd"
-version = "1.6.1"
-description = "A tool to standardize French mobility survey datasets (EMC2, EGT, EMP, etc.) into a unified format."
+name = "nemobi"
+version = "2.0.0"
+description = "Nemobi (Normalisation des enquêtes mobilités): a tool to standardize French mobility survey datasets (EMC², EGT, EMP, etc.) into a unified format."
 readme = "README.md"
 authors = [{ name = "Lucas Javaudin", email = "lucas@lucasjavaudin.com" }]
 license = "MIT"
@@ -17,7 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: File Formats",
 ]
-keywords = ["mobility survey", "polars", "data format"]
+keywords = ["mobility survey", "travel survey", "France", "polars", "data format"]
 dependencies = [
     "geopandas>=1.0.1",
     "humanize>=4.13.0",
@@ -34,13 +34,13 @@ dependencies = [
 requires-python = ">=3.11"
 
 [project.scripts]
-mobisurvstd = "mobisurvstd:cli.app"
+nemobi = "nemobi:cli.app"
 
 [project.urls]
-Homepage = "https://github.com/MobiSurvStd/MobiSurvStd"
-Documentation = "https://mobisurvstd.github.io/MobiSurvStd/index.html"
-Repository = "https://github.com/MobiSurvStd/MobiSurvStd"
-Issues = "https://github.com/MobiSurvStd/MobiSurvStd/issues"
+Homepage = "https://github.com/LucasJavaudin/Nemobi"
+Documentation = "https://nemobi.lucasjavaudin.com/index.html"
+Repository = "https://github.com/LucasJavaudin/Nemobi"
+Issues = "https://github.com/LucasJavaudin/Nemobi/issues"
 
 [dependency-groups]
 dev = [

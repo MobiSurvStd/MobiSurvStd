@@ -2,15 +2,15 @@
 
 ## Note on zones
 
-In MobiSurvStd, locations (e.g., home, work, origin, destination) are specified as special location,
+In Nemobi, locations (e.g., home, work, origin, destination) are specified as special location,
 detailed zone, draw zone, INSEE municipality, département, NUTS2 and NUTS1.
-Unfortunately, given the poor quality of some spatial definitions, MobiSurvStd cannot guarantee the
+Unfortunately, given the poor quality of some spatial definitions, Nemobi cannot guarantee the
 consistency between all these locations, i.e., the home detailed zone of a household might not be
 within its home INSEE municipality.
 
 ## INSEE codes
 
-The original surveys and MobiSurvStd rely heavily on the INSEE "Codes Commune" which are used to
+The original surveys and Nemobi rely heavily on the INSEE "Codes Commune" which are used to
 identify the French municipalities ("Communes").
 These INSEE codes are all composed of 5 characters, with the first 2 characters representing the
 "département" where the municipality is located (the first 3 characters for oversea territories).
@@ -23,7 +23,7 @@ The INSEE code can also represent the "arrondissements municipaux" for Paris, Ly
 Depending on the surveys, either the municipalities or the "arrondissements municipaux" are used to
 define the locations.
 
-Note that some special codes are also used by MobiSurvStd to identify foreign countries.
+Note that some special codes are also used by Nemobi to identify foreign countries.
 They all start by "99":
 
 - `"99001"`: Sea / Ocean
@@ -41,19 +41,19 @@ They all start by "99":
 
 ## External data and cache
 
-MobiSurvStd relies on external data from INSEE (municipality densities, AAV definitions) and IGN
+Nemobi relies on external data from INSEE (municipality densities, AAV definitions) and IGN
 (municipality boundaries) to generate all required variables for certain surveys.
-On first access, MobiSurvStd automatically downloads this data from official sources and stores it
+On first access, Nemobi automatically downloads this data from official sources and stores it
 in a local cache.
 This cache speeds up subsequent operations by avoiding repeated downloads.
 
 The cache is usually located at:
 
-- Windows: `[UserDir]\AppData\Local\mobisurvstd\Cache`
-- Linux: `~/.cache/mobisurvstd`
+- Windows: `[UserDir]\AppData\Local\nemobi\Cache`
+- Linux: `~/.cache/nemobi`
 
 The cache typically uses less than 200 MB of storage. To clear it, run:
 
 ```python
-python -m mobisurvstd --clear-cache
+python -m nemobi --clear-cache
 ```

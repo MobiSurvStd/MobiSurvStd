@@ -2,7 +2,7 @@ import polars as pl
 import seaborn as sns
 from matplotlib.ticker import PercentFormatter
 
-from mobisurvstd import SurveyDataReader, read_many
+from nemobi import SurveyDataReader, read_many
 
 
 def get_bicycle_share(data: SurveyDataReader):

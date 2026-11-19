@@ -1,6 +1,6 @@
 # Format Specification
 
-A survey standardized by MobiSurvStd consists in the following files stored within a directory:
+A survey standardized by Nemobi consists in the following files stored within a directory:
 
 - [`metadata.json`](./metadata.html): general information on the survey
 - [`households.parquet`](./households.html)
@@ -13,6 +13,6 @@ A survey standardized by MobiSurvStd consists in the following files stored with
 - [`detailed_zones.geo.parquet`](./zones.html) [optional]
 - [`draw_zones.geo.parquet`](./zones.html) [optional]
 
-The diagram below shows the relationships between the main entities in MobiSurvStd.
+The diagram below shows the relationships between the main entities in Nemobi.
 
-![Reliationships between the main entities in MobiSurvStd](../images/mobisurvstd-relationships.png)
+![Reliationships between the main entities in Nemobi](../images/nemobi-relationships.png)

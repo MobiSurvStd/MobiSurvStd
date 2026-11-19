@@ -1,9 +1,10 @@
 # Summary
 
 - [Introduction](./README.md)
-  - [Why MobiSurvStd?](./problem-example.md)
+  - [Why Nemobi?](./problem-example.md)
   - [Glossary](./glossary.md)
 - [User Guide](./howto.md)
+  - [Migrating from MobiSurvStd](./migration.md)
 - [Surveys](./surveys.md)
 - [Survey comparison](./comparison.md)
   - [Availability table](./table.md)

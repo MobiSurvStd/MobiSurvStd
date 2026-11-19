@@ -1,0 +1,94 @@
+from pathlib import Path
+from zipfile import ZipFile
+
+from loguru import logger
+
+from nemobi.common.clean import clean
+from nemobi.utils import find_file
+
+from .deplacements import standardize_trips
+from .menages import standardize_households
+from .motos import standardize_motorcycles
+from .personnes import standardize_persons
+from .trajets import standardize_legs
+from .voitures import standardize_cars
+
+
+def standardize(source: Path | ZipFile, skip_spatial: bool = False, skip_insee: bool = False):
+    source_name = source.filename if isinstance(source, ZipFile) else source
+    logger.info(f"Standardizing EGT2020 survey from `{source_name}`")
+    # Households.
+    filename = households_filename(source)
+    if not filename:
+        logger.error(f"Missing households file: {filename}")
+        return None
+    households = standardize_households(filename, skip_insee)
+    # Cars.
+    filename = cars_filename(source)
+    if not filename:
+        logger.error(f"Missing cars file: {filename}")
+        return None
+    cars = standardize_cars(filename, households)
+    # motorcycles.
+    filename = motorcycles_filename(source)
+    if not filename:
+        logger.error(f"Missing motorcycles fil: {filename}e")
+        return None
+    motorcycles = standardize_motorcycles(filename, households)
+    # Persons.
+    filename = persons_filename(source)
+    if not filename:
+        logger.error(f"Missing persons fil: {filename}e")
+        return None
+    persons = standardize_persons(filename, households)
+    # Trips.
+    filename = trips_filename(source)
+    if not filename:
+        logger.error(f"Missing trips fil: {filename}e")
+        return None
+    trips = standardize_trips(filename, households, persons, skip_insee)
+    # Legs.
+    filename = legs_filename(source)
+    if not filename:
+        logger.error(f"Missing legs fil: {filename}e")
+        return None
+    legs = standardize_legs(filename, trips, cars, motorcycles, persons)
+    return clean(
+        households=households,
+        persons=persons,
+        trips=trips,
+        legs=legs,
+        cars=cars,
+        motorcycles=motorcycles,
+        survey_type="EGT2020",
+        survey_name="EGT2020",
+        main_insee="75056",
+    )
+
+
+def households_filename(source: Path | ZipFile):
+    return find_file(source, "a_menage_egt1820.csv") or find_file(source, "01_menage_egt1820.csv")
+
+
+def persons_filename(source: Path | ZipFile):
+    return find_file(source, "b_individu_egt1820.csv") or find_file(
+        source, "02_individu_egt1820.csv"
+    )
+
+
+def trips_filename(source: Path | ZipFile):
+    return find_file(source, "c_deplacement_egt1820.csv") or find_file(
+        source, "03_deplacement_egt1820.csv"
+    )
+
+
+def legs_filename(source: Path | ZipFile):
+    return find_file(source, "d_trajet_egt1820.csv") or find_file(source, "04_trajet_egt1820.csv")
+
+
+def cars_filename(source: Path | ZipFile):
+    return find_file(source, "e_voiture_egt1820.csv") or find_file(source, "05_voiture_egt1820.csv")
+
+
+def motorcycles_filename(source: Path | ZipFile):
+    return find_file(source, "f_drm_egt1820.csv") or find_file(source, "06_drm_egt1820.csv")

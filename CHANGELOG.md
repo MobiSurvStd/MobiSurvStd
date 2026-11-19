@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Breaking changes
+
+- **The project is renamed from MobiSurvStd to Nemobi** (*Normalisation des enquêtes mobilités*).
+  The PyPI package is now `nemobi` (`pip install nemobi`), the Python module is `nemobi`
+  (`import nemobi`) and the command-line tool is `nemobi`. The repository moved to
+  <https://github.com/LucasJavaudin/Nemobi> and the documentation to <https://nemobi.lucasjavaudin.com/>.
+  See the [migration guide](https://nemobi.lucasjavaudin.com/migration.html).
+- The standardized format is unchanged: surveys standardized with MobiSurvStd can be read with
+  `nemobi.SurveyDataReader`.
+- The cache directory is now named `nemobi`; an existing `mobisurvstd` cache is moved there
+  automatically.
+
 ## [1.6.1] - 2026-11-19
 
 - Fix for `*_insee_density`: categories 3 (petite ville) and 4 (ceinture urbain) were reversed in

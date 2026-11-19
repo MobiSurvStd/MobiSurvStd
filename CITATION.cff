@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: 'MobiSurvStd'
+title: 'Nemobi'
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 authors:
@@ -9,12 +9,12 @@ authors:
     affiliation: >-
       LVMT, ENPC, Institut Polytechnique de Paris, Univ Gustave Eiffel
     orcid: 'https://orcid.org/0000-0002-6778-8037'
-repository-code: https://github.com/MobiSurvStd/MobiSurvStd
-url: 'https://mobisurvstd.github.io/MobiSurvStd/'
+repository-code: https://github.com/LucasJavaudin/Nemobi
+url: 'https://nemobi.lucasjavaudin.com/'
 abstract: >-
   A tool to standardize French mobility survey datasets (EMC2, EGT, EMP, etc.)
   into a unified format.
 license: MIT
-version: v1.0.0
+version: v2.0.0
 date-released: '2025-11-25'
 doi: 10.5281/zenodo.17710203

@@ -1,6 +1,6 @@
 import polars as pl
 
-from mobisurvstd import SurveyDataReader, read_many
+from nemobi import SurveyDataReader, read_many
 
 
 def get_weekdays(data: SurveyDataReader):

@@ -245,7 +245,7 @@ Note that in most cases, the end special location should be equal to the start s
 the next leg in the trip (if any).
 Exceptions can occur when two special locations are so closed that the person walked very quickly
 from one to the other and did not report that as a dedicate leg.
-MobiSurvStd will show warning messages indicating how many legs does not match the constraint.
+Nemobi will show warning messages indicating how many legs does not match the constraint.
 
 - **Type:** String
 
@@ -342,7 +342,7 @@ Travel time spent for this leg, in minutes.
 Usually, one can expect that the sum of `leg_travel_time` for all the legs of a trip is not larger
 than the `travel_time` value of the trip.
 In parctice, that constraint is not always satisfied due to miss-recorded travel times.
-MobiSurvStd will show warning messages indicating how many trips does not match the constraint.
+Nemobi will show warning messages indicating how many trips does not match the constraint.
 
 - **Type:** UInt32
 - **Guarantees:**

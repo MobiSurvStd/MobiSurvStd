@@ -9,10 +9,10 @@
 ## Command Line Interface
 
 ```
- Usage: mobisurvstd [OPTIONS] SOURCE OUTPUT_DIRECTORY
+ Usage: nemobi [OPTIONS] SOURCE OUTPUT_DIRECTORY
 
- Mobility Survey Standardizer: a Python command line tool to convert mobility surveys to a clean
- standardized format.
+ Nemobi (Normalisation des enquêtes mobilités): a Python command line tool to convert French
+ mobility surveys to a clean standardized format.
 
 
 ╭─ Arguments ─────────────────────────────────────────────────────────────────────────────────────────╮
@@ -33,7 +33,7 @@
 │ --no-validation                   Do not validate the standardized data (some guarantees might not  │
 │                                   be satisfied)                                                     │
 │ --clear-cache                     Clear the cache data and exit                                     │
-│ --version                         Show MobiSurvStd version and exit                                 │
+│ --version                         Show Nemobi version and exit                                 │
 │ --install-completion              Install completion for the current shell.                         │
 │ --show-completion                 Show completion for the current shell, to copy it or customize    │
 │                                   the installation.                                                 │
@@ -41,11 +41,11 @@
 ╰─────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-Note. If you have installed [`uv`](https://docs.astral.sh/uv/), you can execute `mobisurvstd`
+Note. If you have installed [`uv`](https://docs.astral.sh/uv/), you can execute `nemobi`
 without installing it with:
 
 ```bash
-uvx mobisurvstd
+uvx nemobi
 ```
 
 ### Examples
@@ -56,7 +56,7 @@ Read the EGT2020 survey from the `original_egt2020` directory and store the stan
 the `standardized_egt2020` directory.
 
 ```bash
-mobisurvstd original_egt2020 standardized_egt2020
+nemobi original_egt2020 standardized_egt2020
 ```
 
 #### From zipfile
@@ -65,7 +65,7 @@ Read the EGT2020 survey from the `original_egt2020.zip` file and store the stand
 the `standardized_egt2020` directory.
 
 ```bash
-mobisurvstd original_egt2020.zip standardized_egt2020
+nemobi original_egt2020.zip standardized_egt2020
 ```
 
 #### Bulk import
@@ -74,7 +74,7 @@ Read all surveys in the `my_surveys` directory and store their standardized vers
 `standardized_surveys` directory.
 
 ```bash
-mobisurvstd --bulk my_surveys standardized_surveys
+nemobi --bulk my_surveys standardized_surveys
 ```
 
 ## Usage from Python
@@ -84,14 +84,14 @@ mobisurvstd --bulk my_surveys standardized_surveys
 Converts a mobility survey to a clean standardized format.
 
 ```python
-mobisurvstd.standardize(
+nemobi.standardize(
     source: str,
     output_directory: str | None = None,
     survey_type: str | None = None,
     add_name_subdir: bool = False,
     skip_spatial: bool = False,
     no_validation: bool = False,
-) -> mobisurvstd.classes.SurveyData | None
+) -> nemobi.classes.SurveyData | None
 ```
 
 ```markdown
@@ -104,11 +104,11 @@ source
     survey's files can be found no matter how deeply nested the zipfile is.
 output_directory
     Path to the directory where the standardized survey should be stored.
-    If the directory does not exist, MobiSurvStd will create it (recursively).
+    If the directory does not exist, Nemobi will create it (recursively).
     If None, the standardized survey will not be saved.
 survey_type
     String indicating the type of the survey to be converted.
-    If the value is omitted, MobiSurvStd will do its best to guess the survey type.
+    If the value is omitted, Nemobi will do its best to guess the survey type.
     Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd", "emg2023".
 add_name_subdir
     Whether the standardized survey is stored directly in `output_directory` or within a
@@ -117,12 +117,12 @@ add_name_subdir
     subdirectory name is the survey name.
     If False (default), the standardized survey is stored directly in `output_directory`.
 skip_spatial
-    If True, MobiSurvStd will not try to read spatial data from the survey.
+    If True, Nemobi will not try to read spatial data from the survey.
     This means that special locations, detailed zones, and draw zones will not be read and
     proposed as an output.
     Some variables (e.g., home_lng, home_lat) might also be missing as a result.
 no_validation
-    If True, MobiSurvStd will not validate the standardized data.
+    If True, Nemobi will not validate the standardized data.
     This means that guarantees for some variables might not be satisfied.
 
 Returns
@@ -134,8 +134,8 @@ SurveyData
 standardized version in the `standardized_egt2020` directory.
 
 ```python
-import mobisurvstd
-mobisurvstd.standardize(
+import nemobi
+nemobi.standardize(
     "original_egt2020.zip",
     "standardized_egt2020",
     survey_type="egt2020",
@@ -146,11 +146,11 @@ mobisurvstd.standardize(
 
 Standardizes mobility surveys in bulk from a given directory.
 
-MobiSurvStd will explore all directories and zipfiles within `directory`, try to standardize
+Nemobi will explore all directories and zipfiles within `directory`, try to standardize
 them and store the standardized data in `output_directory`.
 
 ```python
-mobisurvstd.bulk_standardize(
+nemobi.bulk_standardize(
     directory: str,
     output_directory: str,
     survey_type: str | None = None,
@@ -167,20 +167,20 @@ directory
     The directory must contain survey data, stored within directories or zipfiles.
 output_directory
     Path to the directory where the standardized surveys should be stored.
-    If the directory does not exist, MobiSurvStd will create it (recursively).
+    If the directory does not exist, Nemobi will create it (recursively).
     Each survey read is stored in a subdirectory whose name is the survey's name.
 survey_type
     String indicating the type of the surveys to be converted.
     If the directory contains surveys of different types, leave this value to None and
-    MobiSurvStd will try to guess the type of each survey.
+    Nemobi will try to guess the type of each survey.
     Possible values: "emc2", "emp2019", "egt2020", "egt2010", "edgt", "edvm", "emd", "emg2023".
 skip_spatial
-    If True, MobiSurvStd will not try to read spatial data from the surveys.
+    If True, Nemobi will not try to read spatial data from the surveys.
     This means that special locations, detailed zones, and draw zones will not be read and
     proposed as an output.
     Some variables (e.g., home_lng, home_lat) might also be missing as a result.
 no_validation
-    If True, MobiSurvStd will not validate the standardized data.
+    If True, Nemobi will not validate the standardized data.
     This means that guarantees for some variables might not be satisfied.
 ```
 
@@ -188,19 +188,19 @@ no_validation
 in the `standardized_surveys` directory.
 
 ```python
-import mobisurvstd
-mobisurvstd.bulk_standardize("my_surveys", "standardized_surveys")
+import nemobi
+nemobi.bulk_standardize("my_surveys", "standardized_surveys")
 ```
 
 ### `SurveyDataReader`
 
-Data structure representing a MobiSurvStd survey.
+Data structure representing a Nemobi survey.
 
 Create a SurveyDataReader from a directory.
 
 ```python
-import mobisurvstd
->>> data = mobisurvstd.SurveyDataReader("output/emp2019/")
+import nemobi
+>>> data = nemobi.SurveyDataReader("output/emp2019/")
 ```
 
 Access the survey's metadata as a dictionary:
@@ -260,10 +260,10 @@ Access the survey's households as a polars.DataFrame:
 
 ### `read_many`
 
-Runs a function on all MobiSurvStd surveys found in a directory and aggregates the results.
+Runs a function on all Nemobi surveys found in a directory and aggregates the results.
 
 ```python
-mobisurvstd.read_many(
+nemobi.read_many(
     directory: str,
     read_fn: collections.abc.Callable,
     acc_fn: collections.abc.Callable,
@@ -274,7 +274,7 @@ mobisurvstd.read_many(
 Parameters
 ----------
 directory
-    Path to the directory where the MobiSurvStd surveys to read are stored.
+    Path to the directory where the Nemobi surveys to read are stored.
     The directory will be read recursively so the surveys can be stored in subdirectories.
 read_fn
     Function to be run on each survey.
@@ -290,16 +290,16 @@ acc_fn
 Read the total number of households from all surveys in the "output" directory:
 
 ```python
-import mobisurvstd
-mobisurvstd.read_many("output/", lambda d: len(d.households), lambda x, y: x + y)
+import nemobi
+nemobi.read_many("output/", lambda d: len(d.households), lambda x, y: x + y)
 ```
 
 Concatenate all trips in a single DataFrame:
 
 ```python
-import mobisurvstd
-mobisurvstd.read_many("output/", lambda d: d.trips, lambda x, y: pl.concat((x, y)))
+import nemobi
+nemobi.read_many("output/", lambda d: d.trips, lambda x, y: pl.concat((x, y)))
 ```
 
 More complex examples on the use of `read_many` can be found in the
-[`analyses`](https://github.com/MobiSurvStd/MobiSurvStd/tree/main/analyses) directory.
+[`analyses`](https://github.com/LucasJavaudin/Nemobi/tree/main/analyses) directory.

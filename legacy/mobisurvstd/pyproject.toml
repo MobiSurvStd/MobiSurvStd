@@ -1,0 +1,30 @@
+# Compatibility package: `mobisurvstd` is the former name of `nemobi`.
+# It is published separately from `nemobi` (see `.github/workflows/publish-mobisurvstd-shim.yml`).
+
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mobisurvstd"
+version = "1.7.0"
+description = "Deprecated: MobiSurvStd has been renamed to Nemobi. Install `nemobi` instead."
+readme = "README.md"
+authors = [{ name = "Lucas Javaudin", email = "lucas@lucasjavaudin.com" }]
+license = "MIT"
+classifiers = [
+    "Development Status :: 7 - Inactive",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+dependencies = ["nemobi>=2.0.0"]
+requires-python = ">=3.11"
+
+[project.scripts]
+mobisurvstd = "mobisurvstd:_cli"
+
+[project.urls]
+Homepage = "https://github.com/LucasJavaudin/Nemobi"
+Documentation = "https://nemobi.lucasjavaudin.com/migration.html"
+Repository = "https://github.com/LucasJavaudin/Nemobi"
+Issues = "https://github.com/LucasJavaudin/Nemobi/issues"
